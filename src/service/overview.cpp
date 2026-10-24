@@ -70,7 +70,8 @@ void Overview::show(const RECT &area)
     if (!m_window) {
         // Double clicks are needed for the title bars.
         registerWindowClass(s_windowClass, &Overview::windowProc, CS_DBLCLKS);
-        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW, s_windowClass, L"WIN Infinit Desktop", WS_POPUP, area.left, area.top, area.right - area.left,
+        // Never activated: the keyboard stays with the active application, as on KDE.
+        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE, s_windowClass, L"WIN Infinit Desktop", WS_POPUP, area.left, area.top, area.right - area.left,
                                        area.bottom - area.top, nullptr, nullptr, GetModuleHandleW(nullptr), this));
         if (!m_window) {
             return;
@@ -79,8 +80,7 @@ void Overview::show(const RECT &area)
     const bool moved = !sameRect(area, m_area);
     m_area = area;
     if (!m_visible || moved) {
-        SetWindowPos(m_window.get(), HWND_TOP, area.left, area.top, area.right - area.left, area.bottom - area.top, SWP_SHOWWINDOW);
-        SetForegroundWindow(m_window.get());
+        SetWindowPos(m_window.get(), HWND_TOP, area.left, area.top, area.right - area.left, area.bottom - area.top, SWP_SHOWWINDOW | SWP_NOACTIVATE);
         m_visible = true;
         updateBackground();
     }
@@ -346,7 +346,15 @@ void Overview::showMenu(const QPointF &point)
     AppendMenuW(menu.get(), MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu.get(), MF_STRING, MenuSettings, text(L"Settings…", L"Einstellungen …"));
     AppendMenuW(menu.get(), MF_STRING, MenuQuit, text(L"Quit WIN Infinit Desktop", L"WIN Infinit Desktop beenden"));
+    // A menu needs its owner in the foreground to close when clicking elsewhere; give the
+    // foreground back afterwards.
+    const HWND previous = GetForegroundWindow();
+    SetForegroundWindow(m_window.get());
     const UINT chosen = TrackPopupMenuEx(menu.get(), TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON, int(point.x()), int(point.y()), m_window.get(), nullptr);
+    PostMessageW(m_window.get(), WM_NULL, 0, 0);
+    if (previous && previous != m_window.get() && IsWindow(previous)) {
+        SetForegroundWindow(previous);
+    }
     switch (chosen) {
     case MenuZoomReset:
         m_host->overviewCommand(m_monitor, OverviewHost::Command::ZoomReset);
@@ -368,6 +376,8 @@ void Overview::showMenu(const QPointF &point)
 LRESULT Overview::handle(UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
+    case WM_MOUSEACTIVATE:
+        return MA_NOACTIVATE;
     case WM_PAINT:
         paint();
         return 0;

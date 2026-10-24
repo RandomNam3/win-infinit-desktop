@@ -145,7 +145,10 @@ App-Schlüssel.
 | Ziehen auf freier Fläche oder im Inhalt, mittlere Taste | Fläche verschieben, mit Nachgleiten |
 | Mausrad | zoomen zum Mauszeiger |
 | Rechtsklick auf freie Fläche | Menü: 100 %, alle Fenster zeigen, Einstellungen, Beenden |
-| Esc, Alt+F4 | zurück auf 100 % |
+| Esc (über den Tastatur-Hook) | zurück auf 100 % |
+
+Die Übersicht wird nie aktiviert (`WS_EX_NOACTIVATE`, `MA_NOACTIVATE`). Die Tastatur bleibt beim aktiven
+Programm, wie unter KDE: Tippen geht auch herausgezoomt an das aktive Fenster.
 
 ## 6. Eingabe
 
@@ -174,7 +177,8 @@ App-Schlüssel.
     wandert also auf der Fläche.
   - Windows-Snap ist nur für die Dauer dieses Ziehens aus, ohne Eintrag im Benutzerprofil
     (`SystemParametersInfo` ohne `SPIF_UPDATEINIFILE`). Danach wird es wiederhergestellt, auch beim
-    Beenden.
+    Beenden. Stürzt der Dienst während des Ziehens ab, merkt er das an der Datei `snap-off` im
+    Zustandsverzeichnis und schaltet Snap beim nächsten Start wieder ein.
 
 ## 7. Markierungen
 
@@ -220,6 +224,10 @@ Für jedes Fenster außerhalb des Bildes zeigt eine kleine Markierung die Richtu
 ## 10. Stabilität und Ressourcen
 
 **In Ruhe läuft nichts:**
+- Wach wird der Dienst nur durch Ereignisse. Dazu gehören leider auch die Zeigerbewegungen:
+  `EVENT_OBJECT_LOCATIONCHANGE` meldet auch den Mauszeiger (`OBJID_CURSOR`) und lässt sich nicht nach
+  Objekt filtern. Die Prüfung verwirft solche Ereignisse in Mikrosekunden; der Hook-Thread sieht jede
+  Bewegung ohnehin.
 - Alle Timer sind Einmal-Timer oder laufen nur während einer Bewegung: Anwenden 16 ms, Animation
   16 ms, Kantenscrollen 16 ms, Ausblenden der Markierungen 2 s, Speichern 3 s, Bildschirmwechsel
   400 ms.

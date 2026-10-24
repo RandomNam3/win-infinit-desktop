@@ -102,9 +102,24 @@ InfinitDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor)
     return identity;
 }
 
-std::chrono::microseconds steadyMicroseconds()
+// Snap is switched off while a canvas window is dragged. A marker file remembers that, so
+// that the next start switches it back on if the service crashed during a drag.
+QString snapMarkerPath()
 {
-    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch());
+    return QDir(stateDirectory()).filePath(QStringLiteral("snap-off"));
+}
+
+void setSnap(bool on)
+{
+    SystemParametersInfoW(SPI_SETWINARRANGING, on ? TRUE : FALSE, nullptr, 0);
+    if (on) {
+        QFile::remove(snapMarkerPath());
+    } else {
+        QFile marker(snapMarkerPath());
+        if (marker.open(QIODevice::WriteOnly)) {
+            marker.write("1");
+        }
+    }
 }
 
 } // namespace
@@ -164,6 +179,10 @@ bool CanvasService::start(bool safeMode)
         CloseHandle(token);
     }
     reloadSettings();
+    if (QFile::exists(snapMarkerPath())) {
+        qCInfo(lcService) << "switching Snap back on after an unclean exit";
+        setSnap(true);
+    }
     if (!createServiceWindow()) {
         qCWarning(lcService) << "cannot create the service window";
         return false;
@@ -972,7 +991,7 @@ void CanvasService::onMoveSizeStart(HWND hwnd)
         SystemParametersInfoW(SPI_GETWINARRANGING, 0, &snap, 0);
         if (snap) {
             m_snapBefore = snap;
-            SystemParametersInfoW(SPI_SETWINARRANGING, FALSE, nullptr, 0);
+            setSnap(false);
             m_snapChanged = true;
         }
     }
@@ -985,7 +1004,7 @@ void CanvasService::onMoveSizeEnd(HWND hwnd)
         m_userMove = UserMove{};
         m_edgeTimer.stop();
         if (m_snapChanged) {
-            SystemParametersInfoW(SPI_SETWINARRANGING, m_snapBefore, nullptr, 0);
+            setSnap(m_snapBefore != FALSE);
             m_snapChanged = false;
         }
         publishSnapshot();
@@ -1978,7 +1997,7 @@ void CanvasService::shutdown()
     m_tickTimer.stop();
     m_edgeTimer.stop();
     if (m_snapChanged) {
-        SystemParametersInfoW(SPI_SETWINARRANGING, m_snapBefore, nullptr, 0);
+        setSnap(m_snapBefore != FALSE);
         m_snapChanged = false;
     }
     for (MonitorState &monitor : m_monitors) {
