@@ -1,0 +1,100 @@
+# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Builds everything with MSVC on x64 and ARM64 and runs the unit tests. The ARM64 runner
+# is Windows 11 25H2; the x64 runner is Windows Server 2025 (same 26100 platform).
+# wid-probe runs on both and its reports are kept as artifacts.
+
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: Windows ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: windows-2025
+            msvc: x64
+            qt: win64_msvc2022_64
+            with_qt: 'ON'
+          - arch: arm64
+            runner: windows-11-arm
+            msvc: arm64
+            qt: ''
+            with_qt: 'OFF'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc }}
+
+      - name: Install Qt
+        if: matrix.qt != ''
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          arch: ${{ matrix.qt }}
+          cache: true
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DWID_WITH_QT=${{ matrix.with_qt }}
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Unit tests
+        if: matrix.with_qt == 'ON'
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Probe
+        shell: pwsh
+        run: |
+          $probe = "build/tools/wid-probe/wid-probe.exe"
+          New-Item -ItemType Directory -Force probe | Out-Null
+          & $probe --help
+          & $probe | Tee-Object probe/report.txt
+          & $probe --json > probe/report.json
+          # Needs an interactive desktop; the hosted runners have one, but report rather than fail.
+          & $probe --test-move self | Tee-Object probe/test-move.txt
+          & $probe --test-thumbnail | Tee-Object probe/test-thumbnail.txt
+          exit 0
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wid-probe-${{ matrix.arch }}
+          path: |
+            build/tools/wid-probe/wid-probe.exe
+            probe/
+
+  core-linux:
+    # The canvas core is shared with KDE Infinit Desktop; keep it building on Linux too.
+    name: Core on Linux
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qt6-base-dev ninja-build
+      - name: Build and test
+        run: |
+          cmake -S . -B build -G Ninja -DQT_MIN_VERSION=6.4
+          cmake --build build
+          ctest --test-dir build --output-on-failure
