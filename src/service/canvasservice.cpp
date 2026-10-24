@@ -23,6 +23,7 @@
 #include <QFileSystemWatcher>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QLineF>
 #include <QProcess>
 #include <QSaveFile>
 #include <QSettings>
@@ -646,9 +647,15 @@ void CanvasService::tryAdopt(HWND hwnd, bool isNew)
         return;
     }
     if (!home.overview && adopted.onCanvas()) {
-        const int homeIndex = monitorIndexOf(key);
-        if (homeIndex >= 0) {
-            placeWindow(adopted, home, m_monitors[std::size_t(homeIndex)]);
+        if (isNew) {
+            // A window that just appeared is still settling (its DWM frame can lag behind the
+            // window rect): place it a moment later and check the result once more.
+            settleNewWindow(hwnd, 100, 2);
+        } else {
+            const int homeIndex = monitorIndexOf(key);
+            if (homeIndex >= 0) {
+                placeWindow(adopted, home, m_monitors[std::size_t(homeIndex)]);
+            }
         }
     }
     if (revealIt) {
@@ -656,6 +663,33 @@ void CanvasService::tryAdopt(HWND hwnd, bool isNew)
     } else if (home.overview) {
         updateOverview(home);
     }
+}
+
+void CanvasService::settleNewWindow(HWND hwnd, int delayMs, int attempts)
+{
+    QTimer::singleShot(delayMs, this, [this, hwnd, attempts]() {
+        // Looked up again: the window may be gone or changed by now.
+        auto it = m_windows.find(hwnd);
+        if (it == m_windows.end() || !IsWindow(hwnd) || !it->second.onCanvas() || m_shuttingDown) {
+            return;
+        }
+        ManagedWindow &window = it->second;
+        Canvas &home = canvas(window.canvasKey);
+        const int index = monitorIndexOf(window.canvasKey);
+        if (home.overview || index < 0) {
+            return;
+        }
+        const MonitorState &monitor = m_monitors[std::size_t(index)];
+        const QPointF target = home.committed.canvasToScreen(window.canvasPos, monitor.viewport);
+        const QRectF frame = frameOf(hwnd);
+        if (window.parked || (QLineF(frame.topLeft(), target).length() > 2 && frame.intersects(monitor.viewport))) {
+            window.lastRequest = POINT{LONG_MIN, LONG_MIN};
+        }
+        placeWindow(window, home, monitor);
+        if (attempts > 1) {
+            settleNewWindow(hwnd, 300, attempts - 1);
+        }
+    });
 }
 
 void CanvasService::restorePlacement(ManagedWindow &window, bool *reveal)
@@ -865,12 +899,16 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
     }
 }
 
-bool CanvasService::isOwnMove(ManagedWindow &window, POINT position)
+bool CanvasService::isOwnMove(ManagedWindow &window, POINT position, POINT windowPosition)
 {
     const ULONGLONG nowTick = GetTickCount64();
+    const auto same = [](POINT a, POINT b) {
+        return std::abs(a.x - b.x) <= 1 && std::abs(a.y - b.y) <= 1;
+    };
     for (int i = 0; i < window.requestCount; ++i) {
         const ManagedWindow::Request &request = window.requests[std::size_t(i)];
-        if (nowTick - request.tick <= OwnMoveWindowMs && std::abs(request.position.x - position.x) <= 1 && std::abs(request.position.y - position.y) <= 1) {
+        // The window rect is what SetWindowPos got; the frame may differ while DWM catches up.
+        if (nowTick - request.tick <= OwnMoveWindowMs && (same(request.position, position) || same(request.windowPosition, windowPosition))) {
             return true;
         }
     }
@@ -902,7 +940,11 @@ void CanvasService::onLocationChanged(ManagedWindow &window)
     const bool covers = !window.maximized && std::abs(frame.left() - bounds.left) <= 1 && std::abs(frame.top() - bounds.top) <= 1
         && std::abs(frame.right() - bounds.right) <= 1 && std::abs(frame.bottom() - bounds.bottom) <= 1;
     const POINT position = rounded(frame.topLeft());
-    if (covers != window.fullscreen && !isOwnMove(window, position)) {
+    RECT windowRect = {};
+    GetWindowRect(hwnd, &windowRect);
+    const POINT windowPosition = {windowRect.left, windowRect.top};
+    const bool own = isOwnMove(window, position, windowPosition);
+    if (covers != window.fullscreen && !own) {
         window.fullscreen = covers;
         if (!covers) {
             window.canvasKey = monitor.key;
@@ -915,7 +957,7 @@ void CanvasService::onLocationChanged(ManagedWindow &window)
         }
         return;
     }
-    if (isOwnMove(window, position) || window.pinned || window.fullscreen || window.unmovable || window.hidden) {
+    if (own || window.pinned || window.fullscreen || window.unmovable || window.hidden) {
         return;
     }
     Canvas &home = canvas(window.canvasKey);
@@ -1114,12 +1156,14 @@ void CanvasService::requestMove(ManagedWindow &window, POINT position)
         return;
     }
     window.lastRequest = position;
+    DWORD error = 0;
+    POINT windowPosition = {};
+    const bool moved = moveFrameTo(window.hwnd, position, false, &error, &windowPosition);
     ManagedWindow::Request &request = window.requests[std::size_t(window.requestHead)];
-    request = ManagedWindow::Request{position, GetTickCount64()};
+    request = ManagedWindow::Request{position, windowPosition, GetTickCount64()};
     window.requestHead = (window.requestHead + 1) % int(window.requests.size());
     window.requestCount = std::min<int>(window.requestCount + 1, int(window.requests.size()));
-    DWORD error = 0;
-    if (!moveFrameTo(window.hwnd, position, false, &error)) {
+    if (!moved) {
         if (error == ERROR_ACCESS_DENIED) {
             // Elevated: Windows does not let a normal process move it.
             window.unmovable = true;

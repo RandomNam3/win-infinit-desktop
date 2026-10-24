@@ -112,7 +112,7 @@ jobs:
         if: always()
         shell: pwsh
         run: |
-          foreach ($file in "probe/test-thumbnail.txt", "probe/test-move.txt") {
+          foreach ($file in "probe/test-thumbnail.txt", "probe/test-move.txt", "smoke-result.txt") {
             if (Test-Path $file) { Write-Host "--- $file"; Get-Content $file }
           }
 

@@ -86,7 +86,8 @@ struct ManagedWindow
     // Our own recent moves, to tell them from foreign ones.
     struct Request
     {
-        POINT position;
+        POINT position; ///< frame
+        POINT windowPosition; ///< window rect, as passed to SetWindowPos
         ULONGLONG tick;
     };
     std::array<Request, 8> requests{};
@@ -195,6 +196,8 @@ private:
     bool isExcluded(const ManagedWindow &window, const QStringList &list) const;
     QRectF frameOf(HWND hwnd) const;
     void restorePlacement(ManagedWindow &window, bool *reveal);
+    /// Places a new window after `delayMs` and checks it again `attempts - 1` times.
+    void settleNewWindow(HWND hwnd, int delayMs, int attempts);
     void rememberPlacement(const ManagedWindow &window);
 
     // Layout. Camera changes only mark the canvas; flush() applies them at most every 16 ms.
@@ -204,7 +207,7 @@ private:
     void applyCanvas(Canvas &canvas, HWND except = nullptr);
     void placeWindow(ManagedWindow &window, const Canvas &canvas, const MonitorState &monitor);
     void requestMove(ManagedWindow &window, POINT frameTopLeft);
-    bool isOwnMove(ManagedWindow &window, POINT frameTopLeft);
+    bool isOwnMove(ManagedWindow &window, POINT frameTopLeft, POINT windowTopLeft);
     QRectF canvasRect(const ManagedWindow &window) const;
 
     // Camera

@@ -22,11 +22,14 @@ POINT frameOffset(HWND hwnd)
     return {window.left - frame.left, window.top - frame.top};
 }
 
-bool moveFrameTo(HWND hwnd, POINT frameTopLeft, bool synchronous, DWORD *error)
+bool moveFrameTo(HWND hwnd, POINT frameTopLeft, bool synchronous, DWORD *error, POINT *windowTopLeft)
 {
     const POINT offset = frameOffset(hwnd);
     const int x = std::clamp<int>(frameTopLeft.x + offset.x, -ParkingLimit, ParkingLimit);
     const int y = std::clamp<int>(frameTopLeft.y + offset.y, -ParkingLimit, ParkingLimit);
+    if (windowTopLeft) {
+        *windowTopLeft = POINT{x, y};
+    }
     UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE;
     if (!synchronous) {
         flags |= SWP_ASYNCWINDOWPOS;

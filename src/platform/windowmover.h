@@ -22,9 +22,10 @@ inline constexpr int ParkingLimit = 30000;
  * Without `synchronous`, the move is posted to the window's thread (SWP_ASYNCWINDOWPOS):
  * a hung application cannot block the canvas. Never activates and never changes the
  * z-order. Fails (ERROR_ACCESS_DENIED) for windows of elevated processes unless this
- * process is elevated too or has uiAccess.
+ * process is elevated too or has uiAccess. `windowTopLeft` receives the window rect position
+ * that was requested.
  */
-bool moveFrameTo(HWND hwnd, POINT frameTopLeft, bool synchronous = false, DWORD *error = nullptr);
+bool moveFrameTo(HWND hwnd, POINT frameTopLeft, bool synchronous = false, DWORD *error = nullptr, POINT *windowTopLeft = nullptr);
 
 /// Offset from the visible frame to the window rectangle (left, top), usually (-7, 0).
 POINT frameOffset(HWND hwnd);

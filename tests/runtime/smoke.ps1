@@ -18,8 +18,16 @@ $testWindow = Join-Path $Build "tools/wid-testwindow/wid-testwindow.exe"
 $probe = Join-Path $Build "tools/wid-probe/wid-probe.exe"
 $failures = @()
 
+$results = Join-Path (Get-Location) "smoke-result.txt"
+Set-Content -Path $results -Value "smoke test $(Get-Date -Format o)"
+
+function Note($message) {
+    Write-Host $message
+    Add-Content -Path $results -Value $message
+}
+
 function Fail($message) {
-    Write-Host "FAIL: $message"
+    Note "FAIL: $message"
     $script:failures += $message
 }
 
@@ -57,7 +65,7 @@ try {
     if (-not $before) {
         Fail "the test window was not adopted"
     } else {
-        Write-Host "adopted: mode $($before.mode), frame $($before.frame.x),$($before.frame.y)"
+        Note "adopted: mode $($before.mode), frame $($before.frame.x),$($before.frame.y)"
         if ($before.mode -ne "canvas") { Fail "mode is $($before.mode), expected canvas" }
         $state = & $ctl state | ConvertFrom-Json
         $monitor = 0
@@ -69,7 +77,7 @@ try {
         Start-Sleep -Milliseconds 700
         $moved = WindowState $hwnd
         $dx = $moved.frame.x - $before.frame.x
-        Write-Host "after pan -200: frame $($moved.frame.x),$($moved.frame.y)"
+        Note "after pan -200: frame $($moved.frame.x),$($moved.frame.y)"
         if ([Math]::Abs($dx + 200) -gt 2) { Fail "the window moved by $dx instead of -200" }
 
         # Zoomed out: the overview opens, the real window stays where it is.
@@ -77,7 +85,7 @@ try {
         Start-Sleep -Milliseconds 700
         $state = & $ctl state | ConvertFrom-Json
         $zoomed = WindowState $hwnd
-        Write-Host "zoom 0.5: overview $($state.monitors[$monitor].overview), frame $($zoomed.frame.x),$($zoomed.frame.y)"
+        Note "zoom 0.5: overview $($state.monitors[$monitor].overview), frame $($zoomed.frame.x),$($zoomed.frame.y)"
         if (-not $state.monitors[$monitor].overview) { Fail "no overview at 50 %" }
         if (-not (Near $zoomed.frame.x $moved.frame.x)) { Fail "the window moved when zooming out" }
         & $ctl resetZoom monitor=$monitor | Out-Null
@@ -88,7 +96,7 @@ try {
         & $ctl pan dx=-6000 dy=0 monitor=$monitor | Out-Null
         Start-Sleep -Milliseconds 700
         $parked = WindowState $hwnd
-        Write-Host "after pan -6000: parked $($parked.parked), frame $($parked.frame.x),$($parked.frame.y)"
+        Note "after pan -6000: parked $($parked.parked), frame $($parked.frame.x),$($parked.frame.y)"
         if (-not $parked.parked) { Fail "the window was not parked" }
         $onScreen = $false
         foreach ($m in $state.monitors) {
@@ -101,7 +109,7 @@ try {
         & $ctl pan dx=6200 dy=0 monitor=$monitor | Out-Null
         Start-Sleep -Milliseconds 700
         $back = WindowState $hwnd
-        Write-Host "after pan +6200: frame $($back.frame.x),$($back.frame.y)"
+        Note "after pan +6200: frame $($back.frame.x),$($back.frame.y)"
         if (-not (Near $back.frame.x $before.frame.x) -or -not (Near $back.frame.y $before.frame.y)) { Fail "the window did not come back to its place" }
 
         # Closing and opening the program again: the new window gets the old place.
@@ -113,7 +121,7 @@ try {
         if (-not $reopened) {
             Fail "the reopened window was not adopted"
         } else {
-            Write-Host "reopened: frame $($reopened.frame.x),$($reopened.frame.y)"
+            Note "reopened: frame $($reopened.frame.x),$($reopened.frame.y)"
             if (-not (Near $reopened.frame.x $back.frame.x) -or -not (Near $reopened.frame.y $back.frame.y)) { Fail "the reopened window did not get its remembered place" }
         }
     }
@@ -129,7 +137,7 @@ try {
         Fail "the test window is gone"
     } else {
         $frame = $after.frame
-        Write-Host "after quit: frame $($frame[0]),$($frame[1])"
+        Note "after quit: frame $($frame[0]),$($frame[1])"
         $back = $false
         foreach ($m in $report.monitors) {
             $b = $m.work
@@ -148,7 +156,7 @@ try {
 }
 
 if ($failures.Count -gt 0) {
-    Write-Host "$($failures.Count) check(s) failed"
+    Note "$($failures.Count) check(s) failed"
     exit 1
 }
-Write-Host "smoke test passed"
+Note "smoke test passed"
