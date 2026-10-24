@@ -5,6 +5,8 @@
 */
 #pragma once
 
+#include "pipenames.h"
+
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QList>
@@ -18,9 +20,6 @@ class QLocalSocket;
 
 namespace Wid
 {
-
-/// Name of the service's local socket (a named pipe): one per Windows session.
-QString ipcServerName();
 
 /**
  * The service's control interface, the Windows counterpart of the D-Bus interface

@@ -9,24 +9,8 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 
-#ifdef Q_OS_WIN
-#include <windows.h>
-#endif
-
 namespace Wid
 {
-
-QString ipcServerName()
-{
-    unsigned long session = 0;
-#ifdef Q_OS_WIN
-    DWORD id = 0;
-    if (ProcessIdToSessionId(GetCurrentProcessId(), &id)) {
-        session = id;
-    }
-#endif
-    return QStringLiteral("win-infinit-desktop-%1").arg(session);
-}
 
 IpcServer::IpcServer(Handler handler, QObject *parent)
     : QObject(parent)

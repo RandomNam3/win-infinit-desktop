@@ -5,6 +5,6 @@
 find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Network)
 add_executable(wid-ctl main.cpp ${PROJECT_SOURCE_DIR}/src/service/ipcserver.cpp)
 set_target_properties(wid-ctl PROPERTIES AUTOMOC ON)
-target_include_directories(wid-ctl PRIVATE ${PROJECT_SOURCE_DIR}/src/service)
+target_include_directories(wid-ctl PRIVATE ${PROJECT_SOURCE_DIR}/src/service ${PROJECT_SOURCE_DIR}/src/shared)
 target_link_libraries(wid-ctl PRIVATE Qt6::Network)
 install(TARGETS wid-ctl RUNTIME DESTINATION .)

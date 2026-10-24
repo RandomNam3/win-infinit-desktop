@@ -22,7 +22,7 @@ add_library(wid_service STATIC
     win32util.cpp
 )
 set_target_properties(wid_service PROPERTIES AUTOMOC ON)
-target_include_directories(wid_service PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(wid_service PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/src/shared)
 target_link_libraries(wid_service PUBLIC infinitdesktop_core wid_platform Qt6::Gui Qt6::Network)
 
 # Version numbers for the resource file.
