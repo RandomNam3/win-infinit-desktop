@@ -76,14 +76,24 @@ wie die Windows-Version sie umsetzt. Die Begründungen stehen in [SCHNITTSTELLEN
 
 ## Fahrplan
 
-1. **Grundlage** (dieser Stand): Win32-Schicht, gemeinsamer Kern, Diagnose-Werkzeug, CI für x64 und
-   ARM64, Doku.
-2. **Dienst 0.1:** Fläche bei 100 % (Pannen, Nachgleiten, Zoom-Kürzel, Parken, Markierungen, Anpinnen,
-   Fensterplatz-Gedächtnis, Vollbild-Sperre, Kantenscrollen), Übersicht mit Thumbnails, Symbol im
-   Infobereich, Absturzschutz, Named-Pipe-Schnittstelle.
+1. **Grundlage** ✓: Win32-Schicht, gemeinsamer Kern, Diagnose-Werkzeug, CI für x64 und ARM64, Doku.
+2. **Dienst 0.1** ✓ (`win-infinit-desktop.exe`, siehe [ARCHITEKTUR.md](ARCHITEKTUR.md)):
+   - Fläche bei 100 %: Pannen (Ziehen, Win + Alt, mittlere Taste, Umschalt/Strg + Mausrad,
+     Touchpad), Nachgleiten, Zoom, alle Tastenkürzel der KDE-Tabelle, Lesezeichen;
+   - Parken, Markierungen, Anpinnen (auch immer im Vordergrund), Fensterplatz-Gedächtnis,
+     Vollbild-Sperre, Kantenscrollen und Wurf auf den Nachbarbildschirm;
+   - Übersicht mit Thumbnails (verschieben, Größe ändern, eintauchen);
+   - Symbol im Infobereich, Absturzschutz, Named-Pipe-Schnittstelle (`wid-ctl`).
+
+   Noch nicht im Dienst:
+   - Kachel für minimierte Vollbild-Fenster;
+   - eigene Fläche pro virtuellem Desktop (Fenster anderer Desktops behalten ihren Platz, die Kamera
+     ist für alle gleich);
+   - Drei-Finger-Pannen und Touchscreen.
 3. **Einstellungs-App** auf Windows, Notiz-App, Gruppen, Bereiche, Karte.
 4. **Installation:** ZIP mit Installationsskript, Release-Workflow (Tag und Release für jede Version),
-   Update-Check.
+   Update-Check. Bis dahin liegt ein ZIP mit Dienst, `wid-ctl` und `wid-probe` als Artefakt an jedem
+   CI-Lauf.
 5. **Später:** Signatur (SignPath), MSI unter Program Files mit uiAccess (erhöhte Fenster,
    Touchscreen), eigener Starter, Drei-Finger-Pannen, Weitergabe von Klicks an klassische Programme.
 

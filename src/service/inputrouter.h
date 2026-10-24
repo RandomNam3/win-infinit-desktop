@@ -37,6 +37,7 @@ struct InputSnapshot
     bool touchpadScrollPans = true;
     bool pinchZoom = true;
     bool gliding = false; ///< a camera motion runs: a click only stops it
+    bool overviewOpen = false; ///< Esc returns to 100 %
     QList<RECT> monitors;
     QList<bool> locked; ///< per monitor: a fullscreen window has the focus
     // While the user drags a canvas window (system move loop).
@@ -101,8 +102,10 @@ public:
     using DesktopTest = std::function<bool(POINT)>;
     /// Sends the left button release to whatever has the capture (tagged as injected).
     using ReleaseLeft = std::function<void()>;
+    /// Is this mouse button (VK_LBUTTON, VK_MBUTTON) physically held? Empty: GetAsyncKeyState.
+    using ButtonDown = std::function<bool(int)>;
 
-    InputRouter(Sink sink, DesktopTest desktopTest, ReleaseLeft releaseLeft);
+    InputRouter(Sink sink, DesktopTest desktopTest, ReleaseLeft releaseLeft, ButtonDown buttonDown = {});
 
     void setSnapshot(std::shared_ptr<const InputSnapshot> snapshot);
     std::shared_ptr<const InputSnapshot> snapshot() const;
@@ -131,6 +134,7 @@ private:
     Sink m_sink;
     DesktopTest m_desktopTest;
     ReleaseLeft m_releaseLeft;
+    ButtonDown m_buttonDown;
     std::atomic<std::shared_ptr<const InputSnapshot>> m_snapshot;
     std::atomic<DWORD> m_touchpadTick{0};
 

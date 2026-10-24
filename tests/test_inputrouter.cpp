@@ -74,6 +74,9 @@ private Q_SLOTS:
             },
             [this]() {
                 ++m_releases;
+            },
+            [](int) {
+                return true;
             });
         m_router->setSnapshot(snapshot());
     }
@@ -126,6 +129,43 @@ private Q_SLOTS:
         QCOMPARE(m_router->mouse(mouse(WM_MBUTTONDOWN, 100, 100), 0), HookAction::Swallow);
         QCOMPARE(m_router->mouse(mouse(WM_MBUTTONUP, 100, 100), 0), HookAction::Swallow);
         QCOMPARE(kinds(), (QList<Kind>{Kind::PanBegin, Kind::PanEnd}));
+    }
+
+    void lostReleaseEndsThePan()
+    {
+        bool held = true;
+        m_router = std::make_unique<InputRouter>(
+            [this](const InputCommand &command) {
+                m_commands.append(command);
+            },
+            [](POINT) {
+                return false;
+            },
+            [] {},
+            [&held](int) {
+                return held;
+            });
+        m_router->setSnapshot(snapshot());
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONDOWN, 100, 100), MOD_WIN | MOD_ALT), HookAction::Swallow);
+        m_router->mouse(mouse(WM_MOUSEMOVE, 120, 100), MOD_WIN | MOD_ALT);
+        held = false;
+        // The release never came: the next move ends the pan and is not a pan delta.
+        QCOMPARE(m_router->mouse(mouse(WM_MOUSEMOVE, 300, 100), 0), HookAction::Pass);
+        QCOMPARE(m_commands.last().kind, Kind::PanEnd);
+        const int count = m_commands.size();
+        m_router->mouse(mouse(WM_MOUSEMOVE, 400, 100), 0);
+        QCOMPARE(m_commands.size(), count);
+    }
+
+    void escapeLeavesTheOverview()
+    {
+        QCOMPARE(m_router->key(key(WM_KEYDOWN, VK_ESCAPE), 0), HookAction::Pass);
+        auto overview = snapshot();
+        overview->overviewOpen = true;
+        m_router->setSnapshot(overview);
+        QCOMPARE(m_router->key(key(WM_KEYDOWN, VK_ESCAPE), 0), HookAction::Swallow);
+        QCOMPARE(m_commands.last().action, ShortcutAction::ZoomReset);
+        QCOMPARE(m_router->key(key(WM_KEYUP, VK_ESCAPE), 0), HookAction::Swallow);
     }
 
     void clickWhileGlidingStops()

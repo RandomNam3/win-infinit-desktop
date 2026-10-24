@@ -36,11 +36,17 @@ InputCommand make(InputCommand::Kind kind, const QPointF &point = QPointF())
 
 } // namespace
 
-InputRouter::InputRouter(Sink sink, DesktopTest desktopTest, ReleaseLeft releaseLeft)
+InputRouter::InputRouter(Sink sink, DesktopTest desktopTest, ReleaseLeft releaseLeft, ButtonDown buttonDown)
     : m_sink(std::move(sink))
     , m_desktopTest(std::move(desktopTest))
     , m_releaseLeft(std::move(releaseLeft))
+    , m_buttonDown(std::move(buttonDown))
 {
+    if (!m_buttonDown) {
+        m_buttonDown = [](int vk) {
+            return (GetAsyncKeyState(vk) & 0x8000) != 0;
+        };
+    }
     m_snapshot.store(std::make_shared<const InputSnapshot>());
 }
 
@@ -100,6 +106,23 @@ HookAction InputRouter::mouse(const MouseEvent &event, unsigned modifiers)
             return userMoveMotion(event, *snapshot);
         }
         m_handValid = false;
+        // A release the hook never saw (it was reinstalled, or the session switched) must not
+        // leave the canvas glued to the pointer.
+        if (m_state != State::Idle) {
+            const int button = m_state == State::Pending || m_panButtonUp == WM_LBUTTONUP ? VK_LBUTTON : VK_MBUTTON;
+            if (!m_buttonDown(button)) {
+                const bool panning = m_state == State::Panning;
+                m_state = State::Idle;
+                m_swallowLeftUp = false;
+                m_swallowMiddleUp = false;
+                if (panning) {
+                    InputCommand end = make(InputCommand::Kind::PanEnd);
+                    end.time = timeOf(event);
+                    send(end);
+                }
+                return HookAction::Pass;
+            }
+        }
         if (m_state == State::Pending) {
             if (std::abs(point.x - m_pressPoint.x) < DragThreshold && std::abs(point.y - m_pressPoint.y) < DragThreshold) {
                 return HookAction::Pass;
@@ -273,8 +296,9 @@ HookAction InputRouter::wheel(const MouseEvent &event, unsigned modifiers, const
 HookAction InputRouter::userMoveMotion(const MouseEvent &event, const InputSnapshot &snapshot)
 {
     const POINT point = event.position;
-    if (!m_handValid || m_userMoveMonitor != snapshot.userMoveMonitor) {
-        // A new drag: the hand starts where the pointer is.
+    if (!m_handValid) {
+        // A new drag: the hand starts where the pointer is. After a throw onto another monitor
+        // the router keeps its own idea of the monitor until the drag ends.
         m_hand.reset();
         m_handPosition = QPointF(point.x, point.y);
         m_lastPassed = point;
@@ -348,6 +372,15 @@ HookAction InputRouter::key(const KeyEvent &event, unsigned modifiers)
     const std::shared_ptr<const InputSnapshot> snapshot = m_snapshot.load();
     if (!snapshot->shortcutsEnabled) {
         return HookAction::Pass;
+    }
+    if (vk == VK_ESCAPE && modifiers == 0 && snapshot->overviewOpen) {
+        // The overview may not have the keyboard focus: Windows does not always let a
+        // background process activate its window.
+        InputCommand command = make(InputCommand::Kind::Shortcut);
+        command.action = ShortcutAction::ZoomReset;
+        m_swallowedKeys.set(vk);
+        send(command);
+        return HookAction::Swallow;
     }
     const std::optional<ShortcutAction> action = snapshot->shortcuts.actionFor(KeyCombo{modifiers, vk});
     if (!action) {

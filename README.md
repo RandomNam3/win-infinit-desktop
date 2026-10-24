@@ -7,7 +7,7 @@ Jeder Monitor wird zu einer in alle Richtungen unendlichen Fläche, auf der Fens
 Du verschiebst die Fläche mit Maus, Touchpad oder Tastatur, zoomst heraus, um alles zu überblicken, und
 wieder hinein, um weiterzuarbeiten. Taskleiste und Hintergrundbild bleiben dabei stehen.
 
-> **Stand:** in Entwicklung, noch kein Release. Zielsysteme sind Windows 11 **25H2** und **26H2**
+> **Stand:** erste Version des Dienstes, noch kein Release. Zielsysteme sind Windows 11 **25H2** und **26H2**
 > (x64 und ARM64).
 
 ## Wie es unter Windows funktioniert
@@ -28,8 +28,10 @@ Welche Windows-Schnittstellen das sind, was sie können und wo die Grenzen liege
 |---|---|
 | `src/core/` | Kamera, Animationen, Nachgleiten, Parkplätze, Navigation, Fensterplatz-Gedächtnis – **gemeinsam mit KDE** (siehe [UPSTREAM.md](UPSTREAM.md)) |
 | `src/platform/` | Win32-Schicht: Bildschirme (mit EDID), Fenster und ihre Einordnung, Fenster-Ereignisse, Eingabe-Hooks mit Maskentaste, Touchpad-Kontakte, virtuelle Desktops, Vollbild, Verschieben |
+| `src/service/` | der Dienst `win-infinit-desktop.exe`: Fläche, Übersicht, Markierungen, Eingabe, Symbol im Infobereich, Steuerung per Named Pipe |
+| `tools/wid-ctl/` | Kommandozeile für den Dienst (`wid-ctl state`, `wid-ctl pan dx=-500 dy=0`, …) |
 | `tools/wid-probe/` | Diagnose-Werkzeug: prüft auf deinem Rechner, was die Schnittstellen tun |
-| `tests/` | Unit-Tests des Kerns |
+| `tests/` | Unit-Tests des Kerns und des Dienstes, Laufzeittest (`tests/runtime/smoke.ps1`) |
 
 ## Bauen
 
@@ -42,6 +44,21 @@ ctest --test-dir build
 ```
 
 Nur das Diagnose-Werkzeug (ohne Qt): `-DWID_WITH_QT=OFF`.
+
+## Ausprobieren
+
+Noch gibt es kein Release. Jeder CI-Lauf hat ein Artefakt `win-infinit-desktop-x64` mit dem Dienst,
+`wid-ctl` und `wid-probe`:
+
+1. Entpacken und `win-infinit-desktop.exe` starten. Das Symbol erscheint im Infobereich.
+2. Auf freiem Desktop ziehen oder mit dem Mausrad zoomen. Win + Alt + Ziehen verschiebt die Fläche
+   auch über Fenstern.
+3. Beenden über das Symbol. Alle Fenster kommen dabei auf den Bildschirm zurück.
+
+Die Programme sind noch nicht signiert: Smart App Control blockiert sie, SmartScreen warnt (siehe
+[SCHNITTSTELLEN.md](docs/SCHNITTSTELLEN.md#verteilung-und-vertrauen)). Was unter Windows anders ist als
+unter KDE, steht in [FAHRPLAN.md](docs/FAHRPLAN.md), der technische Aufbau in
+[ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 
 ## Diagnose: wid-probe
 

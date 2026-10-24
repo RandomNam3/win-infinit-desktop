@@ -474,6 +474,7 @@ void CanvasService::publishSnapshot()
     snapshot->shortcuts = m_shortcuts;
     for (const auto &[key, canvas] : m_canvases) {
         snapshot->gliding |= canvas.motion.isActive();
+        snapshot->overviewOpen |= canvas.overview;
     }
     const HWND foreground = m_foreground && IsWindow(m_foreground) && !IsIconic(m_foreground) ? m_foreground : nullptr;
     QRectF foregroundFrame;
@@ -560,7 +561,15 @@ void CanvasService::adoptExistingWindows()
 
 void CanvasService::tryAdopt(HWND hwnd, bool isNew)
 {
-    if (m_windows.count(hwnd) || !IsWindow(hwnd) || m_monitors.empty()) {
+    if (m_windows.count(hwnd) || !IsWindow(hwnd) || m_monitors.empty() || !IsWindowVisible(hwnd)) {
+        return;
+    }
+    // Cheap checks first: menus, tooltips and popups show up all the time and are tool or
+    // owned windows; describe() opens the process.
+    const LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+    const LONG_PTR exStyle = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+    const bool appWindow = (exStyle & WS_EX_APPWINDOW) != 0;
+    if ((style & WS_CHILD) || (!appWindow && ((exStyle & WS_EX_TOOLWINDOW) || GetWindow(hwnd, GW_OWNER)))) {
         return;
     }
     const TopLevel top = describe(hwnd);
@@ -1213,6 +1222,7 @@ void CanvasService::enterOverview(Canvas &canvas)
     monitor.overview->show(monitor.info.work);
     m_stackingDirty = true;
     updateOverview(canvas);
+    publishSnapshot();
     qCDebug(lcService) << "overview on" << canvas.key;
 }
 
@@ -1234,6 +1244,7 @@ void CanvasService::leaveOverview(Canvas &canvas)
         activate(dive);
     }
     updateMarkers(true);
+    publishSnapshot();
     qCDebug(lcService) << "overview off" << canvas.key;
 }
 
