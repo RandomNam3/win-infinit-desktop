@@ -7,8 +7,8 @@ Versionen gleich rechnen.
 
 | Hier | Dort | Stand (Commit im KDE-Repo) |
 |---|---|---|
-| `src/core/` | `src/core/` | `c95922e` |
-| `tests/test_{camera,motion,velocitytracker,parking,navigation,placementmemory}.cpp` | `tests/` | `c95922e` |
+| `src/core/` | `src/core/` | `1340a16` (Branch `claude/funny-ride-js1sro`) |
+| `tests/test_{camera,motion,velocitytracker,parking,navigation,placementmemory,groups,areas}.cpp` | `tests/` | `1340a16` |
 
 Prüfen, ob beide noch gleich sind:
 

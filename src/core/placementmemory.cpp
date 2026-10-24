@@ -219,7 +219,7 @@ void PlacementMemory::trimApplications()
 
 bool PlacementMemory::forget(const QString &appKey)
 {
-    return m_entries.remove(appKey) > 0;
+    return m_entries.remove(appKey);
 }
 
 void PlacementMemory::clear()

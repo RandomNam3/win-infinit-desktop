@@ -6,6 +6,7 @@
 #include "velocitytracker.h"
 
 #include <cmath>
+#include <numbers>
 
 namespace InfinitDesktop
 {
@@ -120,7 +121,7 @@ QPointF VelocityTracker::flingVelocity(Time now, qreal minimumSpeed) const
         return QPointF();
     }
     // Same direction as the measured velocity.
-    if (QPointF::dotProduct(displacement, v) < std::cos(35.0 * M_PI / 180.0) * length(displacement) * speed) {
+    if (QPointF::dotProduct(displacement, v) < std::cos(35.0 * std::numbers::pi / 180.0) * length(displacement) * speed) {
         return QPointF();
     }
     // Not turning: the last 100 ms point the same way as the 150 ms before them
@@ -133,7 +134,7 @@ QPointF VelocityTracker::flingVelocity(Time now, qreal minimumSpeed) const
         const QPointF late = newest.position - middle;
         const QPointF early = middle - start;
         if (length(early) > 2.0 && length(late) > 2.0
-            && QPointF::dotProduct(early, late) < std::cos(30.0 * M_PI / 180.0) * length(early) * length(late)) {
+            && QPointF::dotProduct(early, late) < std::cos(30.0 * std::numbers::pi / 180.0) * length(early) * length(late)) {
             return QPointF();
         }
     }
