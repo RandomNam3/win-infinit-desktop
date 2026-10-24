@@ -84,6 +84,53 @@ jobs:
             build/tools/wid-probe/wid-probe.exe
             probe/
 
+      - name: Package
+        if: matrix.with_qt == 'ON'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item build/src/service/win-infinit-desktop.exe, build/tools/wid-ctl/wid-ctl.exe, build/tools/wid-probe/wid-probe.exe dist/
+          windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw --no-quick-import dist/win-infinit-desktop.exe dist/wid-ctl.exe
+          Copy-Item LICENSE, README.md dist/
+
+      - uses: actions/upload-artifact@v7
+        if: matrix.with_qt == 'ON'
+        with:
+          name: win-infinit-desktop-${{ matrix.arch }}
+          path: dist/
+
+      - name: Runtime smoke test
+        if: matrix.with_qt == 'ON'
+        # Depends on the runner's desktop session; reported, not required.
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:QT_ROOT_DIR\bin;$env:PATH"
+          ./tests/runtime/smoke.ps1 -Build build
+
+  asan:
+    # Unit tests of the core and the service with AddressSanitizer (MSVC).
+    name: Windows x64 ASan
+    runs-on: windows-2025
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          arch: win64_msvc2022_64
+          cache: true
+      - name: Build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DWID_ASAN=ON -DWID_BUILD_PROBE=OFF
+          cmake --build build
+      - name: Unit tests
+        run: ctest --test-dir build --output-on-failure
+
   core-linux:
     # The canvas core is shared with KDE Infinit Desktop; keep it building on Linux too.
     name: Core on Linux
