@@ -108,6 +108,14 @@ jobs:
           $env:PATH = "$env:QT_ROOT_DIR\bin;$env:PATH"
           ./tests/runtime/smoke.ps1 -Build build
 
+      - name: Probe summary
+        if: always()
+        shell: pwsh
+        run: |
+          foreach ($file in "probe/test-thumbnail.txt", "probe/test-move.txt") {
+            if (Test-Path $file) { Write-Host "--- $file"; Get-Content $file }
+          }
+
   asan:
     # Unit tests of the core and the service with AddressSanitizer (MSVC).
     name: Windows x64 ASan

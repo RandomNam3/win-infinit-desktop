@@ -3,7 +3,7 @@
 # wid-testwindow: a plain window for the runtime smoke test. No Qt.
 
 add_executable(wid-testwindow main.cpp)
-target_link_libraries(wid-testwindow PRIVATE dwmapi user32 gdi32)
+target_link_libraries(wid-testwindow PRIVATE user32 gdi32)
 if(MINGW)
     target_link_options(wid-testwindow PRIVATE -municode -static)
 endif()

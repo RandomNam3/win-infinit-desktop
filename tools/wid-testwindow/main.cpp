@@ -3,13 +3,11 @@
     SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
-    wid-testwindow X Y WIDTH HEIGHT [SECONDS]: shows a plain application window at the given
-    frame position, prints its handle (hex) and runs until it is closed or the time is up.
+    wid-testwindow X Y WIDTH HEIGHT [SECONDS]: shows a plain application window (window rect at
+    X, Y), prints its handle (hex) and runs until it is closed or the time is up.
     Used by the runtime smoke test (tests/runtime/smoke.ps1).
 */
 #include <windows.h>
-
-#include <dwmapi.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -55,13 +53,9 @@ int wmain(int argc, wchar_t **argv)
     if (!hwnd) {
         return 1;
     }
+    // Created where it shall be, not moved after showing: the canvas service restores
+    // remembered places when a window appears, and a later move of our own would undo that.
     ShowWindow(hwnd, SW_SHOWNORMAL);
-    // Put the visible frame (not the window rect with its invisible borders) at x, y.
-    RECT frame = {};
-    RECT window = {};
-    if (SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_EXTENDED_FRAME_BOUNDS, &frame, sizeof(frame))) && GetWindowRect(hwnd, &window)) {
-        SetWindowPos(hwnd, nullptr, x + (window.left - frame.left), y + (window.top - frame.top), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-    }
     std::printf("0x%llX\n", static_cast<unsigned long long>(reinterpret_cast<uintptr_t>(hwnd)));
     std::fflush(stdout);
     SetTimer(hwnd, 1, static_cast<UINT>(seconds) * 1000, nullptr);

@@ -4,7 +4,9 @@
 # Runtime smoke test of the canvas service on a real desktop (CI runner or a test machine):
 #  1. a test window appears and the service adopts it as a canvas window,
 #  2. panning by IPC really moves it, also off every monitor (parked),
-#  3. quitting the service brings it back onto a screen.
+#  3. zooming out opens the overview without moving the real window,
+#  4. a reopened window gets the place its predecessor had,
+#  5. quitting the service brings everything back onto a screen.
 # Exit code 0 = passed. Usage: pwsh tests/runtime/smoke.ps1 [-Build build]
 
 param([string]$Build = "build")
@@ -28,11 +30,21 @@ function WindowState($hwnd) {
     $state.windows | Where-Object { (Handle $_.hwnd) -eq $hwnd } | Select-Object -First 1
 }
 
-$output = Join-Path ([IO.Path]::GetTempPath()) "wid-testwindow.txt"
-$window = Start-Process -FilePath $testWindow -ArgumentList "300 300 640 400 180" -PassThru -RedirectStandardOutput $output
-Start-Sleep -Seconds 1
-$hwnd = Handle ((Get-Content $output -First 1).Trim())
-Write-Host ("test window 0x{0:X}" -f $hwnd)
+function StartWindow($x, $y) {
+    $output = Join-Path ([IO.Path]::GetTempPath()) ("wid-testwindow-{0}.txt" -f [Guid]::NewGuid())
+    $process = Start-Process -FilePath $testWindow -ArgumentList "$x $y 640 400 180" -PassThru -RedirectStandardOutput $output
+    for ($i = 0; $i -lt 50; $i++) {
+        if ((Test-Path $output -PathType Leaf) -and (Get-Item $output).Length -gt 0) { break }
+        Start-Sleep -Milliseconds 100
+    }
+    $handle = Handle ((Get-Content $output -First 1).Trim())
+    Write-Host ("test window 0x{0:X}" -f $handle)
+    return @($process, $handle)
+}
+
+function Near($a, $b) { [Math]::Abs($a - $b) -le 2 }
+
+$window, $hwnd = StartWindow 300 300
 
 $env:WID_DEBUG = "1"
 $process = Start-Process -FilePath $service -ArgumentList "--no-tray" -PassThru
@@ -60,6 +72,19 @@ try {
         Write-Host "after pan -200: frame $($moved.frame.x),$($moved.frame.y)"
         if ([Math]::Abs($dx + 200) -gt 2) { Fail "the window moved by $dx instead of -200" }
 
+        # Zoomed out: the overview opens, the real window stays where it is.
+        & $ctl setZoom zoom=0.5 monitor=$monitor | Out-Null
+        Start-Sleep -Milliseconds 700
+        $state = & $ctl state | ConvertFrom-Json
+        $zoomed = WindowState $hwnd
+        Write-Host "zoom 0.5: overview $($state.monitors[$monitor].overview), frame $($zoomed.frame.x),$($zoomed.frame.y)"
+        if (-not $state.monitors[$monitor].overview) { Fail "no overview at 50 %" }
+        if (-not (Near $zoomed.frame.x $moved.frame.x)) { Fail "the window moved when zooming out" }
+        & $ctl resetZoom monitor=$monitor | Out-Null
+        Start-Sleep -Milliseconds 700
+        $state = & $ctl state | ConvertFrom-Json
+        if ($state.monitors[$monitor].overview) { Fail "the overview stayed open at 100 %" }
+
         & $ctl pan dx=-6000 dy=0 monitor=$monitor | Out-Null
         Start-Sleep -Milliseconds 700
         $parked = WindowState $hwnd
@@ -71,6 +96,26 @@ try {
                 $parked.frame.y -lt $m.bounds.y + $m.bounds.height -and $parked.frame.y + $parked.frame.height -gt $m.bounds.y) { $onScreen = $true }
         }
         if ($onScreen) { Fail "the parked window is still on a monitor" }
+
+        # Back again: the camera is where it started, so is the window.
+        & $ctl pan dx=6200 dy=0 monitor=$monitor | Out-Null
+        Start-Sleep -Milliseconds 700
+        $back = WindowState $hwnd
+        Write-Host "after pan +6200: frame $($back.frame.x),$($back.frame.y)"
+        if (-not (Near $back.frame.x $before.frame.x) -or -not (Near $back.frame.y $before.frame.y)) { Fail "the window did not come back to its place" }
+
+        # Closing and opening the program again: the new window gets the old place.
+        Stop-Process -Id $window.Id -Force
+        Start-Sleep -Seconds 1
+        $window, $hwnd = StartWindow 900 500
+        Start-Sleep -Milliseconds 1500
+        $reopened = WindowState $hwnd
+        if (-not $reopened) {
+            Fail "the reopened window was not adopted"
+        } else {
+            Write-Host "reopened: frame $($reopened.frame.x),$($reopened.frame.y)"
+            if (-not (Near $reopened.frame.x $back.frame.x) -or -not (Near $reopened.frame.y $back.frame.y)) { Fail "the reopened window did not get its remembered place" }
+        }
     }
 
     & $ctl quit | Out-Null
