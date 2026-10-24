@@ -101,8 +101,10 @@ wie die Windows-Version sie umsetzt. Die Begründungen stehen in [SCHNITTSTELLEN
 
 Mit `wid-probe` zu klären (siehe [SCHNITTSTELLEN.md](SCHNITTSTELLEN.md#offene-fragen-und-wid-probe)):
 
-1. Bleiben DWM-Thumbnails geparkter Fenster live? Davon hängt ab, ob Fenster außerhalb des Bildes in der
-   Übersicht live oder als letztes Bild erscheinen.
+1. Bleiben DWM-Thumbnails geparkter Fenster live? **Auf Windows Server 2025 nein** (eingefroren,
+   ebenso minimierte Fenster; verborgene und verdeckte bleiben live, siehe
+   [SCHNITTSTELLEN.md](SCHNITTSTELLEN.md#3-herauszoomen-verkleinerte-live-ansichten)). Fenster außerhalb
+   des Bildes erscheinen in der Übersicht deshalb mit ihrem letzten Bild. Auf echter Hardware prüfen.
 2. Trennt die Touchpad-Kontaktzahl zuverlässig Zwei-Finger-Scrollen vom Mausrad?
 3. Bleibt Start mit der Maskentaste bei Win + Mausrad zu?
 4. Lassen sich Fenster erhöhter Programme verschieben (erwartet: nein)?

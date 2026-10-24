@@ -144,8 +144,23 @@ Was die Thumbnails nicht können:
   registrieren
   ([CanvasWindowComposer](https://github.com/schnepg1/CanvasWindowComposer), docs/canvas-performance.md).
 - **Popups** (Menüs) sind eigene Fenster und brauchen eigene Thumbnails.
-- **Geparkte Fenster:** Die Thumbnails von Fenstern außerhalb des Bildschirms oder minimierten Fenstern
-  zeigen vermutlich nur das letzte Bild [A, `wid-probe --test-thumbnail`]. Auch DirectComposition hört bei
+- **Geparkte Fenster:** Gemessen mit `wid-probe --test-thumbnail` auf dem CI-Runner mit Windows Server
+  2025 (Build 26100, dieselbe Plattform wie 25H2/26H2):
+
+  | Zustand der Quelle | Thumbnail |
+  |---|---|
+  | auf dem Bildschirm | live |
+  | verdeckt von einem anderen Fenster | live |
+  | verborgen (`DWMWA_CLOAK`) | live |
+  | geparkt bei x = 29000 | **eingefroren** |
+  | fast ganz außerhalb (40 px sichtbar) | **eingefroren** |
+  | minimiert | **eingefroren** |
+
+  Fenster außerhalb des Bildes zeigen in der Übersicht also ihr letztes Bild. Live bleiben würden sie
+  nur verborgen statt geparkt. Fremde Fenster lassen sich aber nur über eine undokumentierte
+  Schnittstelle verbergen (komorebi: `IApplicationView::SetCloak`). Auf echter Windows-11-Hardware ist
+  das noch zu bestätigen. Auf dem ARM64-Runner (Windows 11 25H2) liefert der Test nichts, weil die
+  Sitzung dort nicht zusammengesetzt wird. Auch DirectComposition hört bei
   Fenstern außerhalb des Bildschirms auf zusammenzusetzen
   ([CreateSurfaceFromHwnd](https://learn.microsoft.com/windows/win32/api/dcomp/nf-dcomp-idcompositiondevice-createsurfacefromhwnd)).
 - **Die Übersicht darf Chromium-Fenster nicht verdecken**, sonst hören sie auf zu zeichnen und ihre
