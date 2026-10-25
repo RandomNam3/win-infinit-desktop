@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    WIN Infinit Desktop - settings schema
+    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    SPDX-License-Identifier: GPL-3.0-or-later
+
+    The schema of KDE Infinit Desktop (infinitdesktop.kcfg there) with the entries the
+    Windows service reads: same names, types, defaults and ranges, texts for Windows.
+    The service reads %APPDATA%\WIN Infinit Desktop\settings.ini, group
+    [Effect-infinitdesktop]; enums are stored by choice name, colors as "r,g,b", lists
+    comma separated. Every entry needs a <label> and a <whatsthis>; the UI category of an
+    entry is defined in settingsmeta.cpp.
+-->
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile arg="true"/>
+    <group name="Effect-infinitdesktop">
+
+        <!-- ===================== Navigation: mouse ===================== -->
+        <entry name="DragDesktopToPan" type="Bool">
+            <label>Drag the empty desktop to pan</label>
+            <whatsthis>Hold the left mouse button on an empty part of the desktop and drag to move the whole canvas. A short click still reaches the desktop, so desktop icons and the context menu keep working.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="MiddleButtonPan" type="Bool">
+            <label>Middle mouse button drag pans</label>
+            <whatsthis>Drag with the middle mouse button on the empty desktop to pan the canvas, like in map or CAD applications.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="PanModifier" type="Enum">
+            <label>Pan anywhere with modifier + left mouse button</label>
+            <whatsthis>Hold these keys and drag with the left mouse button to pan the canvas, even on top of windows. The Start menu stays closed.</whatsthis>
+            <choices>
+                <choice name="Disabled"><label>Disabled</label></choice>
+                <choice name="MetaAlt"><label>Win + Alt</label></choice>
+                <choice name="MetaCtrl"><label>Win + Ctrl</label></choice>
+                <choice name="MetaShift"><label>Win + Shift</label></choice>
+                <choice name="CtrlAlt"><label>Ctrl + Alt</label></choice>
+                <choice name="Meta"><label>Win</label></choice>
+            </choices>
+            <default>MetaAlt</default>
+        </entry>
+        <entry name="WheelZoomOnDesktop" type="Bool">
+            <label>Mouse wheel on the empty desktop zooms</label>
+            <whatsthis>Turn the mouse wheel over an empty part of the desktop to zoom in and out. Over windows the wheel keeps scrolling their content.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="ZoomModifier" type="Enum">
+            <label>Zoom anywhere with modifier + mouse wheel</label>
+            <whatsthis>Hold these keys and turn the mouse wheel to zoom at the mouse pointer, even on top of windows. The Start menu stays closed.</whatsthis>
+            <choices>
+                <choice name="Disabled"><label>Disabled</label></choice>
+                <choice name="Meta"><label>Win</label></choice>
+                <choice name="MetaAlt"><label>Win + Alt</label></choice>
+                <choice name="MetaShift"><label>Win + Shift</label></choice>
+                <choice name="CtrlAlt"><label>Ctrl + Alt</label></choice>
+            </choices>
+            <default>Meta</default>
+        </entry>
+        <entry name="InvertWheelZoom" type="Bool">
+            <label>Invert wheel zoom direction</label>
+            <whatsthis>By default turning the wheel away from you zooms in. Enable this to zoom out instead.</whatsthis>
+            <default>false</default>
+        </entry>
+        <entry name="ShiftWheelPans" type="Bool">
+            <label>Shift + wheel on the desktop pans horizontally</label>
+            <whatsthis>Hold Shift and turn the mouse wheel over the empty desktop to move the canvas sideways. Ctrl + wheel moves it up and down.</whatsthis>
+            <default>true</default>
+        </entry>
+
+        <!-- ===================== Navigation: touchpad & touch ===================== -->
+        <entry name="TouchpadScrollPans" type="Bool">
+            <label>Two-finger scrolling on the empty desktop pans</label>
+            <whatsthis>Scroll with two fingers on the touchpad while the pointer is over the empty desktop to move the canvas.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="PinchZoom" type="Bool">
+            <label>Pinch on the empty desktop zooms</label>
+            <whatsthis>Pinch with two fingers on the touchpad while the pointer is over the empty desktop to zoom. Over windows the gesture is passed to the application.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="InvertScrollPan" type="Bool">
+            <label>Invert scroll panning</label>
+            <whatsthis>Reverse the direction in which touchpad scrolling and swiping move the canvas.</whatsthis>
+            <default>false</default>
+        </entry>
+        <entry name="PanSpeed" type="Int">
+            <label>Touchpad pan speed</label>
+            <whatsthis>How fast touchpad scrolling and swiping move the canvas, in percent.</whatsthis>
+            <default>100</default>
+            <min>20</min>
+            <max>400</max>
+        </entry>
+
+        <!-- ===================== Zoom & motion ===================== -->
+        <entry name="ZoomStep" type="Int">
+            <label>Zoom step per wheel notch</label>
+            <whatsthis>How much one notch of the mouse wheel zooms, in percent.</whatsthis>
+            <default>15</default>
+            <min>2</min>
+            <max>100</max>
+        </entry>
+        <entry name="MinZoom" type="Int">
+            <label>Maximum zoom out</label>
+            <whatsthis>The smallest zoom level in percent. 10 % shows an area ten times as wide as the screen.</whatsthis>
+            <default>10</default>
+            <min>2</min>
+            <max>100</max>
+        </entry>
+        <entry name="MaxZoom" type="Int">
+            <label>Maximum zoom in</label>
+            <whatsthis>The largest zoom level in percent. Above 100 % windows are magnified and only shown as a preview.</whatsthis>
+            <default>100</default>
+            <min>100</min>
+            <max>400</max>
+        </entry>
+        <entry name="SnapZoomToOne" type="Bool">
+            <label>Snap to 100 %</label>
+            <whatsthis>When zooming close to 100 %, snap exactly to 100 % so that windows become directly usable again.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="Momentum" type="Bool">
+            <label>Glide after flicking</label>
+            <whatsthis>After a quick drag or swipe the canvas keeps gliding and slows down smoothly, like scrolling on a phone.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="Friction" type="Int">
+            <label>Glide friction</label>
+            <whatsthis>How quickly the glide comes to a stop. Higher values stop sooner.</whatsthis>
+            <default>5</default>
+            <min>1</min>
+            <max>20</max>
+        </entry>
+        <entry name="AnimationDuration" type="Int">
+            <label>Animation duration</label>
+            <whatsthis>Duration of camera animations (jumping to windows, zoom to fit, bookmarks) in milliseconds. 0 disables animations.</whatsthis>
+            <default>280</default>
+            <min>0</min>
+            <max>2000</max>
+        </entry>
+        <entry name="KeyboardPanStep" type="Int">
+            <label>Keyboard pan step</label>
+            <whatsthis>How far one press of a pan shortcut moves the canvas, in percent of the screen size.</whatsthis>
+            <default>25</default>
+            <min>5</min>
+            <max>100</max>
+        </entry>
+
+        <!-- ===================== Windows & focus ===================== -->
+        <entry name="RevealOnActivate" type="Bool">
+            <label>Bring activated windows into view</label>
+            <whatsthis>When a window outside the visible area is activated, for example from the task bar or with Alt+Tab, the canvas moves so that the window becomes visible.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="RevealMode" type="Enum">
+            <label>How windows are brought into view</label>
+            <whatsthis>"Scroll just enough" moves the canvas as little as possible. "Center" always puts the window in the middle of the screen.</whatsthis>
+            <choices>
+                <choice name="Minimal"><label>Scroll just enough</label></choice>
+                <choice name="Center"><label>Center the window</label></choice>
+            </choices>
+            <default>Minimal</default>
+        </entry>
+        <entry name="NewWindowsExitZoom" type="Bool">
+            <label>New windows return to 100 %</label>
+            <whatsthis>When a new window opens while the canvas is zoomed, zoom back to 100 % on the new window so it can be used right away. Windows that are not shown in the task bar, like splash screens of launchers, keep the zoom.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="PinKeepAboveWindows" type="Bool">
+            <label>Windows that are always on top are pinned to the screen</label>
+            <whatsthis>Windows that stay on top of all others (an option of many programs, for example video players) stay fixed on the screen and are not moved by panning or zooming. Use the shortcut "Pin Window to Screen" to pin a window without keeping it above.</whatsthis>
+            <default>false</default>
+        </entry>
+        <entry name="ExcludedWindowClasses" type="StringList">
+            <label>Excluded applications</label>
+            <whatsthis>Programs whose windows never move with the canvas: the program name (for example notepad), its full path or its app ID, one per entry.</whatsthis>
+            <default></default>
+        </entry>
+
+        <entry name="RememberWindowPlacement" type="Bool">
+            <label>Reopen applications where they were closed</label>
+            <whatsthis>Remembers the place, size and screen of every application window when it is closed. The next window of that application opens there again; the view moves to it if necessary. Screens are recognised by manufacturer, model and serial number, so this also works after re-plugging monitors. If the screen is missing, the window opens on the current screen. Dialogs and fullscreen windows are not affected.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="RestorePlacementMode" type="Enum">
+            <label>Where reopened windows appear</label>
+            <whatsthis>"Same place on the canvas" puts the window back exactly where it was on the infinite desktop and moves the view there. "Same place on the screen" only restores the position on the screen, wherever the canvas currently is.</whatsthis>
+            <choices>
+                <choice name="Canvas"><label>Same place on the canvas</label></choice>
+                <choice name="Screen"><label>Same place on the screen</label></choice>
+            </choices>
+            <default>Canvas</default>
+        </entry>
+        <entry name="RestoreWindowSize" type="Bool">
+            <label>Also restore the window size</label>
+            <whatsthis>Reopened windows get the size (and maximized state) they had when they were closed. Some applications may still choose a different size.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="PlacementExcludedClasses" type="StringList">
+            <label>Applications that always open normally</label>
+            <whatsthis>Programs whose position is never remembered: the program name (for example snippingtool), its full path or its app ID, one per entry.</whatsthis>
+            <default></default>
+        </entry>
+
+        <!-- ===================== Multiple screens ===================== -->
+        <entry name="FlingToOtherScreen" type="Bool">
+            <label>Only a fast drag moves windows to another screen</label>
+            <whatsthis>Every screen has its own canvas. A window only moves over to the neighbouring screen when it is dragged quickly against the screen edge. Dragged slowly, it stays on its screen and the canvas scrolls instead.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="FlingThreshold" type="Int">
+            <label>Speed needed to change screens</label>
+            <whatsthis>The minimum pointer speed (pixels per second) at the screen edge that moves a dragged window to the other screen. Lower values make it easier.</whatsthis>
+            <default>1600</default>
+            <min>100</min>
+            <max>10000</max>
+        </entry>
+        <entry name="EdgePan" type="Bool">
+            <label>Scroll the canvas when dragging a window to the screen edge</label>
+            <whatsthis>While moving a window, hold the pointer near the edge of the screen to scroll the canvas in that direction. The window travels with the pointer. While a window is dragged, this replaces Snap ("drag to the screen edge to snap or maximize"); switch it off to use Snap instead.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="EdgePanMargin" type="Int">
+            <label>Edge scrolling zone</label>
+            <whatsthis>Width of the zone at the screen edge that starts edge scrolling, in pixels.</whatsthis>
+            <default>24</default>
+            <min>2</min>
+            <max>200</max>
+        </entry>
+        <entry name="EdgePanSpeed" type="Int">
+            <label>Edge scrolling speed</label>
+            <whatsthis>Maximum speed of edge scrolling in pixels per second.</whatsthis>
+            <default>1400</default>
+            <min>100</min>
+            <max>8000</max>
+        </entry>
+
+        <!-- ===================== Fullscreen ===================== -->
+        <entry name="LockFullscreen" type="Bool">
+            <label>Keep focused fullscreen windows in place</label>
+            <whatsthis>While a fullscreen window (video, game) has the focus, the canvas of its screen cannot be moved or zoomed, so it cannot be scrolled away by accident.</whatsthis>
+            <default>true</default>
+        </entry>
+
+        <!-- ===================== Appearance ===================== -->
+        <entry name="GridSpacing" type="Int">
+            <label>Grid spacing</label>
+            <whatsthis>Distance between the dots of the grid at 100 % zoom, in pixels.</whatsthis>
+            <default>64</default>
+            <min>16</min>
+            <max>512</max>
+        </entry>
+        <entry name="GridOpacity" type="Int">
+            <label>Grid opacity</label>
+            <whatsthis>How strongly the dots are visible, in percent.</whatsthis>
+            <default>35</default>
+            <min>5</min>
+            <max>100</max>
+        </entry>
+        <entry name="GridColor" type="Color">
+            <label>Grid color</label>
+            <whatsthis>Color of the dots.</whatsthis>
+            <default>255,255,255</default>
+        </entry>
+        <entry name="OffscreenMarkers" type="Enum">
+            <label>Markers for windows outside the view</label>
+            <whatsthis>Shows a small marker with the application icon at the screen edge for every window outside the visible area, pointing towards it. Click a marker to fly to the window.</whatsthis>
+            <choices>
+                <choice name="Never"><label>Never</label></choice>
+                <choice name="WhileNavigating"><label>While moving or zooming</label></choice>
+                <choice name="Always"><label>Always</label></choice>
+            </choices>
+            <default>WhileNavigating</default>
+        </entry>
+
+        <!-- ===================== Notes, groups, areas and the map ===================== -->
+        <entry name="NotesEnabled" type="Bool">
+            <label>Notes on the canvas</label>
+            <whatsthis>Notes are small windows with Markdown text that lie on the canvas like other windows and are saved automatically. Create one with Win+Alt+N, from the canvas menu (right click on the empty canvas in the overview, Win + right click on the desktop at 100 %) or from the WIN Infinit Desktop icon in the notification area. Pin a note to keep it on the screen while the canvas moves.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="NoteColor" type="Enum">
+            <label>Color of new notes</label>
+            <whatsthis>The paper color a new note gets. Every note can get another color from its menu.</whatsthis>
+            <choices>
+                <choice name="Yellow"><label>Yellow</label></choice>
+                <choice name="Blue"><label>Blue</label></choice>
+                <choice name="Green"><label>Green</label></choice>
+                <choice name="Pink"><label>Pink</label></choice>
+                <choice name="Gray"><label>Gray</label></choice>
+            </choices>
+            <default>Yellow</default>
+        </entry>
+        <entry name="GroupLayoutMode" type="Enum">
+            <label>Arrangement of new groups is saved</label>
+            <whatsthis>A group remembers how its windows are arranged and always opens like that. Either the arrangement only changes when you save it (Win+Alt+Shift+G or in this app), or every move and resize of a group window while the group is open becomes the new arrangement. Each group can be switched on its own. Where the group lies on the canvas always moves with its windows.</whatsthis>
+            <choices>
+                <choice name="Manual"><label>Only when saved</label></choice>
+                <choice name="Automatic"><label>Automatically when windows are moved</label></choice>
+            </choices>
+            <default>Manual</default>
+        </entry>
+        <entry name="GroupStartsApplications" type="Bool">
+            <label>Opening a group starts missing applications</label>
+            <whatsthis>When a group is opened and one of its applications has no window, it is started and its window is placed in the group. An application in several groups, like the browser, moves along with the group you open as long as only one window of it is open.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="GroupZoomToFit" type="Bool">
+            <label>Zoom out for groups larger than the screen</label>
+            <whatsthis>When an opened group does not fit on the screen at 100 %, the camera zooms out until all its windows are visible. Otherwise the camera centers the group at 100 %.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="ShowAreas" type="Enum">
+            <label>Show areas on the canvas</label>
+            <whatsthis>Areas are named parts of the canvas that you draw with Win+Alt+B. They are drawn as colored frames in the overview and on the map.</whatsthis>
+            <choices>
+                <choice name="Never"><label>Never</label></choice>
+                <choice name="WhileNavigating"><label>While moving or zooming</label></choice>
+                <choice name="Always"><label>Always</label></choice>
+            </choices>
+            <default>Always</default>
+        </entry>
+        <entry name="AreaPadding" type="Int">
+            <label>Space around the windows of an area</label>
+            <whatsthis>An area grows when you drag windows into it or make them larger, and shrinks when they leave or get smaller. It keeps this much space around its windows, in pixels at 100 %.</whatsthis>
+            <default>48</default>
+            <min>0</min>
+            <max>400</max>
+        </entry>
+        <entry name="MapSize" type="Int">
+            <label>Size of the map</label>
+            <whatsthis>How much of the screen the map (Win+Alt+M) covers, in percent.</whatsthis>
+            <default>70</default>
+            <min>30</min>
+            <max>95</max>
+        </entry>
+
+        <!-- ===================== Advanced ===================== -->
+        <entry name="CrashGuard" type="Bool">
+            <label>Safe mode after repeated crashes</label>
+            <whatsthis>If WIN Infinit Desktop crashes several times in a row, it starts in safe mode and leaves the windows alone until you turn it on again. This keeps your desktop usable.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="RememberCanvas" type="Bool">
+            <label>Remember camera positions and bookmarks</label>
+            <whatsthis>Stores the camera position, zoom and bookmarks of every canvas and restores them after a restart.</whatsthis>
+            <default>true</default>
+        </entry>
+        <entry name="DebugLogging" type="Bool">
+            <label>Debug logging</label>
+            <whatsthis>Writes detailed messages to the file service.log in %LOCALAPPDATA%\WIN Infinit Desktop. Only useful for bug reports.</whatsthis>
+            <default>false</default>
+        </entry>
+    </group>
+</kcfg>

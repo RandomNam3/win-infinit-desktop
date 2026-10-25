@@ -15,6 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # the Windows SDK, so they also build without Qt (e.g. a quick MinGW check on Linux).
 option(WID_WITH_QT "Build the Qt based parts (canvas core and its unit tests)" ON)
 option(WID_BUILD_PROBE "Build the diagnostic tool wid-probe (Windows only)" ON)
+option(WID_BUILD_APPS "Build the notes app and the settings app (Qt Quick)" ON)
 option(WID_ASAN "Build with AddressSanitizer (MSVC /fsanitize=address, development only)" OFF)
 
 set(QT_MIN_VERSION "6.8.0" CACHE STRING "Oldest Qt version the project builds with")
@@ -38,6 +39,12 @@ if(WID_WITH_QT)
     find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS Core)
     add_compile_definitions(QT_NO_KEYWORDS QT_NO_CAST_FROM_ASCII QT_NO_URL_CAST_FROM_STRING)
     add_subdirectory(src/core)
+    if(WID_BUILD_APPS)
+        # Their platform-neutral parts also build on Linux, for the unit tests.
+        add_subdirectory(src/shared)
+        add_subdirectory(src/notes)
+        add_subdirectory(src/settings)
+    endif()
 endif()
 
 if(WIN32)

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- WIN Infinit Desktop application icon (the one of KDE Infinit Desktop): an infinite canvas (dot grid with floating windows) and the infinity sign.
+       SPDX-FileCopyrightText: 2026 KDE Infinit Desktop and WIN Infinit Desktop contributors
+       SPDX-License-Identifier: GPL-3.0-or-later -->
+  <defs>
+    <linearGradient id="background" x1="12" y1="8" x2="116" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3b9cf5"/>
+      <stop offset="0.55" stop-color="#4f6cf0"/>
+      <stop offset="1" stop-color="#7a4fe6"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="64" y1="8" x2="64" y2="72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="sign" x1="26" y1="48" x2="102" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e4e9ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#background)"/>
+  <g fill="#ffffff" fill-opacity="0.2"><circle cx="22" cy="22" r="1.7"/><circle cx="36" cy="22" r="1.7"/><circle cx="50" cy="22" r="1.7"/><circle cx="64" cy="22" r="1.7"/><circle cx="78" cy="22" r="1.7"/><circle cx="92" cy="22" r="1.7"/><circle cx="106" cy="22" r="1.7"/><circle cx="22" cy="36" r="1.7"/><circle cx="36" cy="36" r="1.7"/><circle cx="50" cy="36" r="1.7"/><circle cx="64" cy="36" r="1.7"/><circle cx="78" cy="36" r="1.7"/><circle cx="92" cy="36" r="1.7"/><circle cx="106" cy="36" r="1.7"/><circle cx="22" cy="50" r="1.7"/><circle cx="36" cy="50" r="1.7"/><circle cx="50" cy="50" r="1.7"/><circle cx="64" cy="50" r="1.7"/><circle cx="78" cy="50" r="1.7"/><circle cx="92" cy="50" r="1.7"/><circle cx="106" cy="50" r="1.7"/><circle cx="22" cy="64" r="1.7"/><circle cx="36" cy="64" r="1.7"/><circle cx="50" cy="64" r="1.7"/><circle cx="64" cy="64" r="1.7"/><circle cx="78" cy="64" r="1.7"/><circle cx="92" cy="64" r="1.7"/><circle cx="106" cy="64" r="1.7"/><circle cx="22" cy="78" r="1.7"/><circle cx="36" cy="78" r="1.7"/><circle cx="50" cy="78" r="1.7"/><circle cx="64" cy="78" r="1.7"/><circle cx="78" cy="78" r="1.7"/><circle cx="92" cy="78" r="1.7"/><circle cx="106" cy="78" r="1.7"/><circle cx="22" cy="92" r="1.7"/><circle cx="36" cy="92" r="1.7"/><circle cx="50" cy="92" r="1.7"/><circle cx="64" cy="92" r="1.7"/><circle cx="78" cy="92" r="1.7"/><circle cx="92" cy="92" r="1.7"/><circle cx="106" cy="92" r="1.7"/><circle cx="22" cy="106" r="1.7"/><circle cx="36" cy="106" r="1.7"/><circle cx="50" cy="106" r="1.7"/><circle cx="64" cy="106" r="1.7"/><circle cx="78" cy="106" r="1.7"/><circle cx="92" cy="106" r="1.7"/><circle cx="106" cy="106" r="1.7"/></g>
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#gloss)"/>
+  <g fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.38" stroke-width="1.5">
+    <rect x="19" y="19" width="30" height="21" rx="4"/>
+    <rect x="80" y="88" width="29" height="20" rx="4"/>
+  </g>
+  <g stroke="#ffffff" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round">
+    <path d="M23.5 24.5h7"/>
+    <path d="M84.5 93.5h7"/>
+  </g>
+  <path d="M64 67c-7.5-10-13.6-15.2-20.5-15.2a15.2 15.2 0 0 0 0 30.4c6.9 0 13-5.2 20.5-15.2zm0 0c7.5 10 13.6 15.2 20.5 15.2a15.2 15.2 0 0 0 0-30.4c-6.9 0-13 5.2-20.5 15.2z" fill="none" stroke="#1d1f6b" stroke-opacity="0.28" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M64 64c-7.5-10-13.6-15.2-20.5-15.2a15.2 15.2 0 0 0 0 30.4c6.9 0 13-5.2 20.5-15.2zm0 0c7.5 10 13.6 15.2 20.5 15.2a15.2 15.2 0 0 0 0-30.4c-6.9 0-13 5.2-20.5 15.2z" fill="none" stroke="url(#sign)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
