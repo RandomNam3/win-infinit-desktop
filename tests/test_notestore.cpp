@@ -51,6 +51,8 @@ private Q_SLOTS:
             note->setWidth(10); // clamped
             note->setHeight(500);
             note->setHidden(true);
+            QVERIFY(!note->isFormatted()); // the Markdown source is shown by default
+            note->setFormatted(true);
             store.setNotesVisible(false);
             // Saved on destruction (flush) without waiting for the timer.
         }
@@ -67,6 +69,7 @@ private Q_SLOTS:
         QCOMPARE(note->width(), Note::MinimumWidth);
         QCOMPARE(note->height(), 500);
         QVERIFY(note->isHidden());
+        QVERIFY(note->isFormatted());
         QVERIFY(!store.notesVisible());
 
         QSignalSpy removed(&store, &NoteStore::noteRemoved);
@@ -91,6 +94,8 @@ private Q_SLOTS:
         store.load();
         QCOMPARE(store.notes().size(), std::size_t(1));
         QCOMPARE(store.notes().front()->color(), Note::Colors - 1);
+        // Notes from before the setting existed open with their Markdown source.
+        QVERIFY(!store.notes().front()->isFormatted());
     }
 };
 
