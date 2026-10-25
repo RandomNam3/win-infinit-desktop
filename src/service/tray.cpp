@@ -26,7 +26,15 @@ enum MenuId : UINT {
     MenuSettings,
     MenuLeaveSafeMode,
     MenuQuit,
+    MenuNewNote,
+    MenuToggleNotes,
+    MenuMap,
+    MenuGroupFromSelection,
+    MenuAreaFromSelection,
+    MenuGroupFirst = 100, ///< "Open group" entries: MenuGroupFirst + index
 };
+
+constexpr int MaxGroupEntries = 64;
 
 void copy(wchar_t *target, std::size_t size, const std::wstring &text)
 {
@@ -136,9 +144,38 @@ void Tray::showMenu()
         AppendMenuW(menu.get(), MF_STRING | MF_GRAYED, 0, m_state.status.c_str());
         AppendMenuW(menu.get(), MF_SEPARATOR, 0, nullptr);
     }
+    // Owned by `menu` once appended: DestroyMenu destroys submenus with it.
+    HMENU groups = nullptr;
     if (m_state.safeMode) {
         AppendMenuW(menu.get(), MF_STRING, MenuLeaveSafeMode, text(L"Leave Safe Mode", L"Abgesicherten Modus verlassen"));
     } else {
+        AppendMenuW(menu.get(), MF_STRING, MenuNewNote, text(L"New Note", L"Neue Notiz"));
+        AppendMenuW(menu.get(), MF_STRING, MenuToggleNotes, text(L"Show / Hide Notes", L"Notizen ein-/ausblenden"));
+        AppendMenuW(menu.get(), MF_STRING, MenuMap, text(L"Show Map", L"Karte zeigen"));
+        AppendMenuW(menu.get(), MF_SEPARATOR, 0, nullptr);
+        AppendMenuW(menu.get(), MF_STRING, MenuGroupFromSelection, text(L"New Group from Selection…", L"Neue Gruppe aus Auswahl …"));
+        AppendMenuW(menu.get(), MF_STRING, MenuAreaFromSelection, text(L"Draw an Area…", L"Bereich aufziehen …"));
+        const std::vector<std::wstring> names = m_groupNames ? m_groupNames() : std::vector<std::wstring>();
+        if (!names.empty()) {
+            groups = CreatePopupMenu();
+            if (groups) {
+                for (int i = 0; i < int(names.size()) && i < MaxGroupEntries; ++i) {
+                    std::wstring label;
+                    for (wchar_t c : names[std::size_t(i)]) {
+                        // '&' would mark a mnemonic.
+                        label += c == L'&' ? std::wstring(L"&&") : std::wstring(1, c);
+                    }
+                    if (i < 9) {
+                        label += L"\tWin+Alt+F" + std::to_wstring(i + 1);
+                    }
+                    AppendMenuW(groups, MF_STRING, MenuGroupFirst + UINT(i), label.c_str());
+                }
+                if (!AppendMenuW(menu.get(), MF_POPUP, reinterpret_cast<UINT_PTR>(groups), text(L"Open Group", L"Gruppe öffnen"))) {
+                    DestroyMenu(groups);
+                }
+            }
+        }
+        AppendMenuW(menu.get(), MF_SEPARATOR, 0, nullptr);
         AppendMenuW(menu.get(), MF_STRING | (m_state.paused ? MF_CHECKED : 0), MenuPause, text(L"Pause Gestures", L"Gesten pausieren"));
         AppendMenuW(menu.get(), MF_STRING, MenuBringBack, text(L"Bring All Windows Back", L"Alle Fenster zurückholen"));
     }
@@ -157,21 +194,39 @@ void Tray::showMenu()
     }
     switch (chosen) {
     case MenuPause:
-        m_handler(Action::TogglePause);
+        m_handler(Action::TogglePause, 0);
         break;
     case MenuBringBack:
-        m_handler(Action::BringWindowsBack);
+        m_handler(Action::BringWindowsBack, 0);
         break;
     case MenuSettings:
-        m_handler(Action::Settings);
+        m_handler(Action::Settings, 0);
         break;
     case MenuLeaveSafeMode:
-        m_handler(Action::LeaveSafeMode);
+        m_handler(Action::LeaveSafeMode, 0);
         break;
     case MenuQuit:
-        m_handler(Action::Quit);
+        m_handler(Action::Quit, 0);
+        break;
+    case MenuNewNote:
+        m_handler(Action::NewNote, 0);
+        break;
+    case MenuToggleNotes:
+        m_handler(Action::ToggleNotes, 0);
+        break;
+    case MenuMap:
+        m_handler(Action::ShowMap, 0);
+        break;
+    case MenuGroupFromSelection:
+        m_handler(Action::GroupFromSelection, 0);
+        break;
+    case MenuAreaFromSelection:
+        m_handler(Action::AreaFromSelection, 0);
         break;
     default:
+        if (chosen >= MenuGroupFirst && chosen < MenuGroupFirst + MaxGroupEntries) {
+            m_handler(Action::OpenGroup, int(chosen - MenuGroupFirst));
+        }
         break;
     }
 }
@@ -188,7 +243,7 @@ LRESULT Tray::handle(UINT message, WPARAM wParam, LPARAM lParam)
         case NIN_KEYSELECT:
         case WM_LBUTTONDBLCLK:
             if (m_handler) {
-                m_handler(Action::Settings);
+                m_handler(Action::Settings, 0);
             }
             return 0;
         default:

@@ -20,6 +20,7 @@ Zielplattform ist Windows 11 25H2/26H2 (Build 26200/26300), x64 und ARM64.
 │  │  entscheidet sofort  │  Snapshot  │  Overview  (je Bildschirm, DWM-Thumbnails)       │   │
 │  └──────────────────────┘  (atomar)  │  Markers   (kleine geschichtete Fenster)          │   │
 │                                      │  Tray      (Shell_NotifyIcon)                     │   │
+│                                      │  Organizer (Notizen, Gruppen, Bereiche, Karte)    │   │
 │                                      │  IpcServer (Named Pipe, JSON-Zeilen)              │   │
 │                                      │  CrashGuard, Einstellungen (INI, beobachtet)      │   │
 │                                      └──────────────────────────────────────────────────┘   │
@@ -34,6 +35,7 @@ Zielplattform ist Windows 11 25H2/26H2 (Build 26200/26300), x64 und ARM64.
 | `src/core/` | Kamera, Animationen, Geschwindigkeit, Parkplätze, Navigation, Fensterplatz-Gedächtnis, Gruppen, Bereiche, Notizen, Karte – **unverändert aus KDE** | Qt Core |
 | `src/platform/` | Win32-Schicht (Bildschirme, Fenster, Ereignisse, Hooks, Touchpad, Desktops, Vollbild, Verschieben) | Windows SDK |
 | `src/service/` | der Dienst `win-infinit-desktop.exe` | Qt Gui, Qt Network, core, platform |
+| `src/shared/` | Namen der Pipes von Dienst und Notiz-App (`pipenames.h`, nur Header) | Qt Core |
 | `tools/wid-ctl/` | Kommandozeilen-Client der IPC-Schnittstelle | Qt Network |
 | `tools/wid-probe/` | Diagnose der Windows-Schnittstellen auf dem Rechner | Windows SDK |
 | `tools/wid-testwindow/` | Testfenster für den Laufzeittest | Windows SDK |
@@ -214,6 +216,7 @@ Für jedes Fenster außerhalb des Bildes zeigt eine kleine Markierung die Richtu
 | dieselbe Datei, Gruppe `[Shortcuts]` | Tastenkürzel: Schlüssel = Aktions-ID der KDE-Version (`InfinitDesktop Home`), Wert z. B. `Win+Alt+H;Ctrl+Alt+H`, leer = keins |
 | `%LOCALAPPDATA%\WIN Infinit Desktop\canvas.json` | Kameras und Lesezeichen je Canvas (nie gezoomt wiederhergestellt) |
 | `%LOCALAPPDATA%\WIN Infinit Desktop\placements.json` | Fensterplatz-Gedächtnis |
+| `%LOCALAPPDATA%\WIN Infinit Desktop\groups.json`, `areas.json`, `notes.json` | Gruppen, Bereiche und Plätze der Notizen, gleiches JSON wie unter KDE |
 | `%LOCALAPPDATA%\WIN Infinit Desktop\crashguard` | Zähler des Absturzschutzes |
 | `%LOCALAPPDATA%\WIN Infinit Desktop\service.log` | Protokoll (1 MB, eine alte Generation) |
 
@@ -285,6 +288,21 @@ Named Pipe `\\.\pipe\win-infinit-desktop-<Sitzungs-ID>`, nur für den eigenen Be
 | `windowPlacements`, `forgetWindowPlacements`, `forgetApplicationPlacements` | `app` | Fensterplatz-Gedächtnis |
 | `bringWindowsBack` | – | alle Fenster in den Arbeitsbereich |
 | `quit` | – | beendet den Dienst (mit Zurückholen) |
+| `groups`, `setGroups` | `json` (Text) | Gruppen als JSON-Text, mit `openWindows` je Gruppe |
+| `areas`, `setAreas` | `json` (Text) | Bereiche als JSON-Text |
+| `openGroup` | `id` oder `index` | öffnet die Gruppe (wie Win + Alt + F1 … F9) |
+| `saveGroupLayout` | `id` (leer: Gruppe des aktiven Fensters) | speichert die Anordnung |
+| `groupFromSelection`, `areaFromSelection`, `showMap` | – | Rechteck aufziehen bzw. Karte, auf dem Bildschirm unter dem Zeiger |
+| `newNote` | `x`, `y` (optional, Bildschirmpunkt) | bittet die Notiz-App um eine neue Notiz |
+| `toggleNotes` | – | Notizen ein- oder ausblenden (über die Notiz-App) |
+| `expectNote` | `id`, `hwnd` (dezimal) | die Notiz-App meldet ein Notizfenster an, bevor sie es zeigt |
+| `noteState` | `id` | `{id, open, pinned, keepAbove}` |
+| `setNotePinned` | `id`, `pinned`, `keepAbove` | pinnt eine Notiz an oder löst sie; Ergebnis wie `noteState` |
+| `forgetNote`, `retainNotes` | `id` / `ids` | vergisst Plätze gelöschter Notizen |
+| `applications` | – | offene Programme (`app`, `launch`, `program`, `title`) für die Auswahl in der Einstellungs-App |
+
+Ereignisse an alle Clients: `statusChanged`, `groupsChanged`, `areasChanged`,
+`notePinnedChanged {id, pinned, keepAbove}`.
 
 Ohne `monitor` gilt der Bildschirm unter dem Mauszeiger. Navigationsbefehle wirken sofort, ohne
 Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
@@ -297,7 +315,9 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
   - Kürzel-Parser und -Tabelle, Einstellungen aus der INI-Datei;
   - die Entscheidungen des `InputRouter`: Klick, Ziehen, Modifikator, mittlere Taste, Anhalten beim
     Gleiten, Mausrad-Varianten, Touchpad, Pause und Sperre, Kürzel, Fenster ziehen mit Kante und Wurf;
-  - Markierungen, IPC-Zeilen, Absturzschutz.
+  - Markierungen, IPC-Zeilen, Absturzschutz;
+  - Canvas-Menü, Startbefehle von Gruppenmitgliedern, Fenster-Handles und Notiz-IDs aus der IPC,
+    Esc für Karte und Auswahl, Win + Rechtsklick.
 - **AddressSanitizer:** Ein eigener CI-Job baut alles mit MSVC `/fsanitize=address` und führt die
   Unit-Tests aus.
 - **Laufzeittest** (`tests/runtime/smoke.ps1`, in der CI auf Windows Server 2025):
@@ -305,8 +325,87 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
   2. prüfen, dass das Fenster übernommen wird;
   3. per IPC um −200 px verschieben: Das Fenster bewegt sich genau so weit;
   4. um −6000 px: Das Fenster ist geparkt und auf keinem Bildschirm mehr;
-  5. den Dienst beenden: Das Fenster ist wieder auf einem Bildschirm.
+  5. eine Gruppe mit dem Programm des Testfensters 1500 px weiter rechts öffnen: Das Fenster wandert
+     dorthin, die Kamera folgt;
+  6. das Testfenster als Notiz anmelden, per IPC anpinnen und wieder lösen;
+  7. den Dienst beenden: Das Fenster ist wieder auf einem Bildschirm.
 
   Der Test hängt von der Desktop-Sitzung des Runners ab. Er wird berichtet, ist aber nicht
   Voraussetzung.
 - **Echte Hardware:** `wid-probe` (siehe [SCHNITTSTELLEN.md](SCHNITTSTELLEN.md#offene-fragen-und-wid-probe)).
+
+## 13. Notizen, Gruppen, Bereiche und Karte
+
+Die Logik ist der gemeinsame Kern (`groups.h`, `areas.h`, `noteplacements.h`, `minimap.h`).
+`Organizer` (`src/service/organizer.*`) verbindet ihn mit den Win32-Fenstern, der Notiz-App, den
+Dateien und seinen Overlay-Fenstern, wie der gleichnamige Teil des KWin-Effekts.
+
+**Lebensdauer:**
+- `ManagedWindow` trägt Notiz-ID, Gruppe mit Mitglied und Bereich. Der Organizer hält keine
+  Fensterzeiger. Ausnahme sind angemeldete Notizfenster: Sie werden bei `EVENT_OBJECT_DESTROY`
+  vergessen und verfallen nach 10 s.
+- Gestartete Gruppenmitglieder werden nur über ihre Programm-ID erwartet (30 s).
+- Overlay-Zustand merkt sich den Schlüssel des Bildschirms, nicht seinen Index.
+- Overlay-Fenster werden einmal angelegt und nur ausgeblendet, nie aus ihrem eigenen Handler heraus
+  zerstört. Ausgeblendet halten sie kein Bild.
+
+**Gruppen:**
+- Öffnen (Win + Alt + F1 … F9, Tray, IPC):
+  1. `planGroup` wählt die Fenster: erst die mit dieser Gruppe markierten, dann das einzige Fenster
+     des Programms, sonst das nächste unmarkierte.
+  2. Diese Fenster bekommen ihre Plätze auf dem Canvas des Gruppen-Bildschirms. Minimierte werden
+     mit `ShowWindowAsync` geholt und 300 ms später noch einmal platziert, weil Windows sie an ihren
+     alten Platz zurücklegt.
+  3. Fehlende Programme startet `ShellExecuteEx` in einem eigenen Thread: Pfade direkt,
+     AppUserModelIDs über `shell:AppsFolder\<AUMID>`. Das neue Fenster wird beim Übernehmen an
+     seinen Platz gelegt.
+  4. Die Kamera fährt hin; ist die Gruppe größer als der Bildschirm, zoomt sie heraus.
+- Programm-ID und Startbefehl kommen vom Fenster: AppUserModelID, sonst der Programmpfad. Die ID ist
+  klein geschrieben, der Startbefehl bleibt, wie er ist.
+- Die Anordnung folgt wie unter KDE den Fenstern: verschobene Gruppen verschieben ihren Ursprung,
+  im Modus „automatisch“ wird die neue Anordnung gespeichert.
+
+**Bereiche:**
+- Gezeichnet werden sie in der Übersicht, im Hintergrund unter den Thumbnails, und auf der Karte.
+- Bei 100 % lässt Windows nicht zwischen Hintergrundbild und Fenstern zeichnen (wie beim
+  Punktraster).
+- Ein Fenster gehört zum Bereich, in den seine Mitte fällt. Dynamische Bereiche wachsen und
+  schrumpfen mit ihren Fenstern; Größenänderungen werden je Runde der Ereignisschleife
+  zusammengefasst.
+
+**Notizen:**
+- Die Notizen sind Fenster der Notiz-App `wid-notes.exe`.
+- Ablauf beim Anzeigen:
+  1. Die App legt das Fenster an.
+  2. Sie meldet es mit `expectNote {id, hwnd}` beim Dienst an, bevor sie es zeigt.
+  3. Der Dienst übernimmt genau dieses Fenster als Notiz, auch als Werkzeugfenster ohne
+     Taskleisten-Eintrag. Ist es schon sichtbar, übernimmt er es sofort.
+- Der Dienst speichert nur den Platz (`notes.json`); Text, Größe und Farbe speichert die App.
+- Angepinnte Notizen bleiben auf dem Bildschirm, „immer im Vordergrund“ ist `HWND_TOPMOST`.
+- Der Dienst ruft die App über ihre eigene Pipe (`notesServerName()`) auf, ohne je zu warten
+  (`NotesClient`):
+  - Aufrufe warten höchstens in einer kurzen Schlange (8).
+  - Läuft die App nicht, wird sie einmal gestartet. Nach 10 s ohne Verbindung werden die Aufrufe
+    verworfen.
+  - Liest die App nicht mehr, trennt der Dienst ab 64 KB offenen Daten.
+  - Beim Start bittet der Dienst eine laufende App, ihre Notizen neu anzumelden; gestartet wird sie
+    dafür nicht.
+
+**Overlays** (`overlays.*`): nie aktivierte, oberste Werkzeugfenster.
+- **Schleier:** eine Farbe, eine Deckkraft für das ganze Fenster. DWM mischt sie, gezeichnet wird
+  einmal.
+- **Auswahlrechteck:** ein durchklickbares halbtransparentes Fenster, das nur verschoben wird.
+- **Kartenfeld:** ein undurchsichtiges Fenster mit einem `QImage`, neu gezeichnet nur, wenn sich
+  Kamera oder Fenster ändern (höchstens 60-mal pro Sekunde).
+- **Meldungen:** ein kleines Fenster mit Alphakanal; verschwindet nach Ablauf oder bleibt, solange
+  die Auswahl läuft.
+- Esc kommt über den Tastatur-Hook, weil die Overlays nie den Fokus haben. Es schließt zuerst die
+  Karte bzw. die Auswahl, sonst die Übersicht.
+
+**Canvas-Menü:**
+- Herausgezoomt: Rechtsklick auf freie Fläche der Übersicht. Bei 100 %: Win + Rechtsklick auf den
+  Desktop. Der Hook verschluckt nur diese Kombination, das Desktop-Menü von Windows bleibt.
+- Es ist ein natives Menü (`TrackPopupMenuEx`) des Dienstfensters. Es öffnet sich erst nach dem
+  laufenden Ereignis (`QTimer::singleShot(0)`), denn es hat eine eigene Nachrichtenschleife. Danach
+  wird alles neu nachgeschlagen.
+- Einträge wie unter KDE, dazu „Beenden“.

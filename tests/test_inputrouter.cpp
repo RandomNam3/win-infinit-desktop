@@ -168,6 +168,49 @@ private Q_SLOTS:
         QCOMPARE(m_router->key(key(WM_KEYUP, VK_ESCAPE), 0), HookAction::Swallow);
     }
 
+    void escapeClosesTheOverlayFirst()
+    {
+        auto open = snapshot();
+        open->overviewOpen = true;
+        open->overlayOpen = true;
+        m_router->setSnapshot(open);
+        QCOMPARE(m_router->key(key(WM_KEYDOWN, VK_ESCAPE), 0), HookAction::Swallow);
+        QCOMPARE(kinds(), QList<Kind>{Kind::CancelOverlay});
+        QCOMPARE(m_router->key(key(WM_KEYUP, VK_ESCAPE), 0), HookAction::Swallow);
+        // With a modifier it is not ours.
+        QCOMPARE(m_router->key(key(WM_KEYDOWN, VK_ESCAPE), MOD_CONTROL), HookAction::Pass);
+    }
+
+    void canvasMenu()
+    {
+        auto menu = snapshot();
+        menu->canvasMenu = true;
+        m_router->setSnapshot(menu);
+        // A plain right click is the desktop's own menu.
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONDOWN, 500, 400), 0), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONUP, 500, 400), 0), HookAction::Pass);
+        QVERIFY(m_commands.isEmpty());
+        // Win + right click on the desktop: ours, release included.
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONDOWN, 500, 400), MOD_WIN), HookAction::Swallow);
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONUP, 500, 400), MOD_WIN), HookAction::Swallow);
+        QCOMPARE(kinds(), QList<Kind>{Kind::CanvasMenu});
+        QCOMPARE(m_commands.last().point, QPointF(500, 400));
+        // Other modifiers, a window under the pointer, or a locked monitor: passed on.
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONDOWN, 500, 400), MOD_WIN | MOD_SHIFT), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONUP, 500, 400), MOD_WIN | MOD_SHIFT), HookAction::Pass);
+        m_desktop = false;
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONDOWN, 500, 400), MOD_WIN), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONUP, 500, 400), MOD_WIN), HookAction::Pass);
+        m_desktop = true;
+        menu = snapshot();
+        menu->canvasMenu = true;
+        menu->locked = {true, false};
+        m_router->setSnapshot(menu);
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONDOWN, 500, 400), MOD_WIN), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_RBUTTONUP, 500, 400), MOD_WIN), HookAction::Pass);
+        QCOMPARE(m_commands.size(), 1);
+    }
+
     void clickWhileGlidingStops()
     {
         auto gliding = snapshot();

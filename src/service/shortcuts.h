@@ -42,7 +42,25 @@ enum class ShortcutAction {
     TogglePin,
     TogglePinAbove,
     ToggleEnabled,
+    NewNote,
+    ToggleNotes,
+    ShowMap,
+    GroupFromSelection,
+    AreaFromSelection,
+    SaveGroupLayout,
+    OpenGroup1,
+    OpenGroup2,
+    OpenGroup3,
+    OpenGroup4,
+    OpenGroup5,
+    OpenGroup6,
+    OpenGroup7,
+    OpenGroup8,
+    OpenGroup9,
 };
+
+/// Groups with a shortcut of their own (OpenGroup1 … OpenGroup9).
+inline constexpr int GroupShortcutCount = 9;
 
 /// A key with modifiers: MOD_ALT/MOD_CONTROL/MOD_SHIFT/MOD_WIN bits and a virtual key.
 struct KeyCombo

@@ -37,6 +37,15 @@ enum class ShowMode {
     Always,
 };
 
+/// Paper color of new notes (NoteColor in the KDE schema); the notes app uses it.
+enum class NoteColor {
+    Yellow,
+    Blue,
+    Green,
+    Pink,
+    Gray,
+};
+
 /**
  * The settings of the canvas service, read from
  * %APPDATA%\WIN Infinit Desktop\settings.ini, group [Effect-infinitdesktop].
@@ -85,6 +94,15 @@ struct Settings
     qreal gridOpacity = 0.35;
     QColor gridColor = QColor(255, 255, 255);
     ShowMode offscreenMarkers = ShowMode::WhileNavigating;
+    // Notes, groups, areas and the map
+    bool notesEnabled = true;
+    NoteColor noteColor = NoteColor::Yellow;
+    bool groupLayoutAutomatic = false; ///< GroupLayoutMode: Manual / Automatic
+    bool groupStartsApplications = true;
+    bool groupZoomToFit = true;
+    ShowMode showAreas = ShowMode::Always;
+    int areaPadding = 48;
+    int mapSize = 70; ///< percent of the work area
     bool crashGuard = true;
     bool rememberCanvas = true;
     bool debugLogging = false;
@@ -104,5 +122,6 @@ QString stateDirectory();
 
 GestureModifier parseGestureModifier(const QString &value, GestureModifier fallback);
 ShowMode parseShowMode(const QString &value, ShowMode fallback);
+NoteColor parseNoteColor(const QString &value, NoteColor fallback);
 
 } // namespace Wid

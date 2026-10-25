@@ -11,7 +11,7 @@ endforeach()
 
 if(WIN32)
     # The pure parts of the canvas service.
-    set(service_tests shortcuts inputrouter service)
+    set(service_tests shortcuts inputrouter service organizer)
     foreach(name IN LISTS service_tests)
         add_executable(test_${name} test_${name}.cpp)
         target_link_libraries(test_${name} PRIVATE wid_service Qt6::Test)

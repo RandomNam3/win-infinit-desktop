@@ -9,6 +9,7 @@
 
 #include <functional>
 #include <string>
+#include <vector>
 
 namespace Wid
 {
@@ -26,6 +27,12 @@ public:
         Settings,
         LeaveSafeMode,
         Quit,
+        NewNote,
+        ToggleNotes,
+        ShowMap,
+        GroupFromSelection,
+        AreaFromSelection,
+        OpenGroup, ///< index: the group's position (its shortcut slot)
     };
     struct State
     {
@@ -33,7 +40,9 @@ public:
         bool safeMode = false;
         std::wstring status; ///< first, disabled menu line
     };
-    using Handler = std::function<void(Action)>;
+    using Handler = std::function<void(Action, int index)>;
+    /// Names of the groups for the "Open group" submenu, asked when the menu opens.
+    using GroupNames = std::function<std::vector<std::wstring>()>;
 
     explicit Tray(Handler handler);
     ~Tray();
@@ -41,6 +50,10 @@ public:
     Tray &operator=(const Tray &) = delete;
 
     bool show();
+    void setGroupNames(GroupNames names)
+    {
+        m_groupNames = std::move(names);
+    }
     void setState(const State &state);
     /// A balloon notification (shown by Windows as a toast).
     void notify(const std::wstring &title, const std::wstring &message);
@@ -53,6 +66,7 @@ private:
     void updateTip();
 
     Handler m_handler;
+    GroupNames m_groupNames;
     UniqueWindow m_window;
     UniqueIcon m_icon;
     State m_state;

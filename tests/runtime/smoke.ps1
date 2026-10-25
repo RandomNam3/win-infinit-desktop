@@ -6,7 +6,9 @@
 #  2. panning by IPC really moves it, also off every monitor (parked),
 #  3. zooming out opens the overview without moving the real window,
 #  4. a reopened window gets the place its predecessor had,
-#  5. quitting the service brings everything back onto a screen.
+#  5. opening a group moves its window to the group's place and the camera follows,
+#  6. a window announced as a note can be pinned and released over IPC,
+#  7. quitting the service brings everything back onto a screen.
 # Exit code 0 = passed. Usage: pwsh tests/runtime/smoke.ps1 [-Build build]
 
 param([string]$Build = "build")
@@ -123,6 +125,37 @@ try {
         } else {
             Note "reopened: frame $($reopened.frame.x),$($reopened.frame.y)"
             if (-not (Near $reopened.frame.x $back.frame.x) -or -not (Near $reopened.frame.y $back.frame.y)) { Fail "the reopened window did not get its remembered place" }
+
+            # Groups: a group with this program 1500 px further right. Opening it moves the
+            # window there and the camera follows, so it is on the screen again.
+            $rect = $reopened.canvasRect
+            $group = @{ version = 1; groups = @(@{ id = "smoke"; name = "Smoke"; x = $rect.x + 1500; y = $rect.y; layout = "manual"
+                        members = @(@{ app = $reopened.app; launch = ""; geometry = @{ x = 0; y = 0; width = $rect.width; height = $rect.height } }) }) }
+            $groupFile = Join-Path ([IO.Path]::GetTempPath()) "wid-smoke-groups.json"
+            Set-Content -Path $groupFile -Value ($group | ConvertTo-Json -Depth 8 -Compress) -Encoding utf8
+            & $ctl setGroups "json=@$groupFile" | Out-Null
+            if ($LASTEXITCODE -ne 0) { Fail "setGroups failed" }
+            & $ctl openGroup index=0 | Out-Null
+            Start-Sleep -Milliseconds 1500
+            $grouped = WindowState $hwnd
+            Note "group opened: group '$($grouped.group)', canvas $($grouped.canvasRect.x),$($grouped.canvasRect.y), frame $($grouped.frame.x),$($grouped.frame.y)"
+            if ($grouped.group -ne "smoke") { Fail "the window was not tagged with the group" }
+            if (-not (Near $grouped.canvasRect.x ($rect.x + 1500)) -or -not (Near $grouped.canvasRect.y $rect.y)) { Fail "the window did not move to the group's place" }
+            if ($grouped.parked) { Fail "the camera did not follow the group" }
+            $groups = (& $ctl groups | ConvertFrom-Json) | ConvertFrom-Json
+            if ($groups.groups[0].openWindows -ne 1) { Fail "groups reports $($groups.groups[0].openWindows) open windows instead of 1" }
+
+            # Notes: the notes app announces its windows by handle; pinning goes through the
+            # service. The test window stands in for a note here.
+            & $ctl expectNote id=smoke-note hwnd=$hwnd | Out-Null
+            if ($LASTEXITCODE -ne 0) { Fail "expectNote failed" }
+            & $ctl setNotePinned id=smoke-note pinned=true keepAbove=false | Out-Null
+            $note = WindowState $hwnd
+            Note "note: '$($note.note)', mode $($note.mode)"
+            if ($note.note -ne "smoke-note" -or $note.mode -ne "pinned") { Fail "the window did not become a pinned note" }
+            & $ctl setNotePinned id=smoke-note pinned=false keepAbove=false | Out-Null
+            $state = & $ctl noteState id=smoke-note | ConvertFrom-Json
+            if (-not $state.open -or $state.pinned) { Fail "noteState: open $($state.open), pinned $($state.pinned)" }
         }
     }
 

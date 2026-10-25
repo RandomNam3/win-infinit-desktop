@@ -14,6 +14,9 @@ add_library(wid_service STATIC
     logging.cpp
     markerlayout.cpp
     markers.cpp
+    notesclient.cpp
+    organizer.cpp
+    overlays.cpp
     overview.cpp
     settings.cpp
     shortcuts.cpp

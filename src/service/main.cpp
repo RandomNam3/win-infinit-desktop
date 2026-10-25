@@ -22,6 +22,9 @@
 #include <windows.h>
 
 #include <cstring>
+#include <optional>
+#include <string>
+#include <vector>
 
 using namespace Wid;
 
@@ -77,7 +80,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    Tray tray([&](Tray::Action action) {
+    // Tray actions run after the menu's own message loop, from the event loop.
+    const auto onMonitorOfPointer = []() {
+        POINT cursor = {};
+        GetCursorPos(&cursor);
+        return QPointF(cursor.x, cursor.y);
+    };
+    Tray tray([&](Tray::Action action, int index) {
         switch (action) {
         case Tray::Action::TogglePause:
             service.setPaused(!service.isPaused());
@@ -95,7 +104,30 @@ int main(int argc, char **argv)
         case Tray::Action::Quit:
             QGuiApplication::quit();
             break;
+        case Tray::Action::NewNote:
+            service.organizer().newNote(std::nullopt);
+            break;
+        case Tray::Action::ToggleNotes:
+            service.organizer().toggleNotes();
+            break;
+        case Tray::Action::ShowMap:
+            service.organizer().toggleMap(service.monitorIndexAt(onMonitorOfPointer()));
+            break;
+        case Tray::Action::GroupFromSelection:
+        case Tray::Action::AreaFromSelection:
+            service.organizer().startSelection(action == Tray::Action::GroupFromSelection, service.monitorIndexAt(onMonitorOfPointer()));
+            break;
+        case Tray::Action::OpenGroup:
+            service.organizer().openGroup(index);
+            break;
         }
+    });
+    tray.setGroupNames([&service]() {
+        std::vector<std::wstring> names;
+        for (const auto &[id, name] : service.organizer().groupEntries()) {
+            names.push_back(name.toStdWString());
+        }
+        return names;
     });
     if (!hasArgument(argc, argv, "--no-tray")) {
         tray.show();
@@ -114,6 +146,9 @@ int main(int argc, char **argv)
         }
         ipc.notify(QStringLiteral("statusChanged"),
                    QJsonObject{{QStringLiteral("paused"), service.isPaused()}, {QStringLiteral("safeMode"), service.isSafeMode()}});
+    });
+    QObject::connect(&service, &CanvasService::ipcEvent, &app, [&ipc](const QString &event, const QJsonObject &params) {
+        ipc.notify(event, params);
     });
     QObject::connect(&service, &CanvasService::quitRequested, &app, &QGuiApplication::quit);
     QObject::connect(&app, &QGuiApplication::aboutToQuit, &app, [&]() {

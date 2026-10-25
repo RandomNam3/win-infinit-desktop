@@ -196,6 +196,12 @@ HookAction InputRouter::mouse(const MouseEvent &event, unsigned modifiers)
             m_swallowRightUp = true;
             return HookAction::Swallow;
         }
+        if (snapshot->canvasMenu && snapshot->enabled && m_state == State::Idle && (modifiers & MOD_WIN)
+            && !(modifiers & (MOD_ALT | MOD_CONTROL | MOD_SHIFT)) && !lockedAt(*snapshot, point) && m_desktopTest && m_desktopTest(point)) {
+            send(make(InputCommand::Kind::CanvasMenu, QPointF(point.x, point.y)));
+            m_swallowRightUp = true;
+            return HookAction::Swallow;
+        }
         return HookAction::Pass;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
@@ -372,6 +378,12 @@ HookAction InputRouter::key(const KeyEvent &event, unsigned modifiers)
     const std::shared_ptr<const InputSnapshot> snapshot = m_snapshot.load();
     if (!snapshot->shortcutsEnabled) {
         return HookAction::Pass;
+    }
+    if (vk == VK_ESCAPE && modifiers == 0 && snapshot->overlayOpen) {
+        // The map and the selection never have the keyboard focus either.
+        m_swallowedKeys.set(vk);
+        send(make(InputCommand::Kind::CancelOverlay));
+        return HookAction::Swallow;
     }
     if (vk == VK_ESCAPE && modifiers == 0 && snapshot->overviewOpen) {
         // The overview may not have the keyboard focus: Windows does not always let a

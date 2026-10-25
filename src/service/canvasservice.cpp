@@ -92,17 +92,6 @@ QString hwndText(HWND hwnd)
     return QStringLiteral("0x%1").arg(quintptr(hwnd), 0, 16);
 }
 
-InfinitDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor)
-{
-    InfinitDesktop::OutputIdentity identity;
-    identity.name = QString::fromStdWString(monitor.gdiName);
-    identity.manufacturer = QString::fromStdWString(monitor.manufacturerCode());
-    if (monitor.edidValid) {
-        identity.model = QStringLiteral("%1").arg(monitor.edidProduct, 4, 16, QLatin1Char('0')).toUpper();
-    }
-    return identity;
-}
-
 // Snap is switched off while a canvas window is dragged. A marker file remembers that, so
 // that the next start switches it back on if the service crashed during a drag.
 QString snapMarkerPath()
@@ -124,6 +113,17 @@ void setSnap(bool on)
 }
 
 } // namespace
+
+InfinitDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor)
+{
+    InfinitDesktop::OutputIdentity identity;
+    identity.name = QString::fromStdWString(monitor.gdiName);
+    identity.manufacturer = QString::fromStdWString(monitor.manufacturerCode());
+    if (monitor.edidValid) {
+        identity.model = QStringLiteral("%1").arg(monitor.edidProduct, 4, 16, QLatin1Char('0')).toUpper();
+    }
+    return identity;
+}
 
 CanvasService::CanvasService(QObject *parent)
     : QObject(parent)
@@ -158,6 +158,8 @@ CanvasService::CanvasService(QObject *parent)
         applyAll();
         updateMarkers(false);
     });
+    m_organizer = std::make_unique<Organizer>(*this);
+    connect(m_organizer.get(), &Organizer::ipcEvent, this, &CanvasService::ipcEvent);
 }
 
 CanvasService::~CanvasService()
@@ -190,6 +192,7 @@ bool CanvasService::start(bool safeMode)
     }
     updateMonitors();
     loadState();
+    m_organizer->load();
 
     m_settingsWatcher = new QFileSystemWatcher(this);
     const QString settingsPath = settingsFilePath();
@@ -218,6 +221,7 @@ bool CanvasService::start(bool safeMode)
         m_touchpad.start(m_serviceWindow.get());
         applyAll();
         updateMarkers(false);
+        m_organizer->start();
     }
     publishSnapshot();
     qCInfo(lcService) << "started, safe mode" << m_safeMode << "windows" << m_windows.size() << "monitors" << m_monitors.size();
@@ -349,6 +353,9 @@ void CanvasService::updateMonitors()
         const QRectF frame = frameOf(hwnd);
         window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
         window.lastRequest = rounded(frame.topLeft());
+    }
+    if (m_organizer) {
+        m_organizer->monitorsChanged();
     }
     publishSnapshot();
 }
@@ -496,6 +503,8 @@ void CanvasService::publishSnapshot()
         snapshot->gliding |= canvas.motion.isActive();
         snapshot->overviewOpen |= canvas.overview;
     }
+    snapshot->overlayOpen = m_organizer && m_organizer->overlayOpen();
+    snapshot->canvasMenu = m_started && !m_safeMode;
     const HWND foreground = m_foreground && IsWindow(m_foreground) && !IsIconic(m_foreground) ? m_foreground : nullptr;
     QRectF foregroundFrame;
     bool lockingForeground = false;
@@ -579,6 +588,32 @@ void CanvasService::adoptExistingWindows()
     m_stackingDirty = true;
 }
 
+ManagedWindow CanvasService::makeRecord(HWND hwnd, const TopLevel &top, int index)
+{
+    ManagedWindow window;
+    window.hwnd = hwnd;
+    QString program = QFileInfo(QString::fromStdWString(top.exePath)).fileName().toLower();
+    if (program.endsWith(QLatin1String(".exe"))) {
+        program.chop(4);
+    }
+    window.program = program;
+    window.windowClass = QString::fromStdWString(top.className).toLower();
+    window.launch = top.appUserModelId.empty() ? QString::fromStdWString(top.exePath) : QString::fromStdWString(top.appUserModelId);
+    window.appKey = window.launch.toLower();
+    const MonitorState &monitor = m_monitors[std::size_t(index)];
+    const Canvas &target = canvas(monitor.key);
+    const QRectF frame = toRectF(top.frame);
+    window.canvasKey = monitor.key;
+    window.canvasPos = target.committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+    window.size = frame.size();
+    window.lastRequest = rounded(frame.topLeft());
+    window.minimized = top.minimized;
+    window.maximized = top.maximized;
+    window.fullscreen = coversMonitor(top, monitor.info.bounds);
+    window.unmovable = top.elevatedKnown && top.elevated && !m_selfElevated;
+    return window;
+}
+
 void CanvasService::tryAdopt(HWND hwnd, bool isNew)
 {
     if (m_windows.count(hwnd) || !IsWindow(hwnd) || m_monitors.empty() || !IsWindowVisible(hwnd)) {
@@ -600,47 +635,30 @@ void CanvasService::tryAdopt(HWND hwnd, bool isNew)
     if (windowClass != WindowClass::Canvas && windowClass != WindowClass::OtherDesktop) {
         return;
     }
-    ManagedWindow window;
-    window.hwnd = hwnd;
-    QString program = QFileInfo(QString::fromStdWString(top.exePath)).fileName().toLower();
-    if (program.endsWith(QLatin1String(".exe"))) {
-        program.chop(4);
-    }
-    window.program = program;
-    window.windowClass = QString::fromStdWString(top.className).toLower();
-    window.appKey = (top.appUserModelId.empty() ? QString::fromStdWString(top.exePath) : QString::fromStdWString(top.appUserModelId)).toLower();
-    if (isExcluded(window, m_settings.excludedClasses)) {
-        return;
-    }
     const int index = monitorOfWindow(hwnd);
     if (index < 0) {
         return;
     }
-    const MonitorState &monitor = m_monitors[std::size_t(index)];
-    Canvas &target = canvas(monitor.key);
-    const QRectF frame = toRectF(top.frame);
-    window.canvasKey = monitor.key;
-    window.canvasPos = target.committed.screenToCanvas(frame.topLeft(), monitor.viewport);
-    window.size = frame.size();
-    window.lastRequest = rounded(frame.topLeft());
-    window.minimized = top.minimized;
-    window.maximized = top.maximized;
+    ManagedWindow window = makeRecord(hwnd, top, index);
+    if (isExcluded(window, m_settings.excludedClasses)) {
+        return;
+    }
     window.hidden = windowClass == WindowClass::OtherDesktop;
-    window.fullscreen = coversMonitor(top, monitor.info.bounds);
-    window.unmovable = top.elevatedKnown && top.elevated && !m_selfElevated;
     if (m_settings.pinKeepAboveWindows && (top.exStyle & WS_EX_TOPMOST)) {
         window.pinned = true;
     }
     bool revealIt = false;
-    if (isNew && !window.hidden) {
+    // A window started for a group goes to its place there; others where they were last.
+    if (isNew && !window.hidden && !m_organizer->placeLaunched(window)) {
         restorePlacement(window, &revealIt);
     }
     const QString key = window.canvasKey;
     m_windows.emplace(hwnd, std::move(window));
     m_stackingDirty = true;
-    qCDebug(lcService) << "adopted" << hwndText(hwnd) << program << "new" << isNew;
+    qCDebug(lcService) << "adopted" << hwndText(hwnd) << m_windows.at(hwnd).program << "new" << isNew;
 
     ManagedWindow &adopted = m_windows.at(hwnd);
+    m_organizer->windowAdopted(adopted);
     Canvas &home = canvas(key);
     if (isNew && home.overview && m_settings.newWindowsExitZoom && !adopted.hidden) {
         reveal(hwnd, InfinitDesktop::RevealMode::Center);
@@ -663,6 +681,51 @@ void CanvasService::tryAdopt(HWND hwnd, bool isNew)
     } else if (home.overview) {
         updateOverview(home);
     }
+}
+
+void CanvasService::adoptNote(HWND hwnd, const QString &id)
+{
+    if (m_safeMode || m_shuttingDown || !IsWindow(hwnd) || m_monitors.empty()) {
+        return;
+    }
+    if (auto it = m_windows.find(hwnd); it != m_windows.end()) {
+        // Adopted before it was announced (it is not a tool window): a note from now on.
+        it->second.noteId = id;
+        if (it->second.placementEntry) {
+            m_placements.release(it->second.placementEntry);
+            it->second.placementEntry = 0;
+        }
+        return;
+    }
+    if (!IsWindowVisible(hwnd) || (GetWindowLongPtrW(hwnd, GWL_STYLE) & WS_CHILD) || GetAncestor(hwnd, GA_ROOT) != hwnd) {
+        return;
+    }
+    const TopLevel top = describe(hwnd);
+    const int index = monitorOfWindow(hwnd);
+    if (top.processId == m_ownProcess || index < 0) {
+        return;
+    }
+    ManagedWindow window = makeRecord(hwnd, top, index);
+    window.noteId = id;
+    window.fullscreen = false;
+    const bool isNewNote = m_organizer->placeNote(window);
+    const QString key = window.canvasKey;
+    m_windows.emplace(hwnd, std::move(window));
+    m_stackingDirty = true;
+    ManagedWindow &adopted = m_windows.at(hwnd);
+    m_organizer->windowAdopted(adopted);
+    Canvas &home = canvas(key);
+    if (adopted.onCanvas()) {
+        if (home.overview) {
+            updateOverview(home);
+        } else {
+            settleNewWindow(hwnd, 0, 2);
+        }
+    }
+    if (isNewNote) {
+        activate(hwnd);
+    }
+    qCDebug(lcService) << "adopted note" << id << hwndText(hwnd);
 }
 
 void CanvasService::settleNewWindow(HWND hwnd, int delayMs, int attempts)
@@ -721,13 +784,7 @@ void CanvasService::restorePlacement(ManagedWindow &window, bool *reveal)
     const QPointF screenPos = monitor.viewport.topLeft() + placement->screenOffset;
     window.canvasPos = m_settings.restoreOnCanvas ? placement->canvasPos : target.committed.screenToCanvas(screenPos, monitor.viewport);
     if (m_settings.restoreWindowSize && placement->size.width() >= 50 && placement->size.height() >= 30) {
-        RECT windowRect = {};
-        GetWindowRect(window.hwnd, &windowRect);
-        const QRectF frame = frameOf(window.hwnd);
-        const int width = int(std::lround(placement->size.width() + (windowRect.right - windowRect.left) - frame.width()));
-        const int height = int(std::lround(placement->size.height() + (windowRect.bottom - windowRect.top) - frame.height()));
-        SetWindowPos(window.hwnd, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
-        window.size = placement->size;
+        resizeFrame(window, placement->size);
     }
     const bool otherOpen = std::any_of(m_windows.cbegin(), m_windows.cend(), [&window](const auto &entry) {
         return entry.second.appKey == window.appKey;
@@ -744,9 +801,23 @@ void CanvasService::restorePlacement(ManagedWindow &window, bool *reveal)
     *reveal = !InfinitDesktop::isFullyVisible(target.committed, canvasRect(window), monitor.viewport, monitor.work);
 }
 
+void CanvasService::resizeFrame(ManagedWindow &window, const QSizeF &size)
+{
+    RECT windowRect = {};
+    const QRectF frame = frameOf(window.hwnd);
+    if (!GetWindowRect(window.hwnd, &windowRect) || frame.isEmpty()) {
+        return;
+    }
+    // SetWindowPos takes the window rect, which includes the invisible resize borders.
+    const int width = int(std::lround(size.width() + (windowRect.right - windowRect.left) - frame.width()));
+    const int height = int(std::lround(size.height() + (windowRect.bottom - windowRect.top) - frame.height()));
+    SetWindowPos(window.hwnd, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
+    window.size = size;
+}
+
 void CanvasService::rememberPlacement(const ManagedWindow &window)
 {
-    if (!m_settings.rememberWindowPlacement || window.appKey.isEmpty() || window.fullscreen || window.hidden
+    if (!m_settings.rememberWindowPlacement || window.appKey.isEmpty() || window.fullscreen || window.hidden || !window.noteId.isEmpty()
         || isExcluded(window, m_settings.placementExcludedClasses)) {
         if (window.placementEntry) {
             m_placements.release(window.placementEntry);
@@ -817,6 +888,11 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
     case EVENT_OBJECT_SHOW:
         m_stackingDirty = true;
         if (it == m_windows.end()) {
+            if (const std::optional<QString> note = m_organizer->takeExpectedNote(hwnd)) {
+                m_created.remove(hwnd);
+                adoptNote(hwnd, *note);
+                return;
+            }
             const ULONGLONG created = m_created.take(hwnd);
             tryAdopt(hwnd, created && GetTickCount64() - created < NewWindowMs);
         } else if (it->second.hidden && IsWindowVisible(hwnd)) {
@@ -833,13 +909,16 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
     case EVENT_OBJECT_HIDE:
         m_stackingDirty = true;
         if (it != m_windows.end() && !IsWindowVisible(hwnd)) {
+            m_organizer->windowGone(it->second, false);
             it->second.hidden = true;
         }
         return;
     case EVENT_OBJECT_DESTROY:
         m_created.remove(hwnd);
+        m_organizer->handleDestroyed(hwnd);
         if (it != m_windows.end()) {
             rememberPlacement(it->second);
+            m_organizer->windowGone(it->second, true);
             forget(hwnd);
         }
         return;
@@ -929,8 +1008,12 @@ void CanvasService::onLocationChanged(ManagedWindow &window)
     if (frame.isEmpty()) {
         return;
     }
+    const bool resized = std::abs(frame.width() - window.size.width()) > 0.5 || std::abs(frame.height() - window.size.height()) > 0.5;
     window.size = frame.size();
     window.maximized = IsZoomed(hwnd) != FALSE;
+    if (resized && !window.areaId.isEmpty()) {
+        m_organizer->windowResized(window);
+    }
     const int index = monitorAt(frame.center());
     if (index < 0) {
         return;
@@ -1065,6 +1148,7 @@ void CanvasService::onMoveSizeEnd(HWND hwnd)
     window.lastRequest = rounded(frame.topLeft());
     window.parked = false;
     if (window.pinned) {
+        m_organizer->windowArranged(window);
         return;
     }
     const int index = monitorAt(frame.center());
@@ -1074,6 +1158,7 @@ void CanvasService::onMoveSizeEnd(HWND hwnd)
     const MonitorState &monitor = m_monitors[std::size_t(index)];
     window.canvasKey = monitor.key;
     window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+    m_organizer->windowArranged(window);
     saveStateLater();
 }
 
@@ -1102,6 +1187,9 @@ void CanvasService::flush()
     }
     if (m_markersDirty) {
         updateMarkersNow();
+    }
+    if (m_organizer->overlayOpen()) {
+        m_organizer->refresh();
     }
 }
 
@@ -1366,6 +1454,9 @@ void CanvasService::updateOverview(Canvas &canvas)
     grid.color = m_settings.gridColor;
     grid.opacity = std::max(0.15, m_settings.gridOpacity);
     monitor.overview->setGrid(grid);
+    monitor.overview->setAreas(m_settings.showAreas == ShowMode::Never
+                                   ? QList<OverviewArea>()
+                                   : m_organizer->overviewAreas(canvas, monitor.viewport, monitor.info.dpi / 96.0));
 }
 
 void CanvasService::reveal(HWND hwnd, InfinitDesktop::RevealMode mode)
@@ -1433,20 +1524,7 @@ void CanvasService::activate(HWND hwnd)
     if (IsIconic(hwnd)) {
         ShowWindow(hwnd, SW_RESTORE);
     }
-    if (SetForegroundWindow(hwnd) && GetForegroundWindow() == hwnd) {
-        return;
-    }
-    // Windows only lets the process with the last input set the foreground window. An
-    // unassigned key (as for the Start menu mask) counts as input.
-    INPUT inputs[2] = {};
-    for (INPUT &input : inputs) {
-        input.type = INPUT_KEYBOARD;
-        input.ki.wVk = InputHook::maskKey;
-        input.ki.dwExtraInfo = InputHook::injectedTag;
-    }
-    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-    SendInput(2, inputs, sizeof(INPUT));
-    SetForegroundWindow(hwnd);
+    forceForeground(hwnd);
 }
 
 void CanvasService::updateMarkers(bool navigating)
@@ -1638,6 +1716,19 @@ void CanvasService::handleCommand(const InputCommand &command)
             publishSnapshot();
         }
         return;
+    case InputCommand::Kind::CancelOverlay:
+        m_organizer->closeOverlay();
+        return;
+    case InputCommand::Kind::CanvasMenu: {
+        const QPointF point = command.point;
+        // Outside of the input loop: the menu runs its own message loop.
+        QTimer::singleShot(0, this, [this, point]() {
+            if (!m_shuttingDown && !m_safeMode) {
+                m_organizer->showCanvasMenu(point);
+            }
+        });
+        return;
+    }
     }
 }
 
@@ -1772,6 +1863,35 @@ void CanvasService::triggerShortcut(ShortcutAction action, bool repeat)
         break;
     case ShortcutAction::ToggleEnabled:
         break;
+    case ShortcutAction::NewNote:
+        m_organizer->newNote(pointer);
+        break;
+    case ShortcutAction::ToggleNotes:
+        m_organizer->toggleNotes();
+        break;
+    case ShortcutAction::ShowMap:
+        m_organizer->toggleMap(index);
+        break;
+    case ShortcutAction::GroupFromSelection:
+        m_organizer->startSelection(true, index);
+        break;
+    case ShortcutAction::AreaFromSelection:
+        m_organizer->startSelection(false, index);
+        break;
+    case ShortcutAction::SaveGroupLayout:
+        m_organizer->saveGroupLayout();
+        break;
+    case ShortcutAction::OpenGroup1:
+    case ShortcutAction::OpenGroup2:
+    case ShortcutAction::OpenGroup3:
+    case ShortcutAction::OpenGroup4:
+    case ShortcutAction::OpenGroup5:
+    case ShortcutAction::OpenGroup6:
+    case ShortcutAction::OpenGroup7:
+    case ShortcutAction::OpenGroup8:
+    case ShortcutAction::OpenGroup9:
+        m_organizer->openGroup(int(action) - int(ShortcutAction::OpenGroup1));
+        break;
     }
 }
 
@@ -1783,36 +1903,79 @@ void CanvasService::togglePin(bool above)
         return;
     }
     ManagedWindow &window = it->second;
-    const auto setTopmost = [hwnd](bool topmost) {
-        SetWindowPos(hwnd, topmost ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-    };
     if (!window.pinned) {
-        window.pinned = true;
-        if (above) {
-            setTopmost(true);
-            window.pinnedAbove = true;
+        setPinned(window, true, above);
+    } else if (above && !window.pinnedAbove) {
+        setPinned(window, true, true);
+    } else {
+        setPinned(window, false, false);
+    }
+}
+
+void CanvasService::setPinned(ManagedWindow &window, bool pinned, bool above)
+{
+    const HWND hwnd = window.hwnd;
+    above = above && pinned;
+    if (pinned == window.pinned && above == window.pinnedAbove) {
+        return;
+    }
+    if (above != window.pinnedAbove) {
+        SetWindowPos(hwnd, above ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        window.pinnedAbove = above;
+    }
+    if (!pinned && window.pinned) {
+        // Released: back on the canvas where it is now.
+        window.pinned = false;
+        const QRectF frame = frameOf(hwnd);
+        const int index = monitorAt(frame.center());
+        if (index >= 0) {
+            const MonitorState &monitor = m_monitors[std::size_t(index)];
+            window.canvasKey = monitor.key;
+            window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+            window.lastRequest = rounded(frame.topLeft());
         }
+    } else if (pinned && !window.pinned) {
+        // Pinned while parked or zoomed out: it stays where it is on the screen now.
+        window.pinned = true;
+        if (window.parked) {
+            const int index = monitorIndexOf(window.canvasKey);
+            if (index >= 0) {
+                const QRectF &work = m_monitors[std::size_t(index)].work;
+                moveFrameTo(hwnd, rounded(QPointF(work.center().x() - window.size.width() / 2, work.center().y() - window.size.height() / 2)));
+            }
+            window.parked = false;
+        }
+    }
+    m_organizer->pinChanged(window);
+    if (Canvas *home = m_canvases.count(window.canvasKey) ? &m_canvases.at(window.canvasKey) : nullptr; home && home->overview) {
+        updateOverview(*home);
+    }
+}
+
+bool CanvasService::isLocked(int monitor) const
+{
+    return m_snapshot && monitor >= 0 && monitor < m_snapshot->locked.size() && m_snapshot->locked[monitor];
+}
+
+void CanvasService::forceForeground(HWND hwnd)
+{
+    if (!IsWindow(hwnd) || GetForegroundWindow() == hwnd) {
         return;
     }
-    if (above && !window.pinnedAbove) {
-        setTopmost(true);
-        window.pinnedAbove = true;
+    if (SetForegroundWindow(hwnd) && GetForegroundWindow() == hwnd) {
         return;
     }
-    // Released: back on the canvas where it is now.
-    if (window.pinnedAbove) {
-        setTopmost(false);
-        window.pinnedAbove = false;
+    // Windows only lets the process with the last input set the foreground window. An
+    // unassigned key (as for the Start menu mask) counts as input.
+    INPUT inputs[2] = {};
+    for (INPUT &input : inputs) {
+        input.type = INPUT_KEYBOARD;
+        input.ki.wVk = InputHook::maskKey;
+        input.ki.dwExtraInfo = InputHook::injectedTag;
     }
-    window.pinned = false;
-    const QRectF frame = frameOf(hwnd);
-    const int index = monitorAt(frame.center());
-    if (index >= 0) {
-        const MonitorState &monitor = m_monitors[std::size_t(index)];
-        window.canvasKey = monitor.key;
-        window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
-        window.lastRequest = rounded(frame.topLeft());
-    }
+    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    SendInput(2, inputs, sizeof(INPUT));
+    SetForegroundWindow(hwnd);
 }
 
 // --- Overview host -----------------------------------------------------------------------------
@@ -1878,21 +2041,17 @@ void CanvasService::overviewResizeWindow(HWND hwnd, unsigned edges, const QPoint
         rect.setBottom(std::max(rect.bottom() + delta.y(), rect.top() + 80));
     }
     window.canvasPos = rect.topLeft();
-    window.size = rect.size();
     // The size changes physically right away (the position at 100 %).
-    RECT windowRect = {};
-    GetWindowRect(hwnd, &windowRect);
-    const QRectF frame = frameOf(hwnd);
-    const int width = int(std::lround(rect.width() + (windowRect.right - windowRect.left) - frame.width()));
-    const int height = int(std::lround(rect.height() + (windowRect.bottom - windowRect.top) - frame.height()));
-    SetWindowPos(hwnd, nullptr, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
+    resizeFrame(window, rect.size());
     home.dirty = true;
     requestFlush();
 }
 
 void CanvasService::overviewDragEnd(HWND hwnd)
 {
-    Q_UNUSED(hwnd)
+    if (auto it = m_windows.find(hwnd); it != m_windows.end()) {
+        m_organizer->windowArranged(it->second);
+    }
     saveStateLater();
 }
 
@@ -1915,6 +2074,17 @@ void CanvasService::overviewDive(HWND hwnd)
     }
     home.diveTarget = hwnd;
     animateTo(home, target);
+}
+
+void CanvasService::overviewContextMenu(int monitor, const QPointF &point)
+{
+    Q_UNUSED(monitor)
+    // Not from inside the overview's window procedure: the menu runs its own message loop.
+    QTimer::singleShot(0, this, [this, point]() {
+        if (!m_shuttingDown) {
+            m_organizer->showCanvasMenu(point);
+        }
+    });
 }
 
 void CanvasService::overviewCommand(int monitor, Command command)
@@ -1969,6 +2139,7 @@ void CanvasService::leaveSafeMode()
     startHooks();
     m_touchpad.start(m_serviceWindow.get());
     applyAll();
+    m_organizer->start();
     publishSnapshot();
     if (m_tray) {
         m_tray->setState(Tray::State{m_paused, false, {}});
@@ -2019,9 +2190,12 @@ void CanvasService::bringWindowsBack()
 
 void CanvasService::openSettingsApp()
 {
-    const QString path = QDir(QCoreApplication::applicationDirPath()).filePath(QStringLiteral("win-infinit-desktop-settings.exe"));
-    if (QFile::exists(path) && QProcess::startDetached(path, {})) {
-        return;
+    const QDir directory(QCoreApplication::applicationDirPath());
+    for (const QString &name : {QStringLiteral("wid-settings.exe"), QStringLiteral("win-infinit-desktop-settings.exe")}) {
+        const QString path = directory.filePath(name);
+        if (QFile::exists(path) && QProcess::startDetached(path, {})) {
+            return;
+        }
     }
     if (m_tray) {
         m_tray->notify(L"WIN Infinit Desktop", text(L"The settings app is not installed yet.", L"Die Einstellungs-App ist noch nicht installiert."));
@@ -2034,6 +2208,7 @@ void CanvasService::shutdown()
         return;
     }
     m_shuttingDown = true;
+    m_organizer->shutdown();
     stopHooks();
     m_events.stop();
     m_touchpad.stop();
@@ -2142,6 +2317,7 @@ void CanvasService::saveState()
     };
     write(QStringLiteral("canvas.json"), QJsonObject{{QStringLiteral("version"), 1}, {QStringLiteral("canvases"), canvases}});
     write(QStringLiteral("placements.json"), m_placements.toJson());
+    m_organizer->persist();
 }
 
 // --- IPC ---------------------------------------------------------------------------------------
@@ -2191,6 +2367,9 @@ QJsonObject CanvasService::state() const
             {QStringLiteral("canvasRect"), rectJson(canvasRect(window))},
             {QStringLiteral("frame"), rectJson(frameOf(hwnd))},
             {QStringLiteral("pinnedAbove"), window.pinnedAbove},
+            {QStringLiteral("note"), window.noteId},
+            {QStringLiteral("group"), window.groupId},
+            {QStringLiteral("area"), window.areaId},
         });
     }
     return QJsonObject{
@@ -2204,6 +2383,11 @@ QJsonObject CanvasService::state() const
 
 QJsonValue CanvasService::handleIpc(const QString &method, const QJsonObject &params, QString *error)
 {
+    bool handled = false;
+    const QJsonValue organized = m_organizer->handleIpc(method, params, error, &handled);
+    if (handled) {
+        return organized;
+    }
     if (method == QLatin1String("version")) {
         return QStringLiteral(WID_VERSION_STRING);
     }

@@ -108,6 +108,9 @@ using UniqueThumbnail = Unique<HTHUMBNAIL, Release::thumbnail>;
 using UniqueHandle = Unique<HANDLE, Release::kernelHandle>;
 using UniqueMemoryDc = Unique<HDC, Release::memoryDc>;
 using UniqueMenu = Unique<HMENU, Release::menu>;
+using UniqueBrush = Unique<HBRUSH, Release::gdiObject>;
+using UniquePen = Unique<HPEN, Release::gdiObject>;
+using UniqueFont = Unique<HFONT, Release::gdiObject>;
 
 /// Registers a window class once per process; returns its atom (0 on failure).
 ATOM registerWindowClass(const wchar_t *name, WNDPROC proc, UINT style = 0, HCURSOR cursor = nullptr, HICON icon = nullptr);

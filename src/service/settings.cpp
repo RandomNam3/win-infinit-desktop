@@ -138,6 +138,27 @@ ShowMode parseShowMode(const QString &value, ShowMode fallback)
     return fallback;
 }
 
+NoteColor parseNoteColor(const QString &value, NoteColor fallback)
+{
+    const QString text = value.trimmed().toLower();
+    if (text == QLatin1String("yellow")) {
+        return NoteColor::Yellow;
+    }
+    if (text == QLatin1String("blue")) {
+        return NoteColor::Blue;
+    }
+    if (text == QLatin1String("green")) {
+        return NoteColor::Green;
+    }
+    if (text == QLatin1String("pink")) {
+        return NoteColor::Pink;
+    }
+    if (text == QLatin1String("gray")) {
+        return NoteColor::Gray;
+    }
+    return fallback;
+}
+
 Settings Settings::load(QSettings &settings)
 {
     Settings s;
@@ -182,6 +203,14 @@ Settings Settings::load(QSettings &settings)
     s.gridOpacity = readInt(settings, "GridOpacity", 35, 0, 100) / 100.0;
     s.gridColor = readColor(settings, "GridColor", s.gridColor);
     s.offscreenMarkers = parseShowMode(settings.value(QStringLiteral("OffscreenMarkers")).toString(), s.offscreenMarkers);
+    s.notesEnabled = readBool(settings, "NotesEnabled", s.notesEnabled);
+    s.noteColor = parseNoteColor(settings.value(QStringLiteral("NoteColor")).toString(), s.noteColor);
+    s.groupLayoutAutomatic = settings.value(QStringLiteral("GroupLayoutMode")).toString().trimmed().toLower() == QLatin1String("automatic");
+    s.groupStartsApplications = readBool(settings, "GroupStartsApplications", s.groupStartsApplications);
+    s.groupZoomToFit = readBool(settings, "GroupZoomToFit", s.groupZoomToFit);
+    s.showAreas = parseShowMode(settings.value(QStringLiteral("ShowAreas")).toString(), s.showAreas);
+    s.areaPadding = readInt(settings, "AreaPadding", 48, 0, 400);
+    s.mapSize = readInt(settings, "MapSize", 70, 30, 95);
     s.crashGuard = readBool(settings, "CrashGuard", s.crashGuard);
     s.rememberCanvas = readBool(settings, "RememberCanvas", s.rememberCanvas);
     s.debugLogging = readBool(settings, "DebugLogging", s.debugLogging);

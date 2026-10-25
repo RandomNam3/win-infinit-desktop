@@ -17,6 +17,7 @@
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
         arguments = arguments.mid(2);
     }
     if (arguments.isEmpty()) {
-        std::fputs("usage: wid-ctl [--wait SECONDS] METHOD [key=value ...]\n", stderr);
+        std::fputs("usage: wid-ctl [--wait SECONDS] METHOD [key=value ...]   (key=@file: the value is read from a file)\n", stderr);
         return 1;
     }
     QJsonObject params;
@@ -45,7 +46,21 @@ int main(int argc, char **argv)
             continue;
         }
         const QString key = argument.left(equals);
-        const QString value = argument.mid(equals + 1);
+        QString value = argument.mid(equals + 1);
+        if (value.startsWith(QLatin1Char('@'))) {
+            // key=@file: the value is the file's text (JSON documents for setGroups, setAreas).
+            QFile file(value.mid(1));
+            if (!file.open(QIODevice::ReadOnly) || file.size() > 4 * 1024 * 1024) {
+                std::fprintf(stderr, "wid-ctl: cannot read %s\n", qPrintable(value.mid(1)));
+                return 1;
+            }
+            value = QString::fromUtf8(file.readAll()).trimmed();
+            if (value.startsWith(QChar(0xfeff))) {
+                value.remove(0, 1);
+            }
+            params.insert(key, value);
+            continue;
+        }
         bool isNumber = false;
         const double number = value.toDouble(&isNumber);
         if (isNumber) {

@@ -12,6 +12,7 @@
 #include <QList>
 #include <QPointF>
 #include <QRectF>
+#include <QString>
 
 #include <vector>
 
@@ -48,6 +49,8 @@ public:
     /// Back to 100 % with this window in the middle, then activate it.
     virtual void overviewDive(HWND window) = 0;
     virtual void overviewCommand(int monitor, Command command) = 0;
+    /// Right click on empty space: the canvas menu at this screen point.
+    virtual void overviewContextMenu(int monitor, const QPointF &point) = 0;
 };
 
 /// One window in the overview, bottom to top.
@@ -57,6 +60,20 @@ struct OverviewItem
     QRectF visual; ///< where it is drawn, screen coordinates
     RECT source = {}; ///< the visible frame relative to the window rect
     bool movable = true; ///< canvas windows; pinned ones are only shown
+};
+
+/// An area of the canvas, drawn on the overview's background (below the thumbnails).
+struct OverviewArea
+{
+    QRectF rect; ///< screen coordinates
+    QColor color;
+    QString name;
+    qreal textHeight = 14; ///< pixels
+
+    friend bool operator==(const OverviewArea &a, const OverviewArea &b)
+    {
+        return a.rect == b.rect && a.color == b.color && a.name == b.name && a.textHeight == b.textHeight;
+    }
 };
 
 /**
@@ -102,6 +119,7 @@ public:
     /// The windows, bottom to top, and the zoom (for the title bar height).
     void setItems(const QList<OverviewItem> &items, qreal zoom);
     void setGrid(const Grid &grid);
+    void setAreas(const QList<OverviewArea> &areas);
     /// Forgets the thumbnail of a window that is gone.
     void removeWindow(HWND window);
 
@@ -124,12 +142,12 @@ private:
     static LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     LRESULT handle(UINT message, WPARAM wParam, LPARAM lParam);
     void paint();
+    void paintAreas(HDC dc);
     void updateBackground();
     int itemAt(const QPointF &point) const;
     unsigned edgesAt(int item, const QPointF &point) const;
     bool inTitle(int item, const QPointF &point) const;
     QPointF screenPoint(LPARAM lParam) const;
-    void showMenu(const QPointF &point);
     void beginDrag(Drag drag, int item, const QPointF &point, unsigned edges = 0);
     void endDrag(const QPointF &point, bool cancelled);
 
@@ -143,6 +161,7 @@ private:
     UniqueThumbnail m_wallpaper;
     qreal m_zoom = 1;
     Grid m_grid;
+    QList<OverviewArea> m_areas;
 
     Drag m_drag = Drag::None;
     HWND m_dragWindow = nullptr;

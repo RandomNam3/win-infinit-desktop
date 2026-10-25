@@ -170,6 +170,21 @@ const QList<ShortcutDefinition> &shortcutDefinitions()
         {ShortcutAction::TogglePin, "InfinitDesktop TogglePin", "Pin Window to Screen", false, {combo(WinAlt, 'T')}},
         {ShortcutAction::TogglePinAbove, "InfinitDesktop TogglePinAbove", "Pin Window to Screen, Always on Top", false, {combo(WinAltShift, 'T')}},
         {ShortcutAction::ToggleEnabled, "InfinitDesktop ToggleEnabled", "Pause / Resume", false, {}},
+        {ShortcutAction::NewNote, "InfinitDesktop NewNote", "New Note", false, {combo(WinAlt, 'N')}},
+        {ShortcutAction::ToggleNotes, "InfinitDesktop ToggleNotes", "Show / Hide Notes", false, {combo(WinAltShift, 'N')}},
+        {ShortcutAction::ShowMap, "InfinitDesktop ShowMap", "Show Map", false, {combo(WinAlt, 'M')}},
+        {ShortcutAction::GroupFromSelection, "InfinitDesktop GroupFromSelection", "New Group from Selection", false, {combo(WinAlt, 'G')}},
+        {ShortcutAction::AreaFromSelection, "InfinitDesktop AreaFromSelection", "New Area from Selection", false, {combo(WinAlt, 'B')}},
+        {ShortcutAction::SaveGroupLayout, "InfinitDesktop SaveGroupLayout", "Save Group Arrangement", false, {combo(WinAltShift, 'G')}},
+        {ShortcutAction::OpenGroup1, "InfinitDesktop OpenGroup1", "Open Group 1", false, {combo(WinAlt, VkF1)}},
+        {ShortcutAction::OpenGroup2, "InfinitDesktop OpenGroup2", "Open Group 2", false, {combo(WinAlt, VkF1 + 1)}},
+        {ShortcutAction::OpenGroup3, "InfinitDesktop OpenGroup3", "Open Group 3", false, {combo(WinAlt, VkF1 + 2)}},
+        {ShortcutAction::OpenGroup4, "InfinitDesktop OpenGroup4", "Open Group 4", false, {combo(WinAlt, VkF1 + 3)}},
+        {ShortcutAction::OpenGroup5, "InfinitDesktop OpenGroup5", "Open Group 5", false, {combo(WinAlt, VkF1 + 4)}},
+        {ShortcutAction::OpenGroup6, "InfinitDesktop OpenGroup6", "Open Group 6", false, {combo(WinAlt, VkF1 + 5)}},
+        {ShortcutAction::OpenGroup7, "InfinitDesktop OpenGroup7", "Open Group 7", false, {combo(WinAlt, VkF1 + 6)}},
+        {ShortcutAction::OpenGroup8, "InfinitDesktop OpenGroup8", "Open Group 8", false, {combo(WinAlt, VkF1 + 7)}},
+        {ShortcutAction::OpenGroup9, "InfinitDesktop OpenGroup9", "Open Group 9", false, {combo(WinAlt, VkF1 + 8)}},
     };
     return definitions;
 }

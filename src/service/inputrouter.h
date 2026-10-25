@@ -38,6 +38,8 @@ struct InputSnapshot
     bool pinchZoom = true;
     bool gliding = false; ///< a camera motion runs: a click only stops it
     bool overviewOpen = false; ///< Esc returns to 100 %
+    bool overlayOpen = false; ///< map or selection: Esc closes it (before the overview)
+    bool canvasMenu = false; ///< Win + right click on the empty desktop opens the canvas menu
     QList<RECT> monitors;
     QList<bool> locked; ///< per monitor: a fullscreen window has the focus
     // While the user drags a canvas window (system move loop).
@@ -63,6 +65,8 @@ struct InputCommand
         Shortcut, ///< action; repeat
         EdgeChanged, ///< delta: direction (-1/0/1 per axis) while dragging a window at an edge
         MonitorCrossed, ///< monitor: the dragged window is thrown onto this monitor
+        CancelOverlay, ///< Esc while the map or the selection is open
+        CanvasMenu, ///< point: Win + right click on the empty desktop
     };
     Kind kind = Kind::StopMotion;
     QPointF point;
@@ -89,7 +93,10 @@ struct InputCommand
  * - Zoom modifier + wheel zooms anywhere. On the empty desktop: two fingers on a precision
  *   touchpad pan, pinch (injected Ctrl + wheel) zooms, Shift + wheel pans horizontally,
  *   Ctrl + wheel vertically, the plain wheel zooms.
- * - Bound shortcuts are swallowed with their key release.
+ * - Win + right click on the empty desktop opens the canvas menu (press and release are
+ *   swallowed, so the desktop's own menu stays for the plain right click).
+ * - Bound shortcuts are swallowed with their key release; Esc closes the map or the
+ *   selection, else the overview.
  * - While the user drags a window: entering a neighbour monitor is held back unless the
  *   hand moves faster than the fling threshold; the screen edges report edge scrolling.
  */

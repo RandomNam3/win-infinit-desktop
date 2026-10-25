@@ -11,10 +11,12 @@
 #include "markers.h"
 #include "monitors.h"
 #include "motion.h"
+#include "organizer.h"
 #include "overview.h"
 #include "placementmemory.h"
 #include "settings.h"
 #include "shortcuts.h"
+#include "toplevel.h"
 #include "touchpad.h"
 #include "velocitytracker.h"
 #include "win32util.h"
@@ -71,6 +73,12 @@ struct ManagedWindow
     QString appKey; ///< placement memory key: AUMID or program path, lower case
     QString program; ///< file name without .exe, lower case (exclusion lists)
     QString windowClass; ///< lower case
+    QString launch; ///< how to start the program again: AUMID or program path, as given
+    // Notes, groups and areas (Organizer)
+    QString noteId; ///< a note of the notes app
+    QString groupId; ///< group it was last opened or arranged with
+    int groupMember = -1;
+    QString areaId; ///< area it was dropped into
     QPointF canvasPos; ///< visible frame, top left, canvas coordinates
     QSizeF size;
     bool pinned = false;
@@ -103,9 +111,13 @@ struct ManagedWindow
     }
 };
 
+/// Monitor identity as the core compares it (placements, groups, areas, notes).
+InfinitDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor);
+
 class CanvasService : public QObject, public OverviewHost
 {
     Q_OBJECT
+    friend class Organizer;
 
 public:
     explicit CanvasService(QObject *parent = nullptr);
@@ -135,9 +147,21 @@ public:
     QJsonValue handleIpc(const QString &method, const QJsonObject &params, QString *error);
     QJsonObject state() const;
 
+    Organizer &organizer()
+    {
+        return *m_organizer;
+    }
+    /// Index of the monitor at (or nearest to) a screen point, -1 without monitors.
+    int monitorIndexAt(const QPointF &point) const
+    {
+        return monitorAt(point);
+    }
+
 Q_SIGNALS:
     void statusChanged();
     void quitRequested();
+    /// An event for every IPC client (groupsChanged, areasChanged, notePinnedChanged).
+    void ipcEvent(const QString &event, const QJsonObject &params);
 
 protected:
     // OverviewHost
@@ -149,6 +173,7 @@ protected:
     void overviewDragEnd(HWND window) override;
     void overviewDive(HWND window) override;
     void overviewCommand(int monitor, Command command) override;
+    void overviewContextMenu(int monitor, const QPointF &point) override;
 
 private:
     struct MonitorState
@@ -186,6 +211,10 @@ private:
     // Windows
     void adoptExistingWindows();
     void tryAdopt(HWND hwnd, bool isNew);
+    /// The common part of adopting: fills a record for a window on monitor `index`.
+    ManagedWindow makeRecord(HWND hwnd, const TopLevel &top, int index);
+    /// Adopts a note window announced by the notes app (tool windows are welcome here).
+    void adoptNote(HWND hwnd, const QString &id);
     void forget(HWND hwnd);
     void onWindowEvent(DWORD event, HWND hwnd);
     void onLocationChanged(ManagedWindow &window);
@@ -235,6 +264,12 @@ private:
     void handleCommand(const InputCommand &command);
     void triggerShortcut(ShortcutAction action, bool repeat);
     void togglePin(bool above);
+    void setPinned(ManagedWindow &window, bool pinned, bool above);
+    /// Gives the visible frame this size (asynchronously).
+    void resizeFrame(ManagedWindow &window, const QSizeF &size);
+    bool isLocked(int monitor) const;
+    /// SetForegroundWindow that also works while another process has the input.
+    void forceForeground(HWND hwnd);
     void edgeTick();
 
     // Persistence
@@ -295,6 +330,9 @@ private:
     QTimer m_displayTimer; ///< settles monitor changes
     QFileSystemWatcher *m_settingsWatcher = nullptr;
     bool m_stateDirty = false;
+
+    /// Last member: destroyed first, while everything it looks at still exists.
+    std::unique_ptr<Organizer> m_organizer;
 };
 
 } // namespace Wid

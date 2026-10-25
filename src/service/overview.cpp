@@ -4,7 +4,6 @@
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "overview.h"
-#include "texts.h"
 
 #include <QLineF>
 
@@ -26,13 +25,6 @@ constexpr BYTE WallpaperOpacity = 90;
 constexpr qreal TitleHeight = 32; ///< canvas pixels, scaled with the zoom
 constexpr qreal EdgeSize = 6; ///< screen pixels
 constexpr qreal ClickDistance = 4;
-
-enum MenuId : UINT {
-    MenuZoomReset = 1,
-    MenuShowAll,
-    MenuSettings,
-    MenuQuit,
-};
 
 RECT toRect(const QRectF &rect, const RECT &origin)
 {
@@ -142,6 +134,17 @@ void Overview::setGrid(const Grid &grid)
     }
 }
 
+void Overview::setAreas(const QList<OverviewArea> &areas)
+{
+    if (areas == m_areas) {
+        return;
+    }
+    m_areas = areas;
+    if (m_window && m_visible) {
+        InvalidateRect(m_window.get(), nullptr, FALSE);
+    }
+}
+
 void Overview::setItems(const QList<OverviewItem> &items, qreal zoom)
 {
     if (!m_window || !m_visible) {
@@ -245,7 +248,67 @@ void Overview::paint()
         }
         DeleteObject(dot);
     }
+    paintAreas(dc);
     EndPaint(m_window.get(), &paint);
+}
+
+void Overview::paintAreas(HDC dc)
+{
+    if (m_areas.isEmpty()) {
+        return;
+    }
+    // GDI has no alpha: the colors are mixed with the background (the dimmed wallpaper lies
+    // above all of this anyway).
+    const auto mix = [](const QColor &color, qreal alpha) {
+        return RGB(int(GetRValue(Background) + (color.red() - GetRValue(Background)) * alpha),
+                   int(GetGValue(Background) + (color.green() - GetGValue(Background)) * alpha),
+                   int(GetBValue(Background) + (color.blue() - GetBValue(Background)) * alpha));
+    };
+    SetBkMode(dc, TRANSPARENT);
+    int fontHeight = 0;
+    UniqueFont font;
+    HGDIOBJ oldFont = nullptr;
+    for (const OverviewArea &area : std::as_const(m_areas)) {
+        const RECT rect = toRect(area.rect, m_area);
+        if (rect.right - rect.left < 4 || rect.bottom - rect.top < 4) {
+            continue;
+        }
+        UniqueBrush fill(CreateSolidBrush(mix(area.color, 0.16)));
+        FillRect(dc, &rect, fill.get());
+        UniqueBrush border(CreateSolidBrush(mix(area.color, 0.8)));
+        const RECT edges[] = {
+            {rect.left, rect.top, rect.right, rect.top + 2},
+            {rect.left, rect.bottom - 2, rect.right, rect.bottom},
+            {rect.left, rect.top + 2, rect.left + 2, rect.bottom - 2},
+            {rect.right - 2, rect.top + 2, rect.right, rect.bottom - 2},
+        };
+        for (const RECT &edge : edges) {
+            FillRect(dc, &edge, border.get());
+        }
+        if (area.name.isEmpty() || rect.right - rect.left < 60) {
+            continue;
+        }
+        const int height = std::max(8, int(std::lround(area.textHeight)));
+        if (height != fontHeight) {
+            if (oldFont) {
+                SelectObject(dc, oldFont);
+                oldFont = nullptr;
+            }
+            font.reset(CreateFontW(-height, 0, 0, 0, FW_SEMIBOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                                   CLEARTYPE_QUALITY, DEFAULT_PITCH, L"Segoe UI"));
+            fontHeight = height;
+            if (font) {
+                oldFont = SelectObject(dc, font.get());
+            }
+        }
+        SetTextColor(dc, mix(area.color.lighter(130), 1.0));
+        RECT text = {rect.left + 10, rect.top + 6, rect.right - 8, rect.top + 6 + height * 2};
+        const std::wstring name = area.name.toStdWString();
+        DrawTextW(dc, name.c_str(), int(name.size()), &text, DT_LEFT | DT_TOP | DT_SINGLELINE | DT_END_ELLIPSIS | DT_NOPREFIX);
+    }
+    if (oldFont) {
+        SelectObject(dc, oldFont);
+    }
 }
 
 QPointF Overview::screenPoint(LPARAM lParam) const
@@ -331,44 +394,6 @@ void Overview::endDrag(const QPointF &point, bool cancelled)
         }
         break;
     case Drag::None:
-        break;
-    }
-}
-
-void Overview::showMenu(const QPointF &point)
-{
-    UniqueMenu menu(CreatePopupMenu());
-    if (!menu) {
-        return;
-    }
-    AppendMenuW(menu.get(), MF_STRING, MenuZoomReset, text(L"Back to 100 %", L"Zurück auf 100 %"));
-    AppendMenuW(menu.get(), MF_STRING, MenuShowAll, text(L"Show All Windows", L"Alle Fenster zeigen"));
-    AppendMenuW(menu.get(), MF_SEPARATOR, 0, nullptr);
-    AppendMenuW(menu.get(), MF_STRING, MenuSettings, text(L"Settings…", L"Einstellungen …"));
-    AppendMenuW(menu.get(), MF_STRING, MenuQuit, text(L"Quit WIN Infinit Desktop", L"WIN Infinit Desktop beenden"));
-    // A menu needs its owner in the foreground to close when clicking elsewhere; give the
-    // foreground back afterwards.
-    const HWND previous = GetForegroundWindow();
-    SetForegroundWindow(m_window.get());
-    const UINT chosen = TrackPopupMenuEx(menu.get(), TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON, int(point.x()), int(point.y()), m_window.get(), nullptr);
-    PostMessageW(m_window.get(), WM_NULL, 0, 0);
-    if (previous && previous != m_window.get() && IsWindow(previous)) {
-        SetForegroundWindow(previous);
-    }
-    switch (chosen) {
-    case MenuZoomReset:
-        m_host->overviewCommand(m_monitor, OverviewHost::Command::ZoomReset);
-        break;
-    case MenuShowAll:
-        m_host->overviewCommand(m_monitor, OverviewHost::Command::ShowAll);
-        break;
-    case MenuSettings:
-        m_host->overviewCommand(m_monitor, OverviewHost::Command::Settings);
-        break;
-    case MenuQuit:
-        m_host->overviewCommand(m_monitor, OverviewHost::Command::Quit);
-        break;
-    default:
         break;
     }
 }
@@ -490,7 +515,7 @@ LRESULT Overview::handle(UINT message, WPARAM wParam, LPARAM lParam)
     case WM_RBUTTONUP: {
         const QPointF point = screenPoint(lParam);
         if (itemAt(point) < 0) {
-            showMenu(point);
+            m_host->overviewContextMenu(m_monitor, point);
         }
         return 0;
     }

@@ -59,13 +59,24 @@ private Q_SLOTS:
     void defaultsMatchKde()
     {
         // Every KDE action is there, with Meta + Alt turned into Win + Alt.
-        QCOMPARE(shortcutDefinitions().size(), 25);
+        QCOMPARE(shortcutDefinitions().size(), 40);
         const ShortcutMap map = ShortcutMap::defaults();
         QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, 'H'}), std::optional(ShortcutAction::Home));
         QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT | MOD_SHIFT, 'T'}), std::optional(ShortcutAction::TogglePinAbove));
         QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_CONTROL | MOD_ALT, '3'}), std::optional(ShortcutAction::SaveBookmark3));
         QVERIFY(!map.actionFor(KeyCombo{MOD_WIN, 'H'}));
         QVERIFY(map.combosFor(ShortcutAction::ToggleEnabled).isEmpty());
+        // Notes, groups, areas and the map.
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, 'N'}), std::optional(ShortcutAction::NewNote));
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT | MOD_SHIFT, 'N'}), std::optional(ShortcutAction::ToggleNotes));
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, 'M'}), std::optional(ShortcutAction::ShowMap));
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, 'G'}), std::optional(ShortcutAction::GroupFromSelection));
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, 'B'}), std::optional(ShortcutAction::AreaFromSelection));
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT | MOD_SHIFT, 'G'}), std::optional(ShortcutAction::SaveGroupLayout));
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, VK_F1}), std::optional(ShortcutAction::OpenGroup1));
+        QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, VK_F9}), std::optional(ShortcutAction::OpenGroup9));
+        QCOMPARE(QLatin1String(findShortcut(ShortcutAction::OpenGroup9)->id), QLatin1String("InfinitDesktop OpenGroup9"));
+        QCOMPARE(int(ShortcutAction::OpenGroup9) - int(ShortcutAction::OpenGroup1) + 1, GroupShortcutCount);
     }
 
     void loadOverrides()
@@ -122,6 +133,40 @@ private Q_SLOTS:
         QVERIFY(settings.dragDesktopToPan);
         QCOMPARE(settings.flingThreshold, 1600.0);
         QCOMPARE(settings.animationDuration, std::chrono::milliseconds(280));
+        QVERIFY(settings.notesEnabled);
+        QCOMPARE(settings.noteColor, NoteColor::Yellow);
+        QVERIFY(!settings.groupLayoutAutomatic);
+        QVERIFY(settings.groupStartsApplications);
+        QVERIFY(settings.groupZoomToFit);
+        QCOMPARE(settings.showAreas, ShowMode::Always);
+        QCOMPARE(settings.areaPadding, 48);
+        QCOMPARE(settings.mapSize, 70);
+    }
+
+    void organizerSettingsFromIni()
+    {
+        QTemporaryDir dir;
+        QSettings file(dir.filePath(QStringLiteral("settings.ini")), QSettings::IniFormat);
+        file.beginGroup(QLatin1String(SettingsGroup));
+        file.setValue(QStringLiteral("NotesEnabled"), QStringLiteral("false"));
+        file.setValue(QStringLiteral("NoteColor"), QStringLiteral("Pink"));
+        file.setValue(QStringLiteral("GroupLayoutMode"), QStringLiteral("Automatic"));
+        file.setValue(QStringLiteral("GroupStartsApplications"), QStringLiteral("false"));
+        file.setValue(QStringLiteral("GroupZoomToFit"), QStringLiteral("false"));
+        file.setValue(QStringLiteral("ShowAreas"), QStringLiteral("Never"));
+        file.setValue(QStringLiteral("AreaPadding"), 900); // clamped to 400
+        file.setValue(QStringLiteral("MapSize"), 10); // clamped to 30
+        file.endGroup();
+        file.sync();
+        const Settings settings = Settings::load(file);
+        QVERIFY(!settings.notesEnabled);
+        QCOMPARE(settings.noteColor, NoteColor::Pink);
+        QVERIFY(settings.groupLayoutAutomatic);
+        QVERIFY(!settings.groupStartsApplications);
+        QVERIFY(!settings.groupZoomToFit);
+        QCOMPARE(settings.showAreas, ShowMode::Never);
+        QCOMPARE(settings.areaPadding, 400);
+        QCOMPARE(settings.mapSize, 30);
     }
 };
 

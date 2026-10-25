@@ -61,7 +61,7 @@ wie die Windows-Version sie umsetzt. Die Begründungen stehen in [SCHNITTSTELLEN
 |---|---|---|
 | **Notiz-Zettel** | Per Kürzel oder Rechtsklick-Menü anlegen; Markdown; automatisch gespeichert; ein- und ausblenden; anpinnen, damit sie auch außerhalb der Kamera sichtbar bleiben | gleich: dieselbe Notiz-App (Qt Quick) wie unter KDE, die Zettel sind kleine Fenster auf der Fläche |
 | **Gruppen** | Fenster gruppieren (Liste in der App oder Bereich mit der Maus aufziehen); per Kürzel öffnen oder zusammenholen, die Kamera springt hin; Anordnung wird gespeichert (umschaltbar: auf Befehl oder automatisch); ein Programm in mehreren Gruppen springt mit, solange nur ein Fenster davon offen ist | gleich, Gruppenlogik im gemeinsamen Kern |
-| **Bereiche** | Die Fläche in Bereiche teilen (Rechteck aufziehen); Bereiche wachsen und schrumpfen mit den Fenstern darin | gleich, Logik im gemeinsamen Kern |
+| **Bereiche** | Die Fläche in Bereiche teilen (Rechteck aufziehen); Bereiche wachsen und schrumpfen mit den Fenstern darin | angepasst: Logik im gemeinsamen Kern; sichtbar herausgezoomt und auf der Karte, nicht bei 100 % |
 | **Karte** | Per Kürzel eine Karte der Fläche mit Fenstern, Gruppen und Bereichen; Ziehen und Klicken bewegen die Kamera | gleich: eigenes Fenster über allem |
 | **Rechtsklick-Menü** | Herausgezoomt: Rechtsklick auf freie Fläche; bei 100 %: Win + Rechtsklick auf freie Fläche (das Desktop-Menü von Windows bleibt). Dazu Menüs auf Notizen und am Symbol im Infobereich | gleich |
 
@@ -90,11 +90,28 @@ wie die Windows-Version sie umsetzt. Die Begründungen stehen in [SCHNITTSTELLEN
    - eigene Fläche pro virtuellem Desktop (Fenster anderer Desktops behalten ihren Platz, die Kamera
      ist für alle gleich);
    - Drei-Finger-Pannen und Touchscreen.
-3. **Einstellungs-App** auf Windows, Notiz-App, Gruppen, Bereiche, Karte.
-4. **Installation:** ZIP mit Installationsskript, Release-Workflow (Tag und Release für jede Version),
+3. **Notizen, Gruppen, Bereiche, Karte** im Dienst ✓ (siehe [ARCHITEKTUR.md](ARCHITEKTUR.md#13-notizen-gruppen-bereiche-und-karte)):
+   - Gruppen öffnen (Win + Alt + F1 … F9, Tray-Menü), aus einem Rechteck anlegen
+     (Win + Alt + G), Anordnung speichern (Win + Alt + Umschalt + G) oder automatisch;
+     fehlende Programme werden gestartet, die Kamera springt hin;
+   - Bereiche aufziehen (Win + Alt + B), sie wachsen mit ihren Fenstern;
+   - Karte (Win + Alt + M) mit Fenstern, Notizen, Gruppen, Bereichen und sichtbarem Ausschnitt;
+     Klicken und Ziehen bewegen die Kamera, das Mausrad zoomt;
+   - Canvas-Menü (Rechtsklick in der Übersicht, Win + Rechtsklick auf den Desktop) und
+     Notiz-Einträge im Tray-Menü;
+   - Platz und Anpinnen der Notizen; die Notizen selbst kommen von der Notiz-App.
+
+   Abweichungen:
+   - Bereiche erscheinen nur herausgezoomt und auf der Karte, bei 100 % nicht. Windows lässt nicht
+     zwischen Hintergrundbild und Fenstern zeichnen.
+   - Win + Alt + B (HDR an/aus) und Win + Alt + G (Game Bar: Aufnahme) belegt Windows 11 selbst.
+     Der Tastatur-Hook hat Vorrang, solange der Dienst läuft. Wer die Windows-Funktion braucht,
+     legt das Kürzel in der Einstellungs-App um.
+4. **Einstellungs-App und Notiz-App** auf Windows.
+5. **Installation:** ZIP mit Installationsskript, Release-Workflow (Tag und Release für jede Version),
    Update-Check. Bis dahin liegt ein ZIP mit Dienst, `wid-ctl` und `wid-probe` als Artefakt an jedem
    CI-Lauf.
-5. **Später:** Signatur (SignPath), MSI unter Program Files mit uiAccess (erhöhte Fenster,
+6. **Später:** Signatur (SignPath), MSI unter Program Files mit uiAccess (erhöhte Fenster,
    Touchscreen), eigener Starter, Drei-Finger-Pannen, Weitergabe von Klicks an klassische Programme.
 
 ## Offene Fragen für echte Hardware
