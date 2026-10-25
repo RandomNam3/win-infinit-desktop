@@ -110,7 +110,10 @@ dann los, bleibt die Fläche stehen.
 **Tippen** geht auch herausgezoomt an das aktive Fenster. Die Übersicht selbst wird nie aktiv.
 
 Windows zeichnet fremde Programme immer in ihrer vollen Größe; in der Übersicht siehst du verkleinerte
-Abbilder. Fenster, die gerade außerhalb des Bildes liegen, zeigen dort ihr zuletzt gezeichnetes Bild.
+Abbilder. Die echten Fenster bleiben hinter der Übersicht verdeckt stehen, bis du wieder auf 100 % bist.
+Fenster, die gerade außerhalb des Bildes liegen, zeigen dort ihr zuletzt gezeichnetes Bild.
+
+![Herauszoomen in die Übersicht und zurück](images/zoom-overview.webp)
 
 ### Fenster außerhalb des Bildes wiederfinden
 
@@ -209,6 +212,12 @@ Herausgezoomt öffnet ein **Rechtsklick auf die freie Fläche** ein Menü mit de
 Bei 100 % öffnet es **Win + Rechtsklick** auf den Desktop; der normale Rechtsklick zeigt weiter das
 Desktop-Menü von Windows.
 
+Das Menü der Arbeitsfläche, das Menü des Symbols im Infobereich und die Menüs der Notizen sind Menüs von
+Windows: Sie sehen gleich aus und folgen dem hellen oder dunklen Modus (*Einstellungen →
+Personalisierung → Farben → Modus*).
+
+![Das Menü der Arbeitsfläche im dunklen Modus](images/canvas-menu.png)
+
 ### Notizen
 
 Notizen sind kleine Zettel, die wie Fenster auf der Fläche liegen. Neu anlegen kannst du sie auf drei Wegen:
@@ -216,8 +225,11 @@ Notizen sind kleine Zettel, die wie Fenster auf der Fläche liegen. Neu anlegen 
 - über das Menü der Arbeitsfläche;
 - über das **Symbol im Infobereich** (*Neue Notiz*).
 
-- **Schreiben:** Klick in die Notiz zeigt den Text zum Bearbeiten, sonst ist er formatiert. Markdown geht:
-  `# Überschrift`, `**fett**`, `*kursiv*`, `- Liste`, `[Link](https://…)`. Links lassen sich anklicken.
+- **Schreiben:** Eine Notiz öffnet sich mit ihrem Text zum Bearbeiten. Markdown geht: `# Überschrift`,
+  `**fett**`, `*kursiv*`, `- Liste`, `[Link](https://…)`.
+- **Formatiert ansehen:** Der Stift ✎ in der Kopfzeile oder **Strg + E** zeigt den Text formatiert, mit
+  anklickbaren Links; nochmal schaltet zurück zum Bearbeiten, ebenso ein Doppelklick in den Text. Jede
+  Notiz merkt sich ihre Ansicht.
 - **Speichern** passiert automatisch, kurz nach dem Tippen. Jede Notiz ist eine Markdown-Datei unter
   `%APPDATA%\WIN Infinit Desktop\notes\` und lässt sich auch dort lesen.
 - **Verschieben** an der Kopfzeile, **Größe ändern** an der Ecke rechts unten. Notizen öffnen sich wieder
@@ -226,7 +238,13 @@ Notizen sind kleine Zettel, die wie Fenster auf der Fläche liegen. Neu anlegen 
   weiterzieht – praktisch für eine Einkaufsliste oder Aufgaben, die immer sichtbar sein sollen.
 - **Ausblenden:** ✕ blendet eine Notiz aus (sie bleibt erhalten), **Win + Alt + Umschalt + N** blendet
   alle aus und wieder ein, ebenso *Notizen ein-/ausblenden* im Menü des Symbols.
-- **Farbe, löschen** und mehr im Menü der Notiz (⋯ oder Rechtsklick auf die Kopfzeile).
+- **Menü der Notiz:** ⋯ in der Kopfzeile oder ein **Rechtsklick irgendwo in die Notiz** öffnet es:
+  Bearbeiten, neue Notiz, anheften, *Farbe …*, ausblenden, Karte und löschen. Im Text bietet der
+  Rechtsklick zusätzlich Rückgängig, Wiederholen, Ausschneiden, Kopieren, Einfügen und Alles auswählen.
+
+| Formatiert | Beim Schreiben | Menü der Notiz |
+|---|---|---|
+| ![Eine formatierte Notiz](images/notes.png) | ![Eine Notiz beim Schreiben](images/note-editing.png) | ![Das Menü einer Notiz im dunklen Modus](images/note-menu.png) |
 
 Notizen stehen nicht in der Taskleiste und nicht in Alt+Tab.
 
@@ -276,6 +294,8 @@ Gruppen und Bereichen. Das helle Rechteck ist der sichtbare Ausschnitt.
 
 - **Ziehen** verschiebt die Kamera, **Klick** fährt an diese Stelle.
 - Das **Mausrad** zoomt, **Esc** oder ein Klick neben die Karte schließt sie.
+
+![Die Karte der Fläche mit Fenstern und Notizen](images/map.webp)
 
 ## Mehrere Bildschirme
 

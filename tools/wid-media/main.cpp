@@ -367,6 +367,41 @@ int place(const std::wstring &program, int x, int y, int width, int height)
     return 0;
 }
 
+BOOL CALLBACK closeClassWindow(HWND hwnd, LPARAM lParam)
+{
+    const auto *className = reinterpret_cast<const wchar_t *>(lParam);
+    wchar_t name[256] = {};
+    if (IsWindowVisible(hwnd) && GetClassNameW(hwnd, name, 256) && _wcsicmp(name, className) == 0) {
+        PostMessageW(hwnd, WM_CLOSE, 0, 0);
+    }
+    return TRUE;
+}
+
+/// Prints "X Y WIDTH HEIGHT" of the topmost visible window of a class (#32768: an open menu).
+int rectOf(const std::wstring &className)
+{
+    HWND found = nullptr;
+    for (HWND hwnd = GetTopWindow(nullptr); hwnd && !found; hwnd = GetWindow(hwnd, GW_HWNDNEXT)) {
+        wchar_t name[256] = {};
+        if (IsWindowVisible(hwnd) && GetClassNameW(hwnd, name, 256) && _wcsicmp(name, className.c_str()) == 0) {
+            found = hwnd;
+        }
+    }
+    RECT rect = {};
+    if (!found || !GetWindowRect(found, &rect)) {
+        return fail(L"rect: no such window");
+    }
+    std::fwprintf(stdout, L"%ld %ld %ld %ld\n", rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+    return 0;
+}
+
+/// Asks every visible top-level window of a class to close (e.g. CabinetWClass: File Explorer).
+int closeClass(const std::wstring &className)
+{
+    EnumWindows(&closeClassWindow, reinterpret_cast<LPARAM>(className.c_str()));
+    return 0;
+}
+
 // --- Light and dark mode -------------------------------------------------------------------
 
 int theme(const std::wstring &mode)
@@ -402,6 +437,8 @@ void usage()
                   L"  wid-media key COMBO                             e.g. win+alt+m, escape, ctrl+e\n"
                   L"  wid-media type TEXT\n"
                   L"  wid-media place PROGRAM.exe X Y WIDTH HEIGHT    moves the main window of a program\n"
+                  L"  wid-media close CLASS                           closes the windows of a window class\n"
+                  L"  wid-media rect CLASS                            X Y WIDTH HEIGHT of a window (#32768: menu)\n"
                   L"  wid-media theme dark|light                      app and system mode (current user)\n"
                   L"  wid-media screen                                virtual screen, work area, DPI\n\n"
                   L"MODIFIERS: win, ctrl, alt, shift, combined with + (win+alt).\n");
@@ -457,6 +494,12 @@ int wmain(int argc, wchar_t **argv)
     }
     if (command == L"place" && argc >= 7) {
         return place(argv[2], number(argv[3]), number(argv[4]), number(argv[5]), number(argv[6]));
+    }
+    if (command == L"close" && argc >= 3) {
+        return closeClass(argv[2]);
+    }
+    if (command == L"rect" && argc >= 3) {
+        return rectOf(argv[2]);
     }
     if (command == L"theme" && argc >= 3) {
         return theme(argv[2]);

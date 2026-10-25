@@ -1847,7 +1847,7 @@ msgstr "An den Bildschirm anheften"
 
 msgctxt "@action note menu"
 msgid "Pinned and Always on Top"
-msgstr "Angeheftet und immer im Vordergrund"
+msgstr "Immer im Vordergrund"
 
 msgctxt "@action note menu"
 msgid "Color…"
