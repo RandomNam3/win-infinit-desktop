@@ -211,6 +211,8 @@ private:
     // Windows
     void adoptExistingWindows();
     void tryAdopt(HWND hwnd, bool isNew);
+    /// Handles windows that are gone without a destroy event as closed.
+    void forgetDeadWindows();
     /// The common part of adopting: fills a record for a window on monitor `index`.
     ManagedWindow makeRecord(HWND hwnd, const TopLevel &top, int index);
     /// Adopts a note window announced by the notes app (tool windows are welcome here).

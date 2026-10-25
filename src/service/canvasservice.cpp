@@ -614,8 +614,26 @@ ManagedWindow CanvasService::makeRecord(HWND hwnd, const TopLevel &top, int inde
     return window;
 }
 
+void CanvasService::forgetDeadWindows()
+{
+    // A window whose process was killed may vanish without EVENT_OBJECT_DESTROY reaching us
+    // (or before it does); its place must still be remembered for the next window of it.
+    std::vector<HWND> dead;
+    for (const auto &[hwnd, window] : m_windows) {
+        if (!IsWindow(hwnd)) {
+            dead.push_back(hwnd);
+        }
+    }
+    for (HWND hwnd : dead) {
+        onWindowEvent(EVENT_OBJECT_DESTROY, hwnd);
+    }
+}
+
 void CanvasService::tryAdopt(HWND hwnd, bool isNew)
 {
+    if (isNew) {
+        forgetDeadWindows();
+    }
     if (m_windows.count(hwnd) || !IsWindow(hwnd) || m_monitors.empty() || !IsWindowVisible(hwnd)) {
         return;
     }
@@ -917,6 +935,7 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
         m_created.remove(hwnd);
         m_organizer->handleDestroyed(hwnd);
         if (it != m_windows.end()) {
+            qCDebug(lcService) << "closed" << hwndText(hwnd) << it->second.program;
             rememberPlacement(it->second);
             m_organizer->windowGone(it->second, true);
             forget(hwnd);
