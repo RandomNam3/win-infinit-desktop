@@ -163,10 +163,6 @@ int main(int argc, char **argv)
         tray.notify(L"WIN Infinit Desktop",
                     text(L"Started in safe mode after repeated crashes. Windows are not managed until you leave safe mode.",
                          L"Nach wiederholten Abstürzen im abgesicherten Modus gestartet. Fenster werden erst nach dem Verlassen verwaltet."));
-    } else if (osSupport(os) == OsSupport::Untested) {
-        tray.notify(L"WIN Infinit Desktop",
-                    text(L"This Windows version has not been tested. Supported are Windows 11 25H2 and 26H2.",
-                         L"Diese Windows-Version ist nicht getestet. Unterstützt werden Windows 11 25H2 und 26H2."));
     }
     return app.exec();
 }
