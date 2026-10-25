@@ -7,8 +7,8 @@ Jeder Monitor wird zu einer in alle Richtungen unendlichen Fläche, auf der Fens
 Du verschiebst die Fläche mit Maus, Touchpad oder Tastatur, zoomst heraus, um alles zu überblicken, und
 wieder hinein, um weiterzuarbeiten. Taskleiste und Hintergrundbild bleiben dabei stehen.
 
-> **Stand:** erste Version des Dienstes, noch kein Release. Zielsysteme sind Windows 11 **25H2** und **26H2**
-> (x64 und ARM64).
+> **Stand:** Version 0.1.0 – Dienst, Notizen, Gruppen, Bereiche, Karte, Einstellungs-App und Installer.
+> Zielsysteme sind Windows 11 **25H2** und **26H2** (x64; ARM64 folgt).
 
 ## Wie es unter Windows funktioniert
 
@@ -48,15 +48,28 @@ ctest --test-dir build
 
 Nur das Diagnose-Werkzeug (ohne Qt): `-DWID_WITH_QT=OFF`.
 
-## Ausprobieren
+## Installieren
 
-Noch gibt es kein Release. Jeder CI-Lauf hat ein Artefakt `win-infinit-desktop-x64` mit dem Dienst,
-der Einstellungs-App `wid-settings.exe`, der Notiz-App `wid-notes.exe`, `wid-ctl` und `wid-probe`:
+Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest)
+`win-infinit-desktop-<Version>-x64.zip` herunterladen, entpacken und im entpackten Ordner ausführen:
 
-1. Entpacken und `win-infinit-desktop.exe` starten. Das Symbol erscheint im Infobereich.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+- Installiert wird für den angemeldeten Benutzer, ohne Administratorrechte, nach
+  `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`, mit Einträgen im Startmenü und im Autostart.
+- Updates kommen über die Einstellungs-App (Update-Check) oder mit `install.ps1 -Update` aus einem neuen ZIP.
+- Entfernen über Einstellungen › Apps oder mit `install.ps1 -Uninstall` (Einstellungen und Notizen
+  bleiben; `-RemoveData` löscht sie mit).
+
+Danach:
+1. Das Symbol erscheint im Infobereich; sein Menü hat Notizen, Karte, Gruppen und die Einstellungen.
 2. Auf freiem Desktop ziehen oder mit dem Mausrad zoomen. Win + Alt + Ziehen verschiebt die Fläche
    auch über Fenstern.
-3. Beenden über das Symbol. Alle Fenster kommen dabei auf den Bildschirm zurück.
+3. Beim Beenden über das Symbol kommen alle Fenster auf den Bildschirm zurück.
+
+Jeder CI-Lauf hat außerdem ein Artefakt `win-infinit-desktop-x64` mit denselben Programmen.
 
 Die Programme sind noch nicht signiert: Smart App Control blockiert sie, SmartScreen warnt (siehe
 [SCHNITTSTELLEN.md](docs/SCHNITTSTELLEN.md#verteilung-und-vertrauen)). Was unter Windows anders ist als

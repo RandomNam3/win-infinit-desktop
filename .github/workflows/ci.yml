@@ -87,15 +87,25 @@ jobs:
       - name: Package
         if: matrix.with_qt == 'ON'
         shell: pwsh
+        # The same script builds the release zip (release.yml).
+        run: ./scripts/package.ps1 -Build build -Output dist -Arch ${{ matrix.arch }}
+
+      - name: Install and uninstall the package
+        if: matrix.with_qt == 'ON'
+        shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force dist | Out-Null
-          Copy-Item build/src/service/win-infinit-desktop.exe, build/tools/wid-ctl/wid-ctl.exe, build/tools/wid-probe/wid-probe.exe dist/
-          Copy-Item build/src/notes/wid-notes.exe, build/src/settings/wid-settings.exe dist/
-          windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw --no-quick-import dist/win-infinit-desktop.exe dist/wid-ctl.exe
-          # The apps need Qt Quick and their QML imports.
-          windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw --qmldir src/settings/qml --qmldir src/notes/qml dist/wid-settings.exe dist/wid-notes.exe
-          Copy-Item LICENSE, README.md dist/
-          Get-ChildItem dist -Recurse -File | Measure-Object -Property Length -Sum | ForEach-Object { "{0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }
+          $zip = Get-ChildItem -Filter "win-infinit-desktop-*-${{ matrix.arch }}.zip" | Select-Object -First 1
+          $dir = Join-Path $env:RUNNER_TEMP "package"
+          Expand-Archive -Path $zip.FullName -DestinationPath $dir -Force
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -NoStart
+          if ($LASTEXITCODE -ne 0) { throw "install.ps1 failed" }
+          $installed = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinit Desktop"
+          foreach ($exe in "win-infinit-desktop.exe", "wid-notes.exe", "wid-settings.exe") {
+            if (-not (Test-Path (Join-Path $installed $exe))) { throw "$exe was not installed" }
+          }
+          if (-not (Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "WIN Infinit Desktop" -ErrorAction SilentlyContinue)) { throw "no autostart entry" }
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -Uninstall
+          if ($LASTEXITCODE -ne 0 -or (Test-Path $installed)) { throw "uninstall failed" }
 
       - name: Settings app and notes app start
         if: matrix.with_qt == 'ON'

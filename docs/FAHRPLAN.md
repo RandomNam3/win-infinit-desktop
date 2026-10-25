@@ -117,9 +117,16 @@ wie die Windows-Version sie umsetzt. Die Begründungen stehen in [SCHNITTSTELLEN
 
    Unter Windows fehlen: Touchscreen-, Wisch- und Schärfe-Einstellungen, das Punktraster bei
    100 % und die Kachel für minimierte Vollbild-Fenster (der Dienst kann sie noch nicht).
-5. **Installation:** ZIP mit Installationsskript, Release-Workflow (Tag und Release für jede Version),
-   Update-Check. Bis dahin liegt ein ZIP mit Dienst, `wid-ctl` und `wid-probe` als Artefakt an jedem
-   CI-Lauf.
+5. **Installation** ✓ (Version 0.1.0):
+   - `win-infinit-desktop-<Version>-x64.zip` mit allen Programmen, Qt und `install.ps1`;
+   - `install.ps1` installiert für den angemeldeten Benutzer ohne Administratorrechte nach
+     `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`, mit Startmenü, Autostart und Eintrag unter
+     Einstellungen › Apps; `-Uninstall` entfernt alles außer Einstellungen und Notizen;
+   - ein laufender Dienst wird über seine Pipe beendet (alle Fenster kommen zurück), nie
+     abgeschossen; die Notiz-App speichert vor dem Beenden;
+   - `release.yml` baut das ZIP, setzt den Tag `v<Version>` und veröffentlicht das Release, sobald
+     eine neue Version auf `main` landet; der Update-Check der Einstellungs-App liest es.
+   - ARM64 bekommt ein eigenes ZIP, sobald der ARM64-Build Qt hat.
 6. **Später:** Signatur (SignPath), MSI unter Program Files mit uiAccess (erhöhte Fenster,
    Touchscreen), eigener Starter, Drei-Finger-Pannen, Weitergabe von Klicks an klassische Programme.
 
