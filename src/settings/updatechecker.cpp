@@ -262,7 +262,8 @@ QString UpdateChecker::updateCommand() const
     if (version.isEmpty() || package.isEmpty()) {
         return QString();
     }
-    // Download the package, unpack it next to the old one in %TEMP% and run its installer.
+    // Download the package, unpack it in %TEMP% and run its installer, which stops the
+    // service and the apps (this one too), installs and starts the service again.
     return QStringLiteral(
                "$ErrorActionPreference = 'Stop'; "
                "$dir = Join-Path $env:TEMP 'win-infinit-desktop-update-%1'; "
@@ -271,7 +272,8 @@ QString UpdateChecker::updateCommand() const
                "$zip = Join-Path $dir 'package.zip'; "
                "Invoke-WebRequest -UseBasicParsing -Uri %2 -OutFile $zip; "
                "Expand-Archive -Path $zip -DestinationPath (Join-Path $dir 'package'); "
-               "& (Join-Path $dir 'package\\install.ps1') -Update")
+               "& powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $dir 'package\\install.ps1') -Update; "
+               "if ($LASTEXITCODE -ne 0) { throw ('install.ps1 failed: ' + $LASTEXITCODE) }")
         .arg(version, powerShellQuote(package));
 }
 
@@ -282,6 +284,7 @@ bool UpdateChecker::startUpdate()
         return false;
     }
     // A PowerShell window that stays open, so the messages of the installer can be read.
+    // Only single quotes in the script: double quotes do not survive the command line.
     const QString script = QStringLiteral(
                                "try { %1; Write-Host ''; Write-Host %2 } "
                                "catch { Write-Host ''; Write-Host $_; Write-Host %3 }; "

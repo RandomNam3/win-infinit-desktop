@@ -29,6 +29,9 @@ Welche Windows-Schnittstellen das sind, was sie können und wo die Grenzen liege
 | `src/core/` | Kamera, Animationen, Nachgleiten, Parkplätze, Navigation, Fensterplatz-Gedächtnis – **gemeinsam mit KDE** (siehe [UPSTREAM.md](UPSTREAM.md)) |
 | `src/platform/` | Win32-Schicht: Bildschirme (mit EDID), Fenster und ihre Einordnung, Fenster-Ereignisse, Eingabe-Hooks mit Maskentaste, Touchpad-Kontakte, virtuelle Desktops, Vollbild, Verschieben |
 | `src/service/` | der Dienst `win-infinit-desktop.exe`: Fläche, Übersicht, Markierungen, Eingabe, Symbol im Infobereich, Steuerung per Named Pipe |
+| `src/notes/` | die Notiz-App `wid-notes.exe`: Notiz-Zettel mit Markdown auf der Fläche |
+| `src/settings/` | die Einstellungs-App `wid-settings.exe`, dieselbe Oberfläche wie unter KDE |
+| `src/shared/`, `po/de/` | Pipe-Protokoll und Übersetzungen der Apps, deutscher Katalog |
 | `tools/wid-ctl/` | Kommandozeile für den Dienst (`wid-ctl state`, `wid-ctl pan dx=-500 dy=0`, …) |
 | `tools/wid-probe/` | Diagnose-Werkzeug: prüft auf deinem Rechner, was die Schnittstellen tun |
 | `tests/` | Unit-Tests des Kerns und des Dienstes, Laufzeittest (`tests/runtime/smoke.ps1`) |
@@ -48,7 +51,7 @@ Nur das Diagnose-Werkzeug (ohne Qt): `-DWID_WITH_QT=OFF`.
 ## Ausprobieren
 
 Noch gibt es kein Release. Jeder CI-Lauf hat ein Artefakt `win-infinit-desktop-x64` mit dem Dienst,
-`wid-ctl` und `wid-probe`:
+der Einstellungs-App `wid-settings.exe`, der Notiz-App `wid-notes.exe`, `wid-ctl` und `wid-probe`:
 
 1. Entpacken und `win-infinit-desktop.exe` starten. Das Symbol erscheint im Infobereich.
 2. Auf freiem Desktop ziehen oder mit dem Mausrad zoomen. Win + Alt + Ziehen verschiebt die Fläche

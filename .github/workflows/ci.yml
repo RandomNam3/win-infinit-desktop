@@ -90,8 +90,46 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           Copy-Item build/src/service/win-infinit-desktop.exe, build/tools/wid-ctl/wid-ctl.exe, build/tools/wid-probe/wid-probe.exe dist/
+          Copy-Item build/src/notes/wid-notes.exe, build/src/settings/wid-settings.exe dist/
           windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw --no-quick-import dist/win-infinit-desktop.exe dist/wid-ctl.exe
+          # The apps need Qt Quick and their QML imports.
+          windeployqt --release --no-translations --no-system-d3d-compiler --no-opengl-sw --qmldir src/settings/qml --qmldir src/notes/qml dist/wid-settings.exe dist/wid-notes.exe
           Copy-Item LICENSE, README.md dist/
+          Get-ChildItem dist -Recurse -File | Measure-Object -Property Length -Sum | ForEach-Object { "{0} files, {1:N1} MB" -f $_.Count, ($_.Sum / 1MB) }
+
+      - name: Settings app and notes app start
+        if: matrix.with_qt == 'ON'
+        shell: pwsh
+        run: |
+          # The settings app renders every page (screenshot mode: no pipes, a temporary
+          # settings file); QML errors fail the step. The notes app starts and creates a note.
+          $env:QT_FORCE_STDERR_LOGGING = "1"
+          New-Item -ItemType Directory -Force screenshots | Out-Null
+          $settings = Start-Process dist/wid-settings.exe -ArgumentList "--screenshot", "screenshots", "--screenshot-size", "1120x760" -PassThru -Wait -RedirectStandardError settings-log.txt -RedirectStandardOutput settings-out.txt
+          Get-Content settings-log.txt | Select-Object -First 80
+          $errors = Select-String -Path settings-log.txt -Pattern "ReferenceError|TypeError|is not defined|is not a type|Cannot assign|Unable to assign|module .* is not installed|failed to load component"
+          if ($errors) { $errors | ForEach-Object { Write-Host "::error::$($_.Line)" } }
+          $shots = (Get-ChildItem screenshots -Filter *.png).Count
+          Write-Host "settings app: exit $($settings.ExitCode), $shots screenshots"
+          $env:APPDATA = Join-Path $env:RUNNER_TEMP "notes-appdata"
+          New-Item -ItemType Directory -Force $env:APPDATA | Out-Null
+          $notes = Start-Process dist/wid-notes.exe -ArgumentList "--new-note" -PassThru -RedirectStandardError notes-log.txt
+          Start-Sleep -Seconds 4
+          $alive = -not $notes.HasExited
+          if ($alive) { Stop-Process -Id $notes.Id -Force }
+          Get-Content notes-log.txt
+          $index = Join-Path $env:APPDATA "WIN Infinit Desktop\notes\index.json"
+          Write-Host "notes app: running $alive, index $(Test-Path $index)"
+          if ($settings.ExitCode -ne 0 -or $shots -lt 40 -or $errors -or -not $alive -or -not (Test-Path $index)) { exit 1 }
+
+      - uses: actions/upload-artifact@v7
+        if: always() && matrix.with_qt == 'ON'
+        with:
+          name: settings-screenshots-${{ matrix.arch }}
+          path: |
+            screenshots/
+            settings-log.txt
+            notes-log.txt
 
       - uses: actions/upload-artifact@v7
         if: matrix.with_qt == 'ON'
@@ -140,16 +178,21 @@ jobs:
         run: ctest --test-dir build --output-on-failure
 
   core-linux:
-    # The canvas core is shared with KDE Infinit Desktop; keep it building on Linux too.
+    # The canvas core is shared with KDE Infinit Desktop; keep it building on Linux too,
+    # together with the parts of the apps that need no Windows (Qt 6.4: without the QML apps).
     name: Core on Linux
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - name: Dependencies
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qt6-base-dev ninja-build
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qt6-base-dev qt6-declarative-dev ninja-build gettext
       - name: Build and test
         run: |
           cmake -S . -B build -G Ninja -DQT_MIN_VERSION=6.4
           cmake --build build
-          ctest --test-dir build --output-on-failure
+          QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure
+      - name: German catalog
+        run: |
+          msgfmt --check -o /dev/null po/de/win-infinit-desktop.po
+          python3 tools/i18n/check_catalog.py --strict

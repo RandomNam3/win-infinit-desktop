@@ -27,7 +27,7 @@ Zielplattform ist Windows 11 25H2/26H2 (Build 26200/26300), x64 und ARM64.
 └──────────────────────────────────────────────────────────────────────────────────────────────┘
         ▲ Named Pipe win-infinit-desktop-<Sitzung>                ▲ %APPDATA%\WIN Infinit Desktop\settings.ini
         │                                                          │
-   wid-ctl.exe, später die Einstellungs-App                   Einstellungs-App, Texteditor
+   wid-ctl.exe, wid-settings.exe, wid-notes.exe               wid-settings.exe, Texteditor
 ```
 
 | Verzeichnis | Inhalt | Abhängigkeiten |
@@ -35,7 +35,11 @@ Zielplattform ist Windows 11 25H2/26H2 (Build 26200/26300), x64 und ARM64.
 | `src/core/` | Kamera, Animationen, Geschwindigkeit, Parkplätze, Navigation, Fensterplatz-Gedächtnis, Gruppen, Bereiche, Notizen, Karte – **unverändert aus KDE** | Qt Core |
 | `src/platform/` | Win32-Schicht (Bildschirme, Fenster, Ereignisse, Hooks, Touchpad, Desktops, Vollbild, Verschieben) | Windows SDK |
 | `src/service/` | der Dienst `win-infinit-desktop.exe` | Qt Gui, Qt Network, core, platform |
-| `src/shared/` | Namen der Pipes von Dienst und Notiz-App (`pipenames.h`, nur Header) | Qt Core |
+| `src/shared/` | Namen der Pipes von Dienst und Notiz-App (`pipenames.h`, nur Header); für die Apps: Pipe-Client und -Server, Übersetzungen aus dem `.po`-Katalog, Pfade | Qt Core, Qt Network, Qt Qml |
+| `src/notes/` | die Notiz-App `wid-notes.exe` | Qt Quick, shared |
+| `src/settings/` | die Einstellungs-App `wid-settings.exe` mit dem Schema `win-infinit-desktop.kcfg` | Qt Quick, shared |
+| `po/de/` | deutscher Katalog beider Apps (`win-infinit-desktop.po`) | – |
+| `tools/i18n/` | `check_catalog.py`: fehlende und unbenutzte Übersetzungen | Python 3 |
 | `tools/wid-ctl/` | Kommandozeilen-Client der IPC-Schnittstelle | Qt Network |
 | `tools/wid-probe/` | Diagnose der Windows-Schnittstellen auf dem Rechner | Windows SDK |
 | `tools/wid-testwindow/` | Testfenster für den Laufzeittest | Windows SDK |
@@ -409,3 +413,53 @@ Dateien und seinen Overlay-Fenstern, wie der gleichnamige Teil des KWin-Effekts.
   laufenden Ereignis (`QTimer::singleShot(0)`), denn es hat eine eigene Nachrichtenschleife. Danach
   wird alles neu nachgeschlagen.
 - Einträge wie unter KDE, dazu „Beenden“.
+
+## 14. Notiz-App und Einstellungs-App
+
+Beide Apps sind die Qt-Quick-Apps von KDE Infinit Desktop (QML fast unverändert) ohne KDE
+Frameworks. Was dort KDE erledigt, übernehmen kleine Teile in `src/shared` und den Apps:
+
+| KDE | Windows |
+|---|---|
+| KI18n, `KLocalizedContext` | `Localizer` liest den `.po`-Katalog (als Ressource eingebaut) beim Start; `i18n()`, `i18nc()`, `i18np()`, `i18ncp()` mit derselben Bedeutung in C++ und QML (`LocalizedContext`). Platzhalter werden in einem Durchgang ersetzt. Ohne deutsche Oberflächensprache bleibt der Text englisch (`WID_LANGUAGE=de` erzwingt Deutsch). |
+| D-Bus | JSON-Zeilen über Named Pipes: `IpcClient` (asynchron, Antworten an Rückrufe, die mit ihrem Kontextobjekt verfallen; Zeitlimit; begrenzte Warteschlangen) und `JsonLineServer` (Zeilen höchstens 64 KiB, höchstens 16 Verbindungen). |
+| `kwinrc` mit KConfigSkeleton | `SettingsFile` schreibt `%APPDATA%\WIN Infinit Desktop\settings.ini` so, wie der Dienst sie liest (Gruppe `[Effect-infinitdesktop]`, Enums als Name, Farben als `r,g,b`, Listen mit Komma, Standardwerte fallen weg). Das Schema `win-infinit-desktop.kcfg` ist das von KDE ohne die Einträge, die unter Windows nichts bewirken, mit Texten für Windows. |
+| KGlobalAccel | Kürzel in `[Shortcuts]` derselben Datei in der Schreibweise des Dienstes (`Win+Alt+H;Win+Alt+Num+`, `keycombo.h`). Ohne Eintrag gelten die Standardkürzel, ein leerer Wert hebt die Belegung auf. Die Seite „Mit Windows“ zeigt die dokumentierten Kürzel von Windows 11 als feste Tabelle und markiert Überschneidungen (etwa Win + Alt + B für HDR). |
+| KService, Icon-Theme | Startmenü über den Shell-Ordner `AppsFolder` (in einem eigenen Thread, `IShellItem`), Symbole über `IShellItemImageFactory`. Programm-ID ist wie im Dienst die AppUserModelID oder der Programmpfad in Kleinbuchstaben, der Startbefehl behält die Schreibweise. |
+| KStatusNotifierItem | entfällt: das Symbol im Infobereich gehört dem Dienst. |
+
+**Notiz-App (`wid-notes.exe`):**
+- Startet der Dienst bei Bedarf; läuft einmal je Sitzung (die Pipe `…-notes` gehört der ersten
+  Instanz, eine zweite gibt `--new-note` weiter und endet).
+- Jede Notiz ist ein randloses Werkzeugfenster (`Qt::Tool`: nicht in der Taskleiste und nicht in
+  Alt + Tab). Vor dem Anzeigen meldet die App das Fenster mit `expectNote {id, hwnd}` an und wartet
+  höchstens 500 ms auf die Antwort; der Dienst übernimmt genau dieses Fenster und legt es an
+  seinen Platz. Ausgeblendete Notizen haben kein Fenster, alle Fenster teilen die einfache
+  Render-Schleife (`QSG_RENDER_LOOP=basic`).
+- Speicherung wie unter KDE: `<id>.md` und `index.json` in `%APPDATA%\WIN Infinit Desktop\notes`,
+  verzögert und atomar (`QSaveFile`).
+- Anfragen auf ihrer Pipe (`newNote`, `toggleNotes`, `setNotesVisible`, `reannounceNotes`, `notes`,
+  `quit`) beantwortet sie sofort und erledigt die Fensterarbeit danach, damit der Dienst nie auf
+  QML wartet. Ohne laufenden Dienst gehen ihre Aufrufe verloren; startet der Dienst neu, ruft er
+  `reannounceNotes`.
+
+**Einstellungs-App (`wid-settings.exe`):**
+- Einmal je Sitzung; ein zweiter Start holt das Fenster nach vorn (und öffnet `--page`).
+- Der Zustand („Effect“ in QML) kommt vom Dienst (`state`, Ereignis `statusChanged`); solange die
+  App offen ist, verbindet sie sich alle 3 s neu, wenn der Dienst fehlt. „Einschalten“ startet den
+  Dienst und trägt ihn unter `HKCU\…\Run` ein, „Ausschalten“ beendet ihn und entfernt den Eintrag.
+- Gruppen und Bereiche bearbeitet sie als ganze JSON-Dokumente (`groups`/`setGroups`,
+  `areas`/`setAreas`), die Zahl der Notizen fragt sie die Notiz-App, ohne sie zu starten.
+- Während ein Kürzel aufgenommen wird, bittet sie den Dienst mit `blockShortcuts` um Ruhe.
+- Update-Check: Releases dieses Repositorys; ein Release enthält
+  `win-infinit-desktop-<Version>-<x64|arm64>.zip`. „Update installieren“ lädt das passende Paket in
+  einem PowerShell-Fenster herunter und startet dessen `install.ps1 -Update`. Nur Downloads von
+  GitHub werden verwendet.
+- `--screenshot <Ordner>` rendert alle Seiten mit Beispieldaten, ohne Pipes und mit einer
+  temporären Einstellungsdatei; die CI prüft damit, dass alle QML-Seiten fehlerfrei laden.
+
+**Tests** (auch unter Linux, ohne die QML-Apps bei Qt < 6.5): Notizspeicher, Katalog und
+`i18n`-Funktionen, Pipe-Protokoll (Antworten, Ereignisse, Zeitlimit, verfallene Rückrufe, zu lange
+Zeilen), Tastenkombinationen, Einstellungsdatei, Update-Check. Unter Windows liest
+`test_settingsinterop` mit dem Code des Dienstes, was die App schreibt, und vergleicht die
+Standardwerte und Standardkürzel beider Seiten.

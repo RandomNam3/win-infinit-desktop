@@ -107,7 +107,16 @@ wie die Windows-Version sie umsetzt. Die Begründungen stehen in [SCHNITTSTELLEN
    - Win + Alt + B (HDR an/aus) und Win + Alt + G (Game Bar: Aufnahme) belegt Windows 11 selbst.
      Der Tastatur-Hook hat Vorrang, solange der Dienst läuft. Wer die Windows-Funktion braucht,
      legt das Kürzel in der Einstellungs-App um.
-4. **Einstellungs-App und Notiz-App** auf Windows.
+4. **Einstellungs-App und Notiz-App** ✓ (siehe [ARCHITEKTUR.md](ARCHITEKTUR.md#14-notiz-app-und-einstellungs-app)):
+   - `wid-settings.exe`: dieselbe Oberfläche wie unter KDE (Suche, Erklärungen, sofortige
+     Übernahme, Seite „Notizen & Gruppen“, Update-Check), Einstellungen und Kürzel in
+     `settings.ini`, Kürzel von Windows 11 zur Kollisionsprüfung, Programme aus dem Startmenü;
+   - `wid-notes.exe`: Notiz-Zettel mit Markdown, Farben und Menü, ohne eigenes Symbol im
+     Infobereich;
+   - deutscher Katalog für beide Apps.
+
+   Unter Windows fehlen: Touchscreen-, Wisch- und Schärfe-Einstellungen, das Punktraster bei
+   100 % und die Kachel für minimierte Vollbild-Fenster (der Dienst kann sie noch nicht).
 5. **Installation:** ZIP mit Installationsskript, Release-Workflow (Tag und Release für jede Version),
    Update-Check. Bis dahin liegt ein ZIP mit Dienst, `wid-ctl` und `wid-probe` als Artefakt an jedem
    CI-Lauf.
