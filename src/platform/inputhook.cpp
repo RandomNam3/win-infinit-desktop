@@ -188,7 +188,15 @@ LRESULT CALLBACK InputHook::keyProc(int code, WPARAM wParam, LPARAM lParam)
     if (data->dwExtraInfo == injectedTag) {
         return CallNextHookEx(nullptr, code, wParam, lParam);
     }
-    self->trackModifier(data->vkCode, !isKeyUp(wParam));
+    const bool up = isKeyUp(wParam);
+    // Win or Alt goes up after something was swallowed while it was held. The mask key sent
+    // then does not keep Start closed on every system; sent once more from inside the hook,
+    // right before the release goes on, it does (as with AutoHotkey's menu mask key).
+    const bool disguise = up && (modifierOf(data->vkCode) & (MOD_WIN | MOD_ALT)) && self->m_masked;
+    self->trackModifier(data->vkCode, !up);
+    if (disguise) {
+        self->sendMask();
+    }
     if (self->m_keyFilter) {
         KeyEvent event;
         event.message = wParam;
@@ -226,6 +234,11 @@ void InputHook::swallowed()
         return;
     }
     m_masked = true;
+    sendMask();
+}
+
+void InputHook::sendMask()
+{
     INPUT inputs[2] = {};
     for (INPUT &input : inputs) {
         input.type = INPUT_KEYBOARD;

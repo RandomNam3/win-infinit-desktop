@@ -111,21 +111,13 @@ HookAction InputRouter::mouse(const MouseEvent &event, unsigned modifiers)
         }
         m_handValid = false;
         // A release the hook never saw (it was reinstalled, or the session switched) must not
-        // leave the canvas glued to the pointer.
-        if (m_state != State::Idle) {
-            const int button = m_state == State::Pending || m_panButtonUp == WM_LBUTTONUP ? VK_LBUTTON : VK_MBUTTON;
-            if (!m_buttonDown(button)) {
-                const bool panning = m_state == State::Panning;
-                m_state = State::Idle;
-                m_swallowLeftUp = false;
-                m_swallowMiddleUp = false;
-                if (panning) {
-                    InputCommand end = make(InputCommand::Kind::PanEnd);
-                    end.time = timeOf(event);
-                    send(end);
-                }
-                return HookAction::Pass;
-            }
+        // leave a press behind. Windows only knows the button state of a press that went
+        // through untouched: a swallowed press (Win + Alt, middle button) never counts as
+        // down, and the desktop's press is released by us when the pan starts. A pan whose
+        // release got lost ends with the next press instead (see the button-down case).
+        if (m_state == State::Pending && !m_buttonDown(VK_LBUTTON)) {
+            m_state = State::Idle;
+            return HookAction::Pass;
         }
         if (m_state == State::Pending) {
             if (std::abs(point.x - m_pressPoint.x) < DragThreshold && std::abs(point.y - m_pressPoint.y) < DragThreshold) {
@@ -161,6 +153,18 @@ HookAction InputRouter::mouse(const MouseEvent &event, unsigned modifiers)
     case WM_LBUTTONDOWN:
     case WM_MBUTTONDOWN: {
         const bool left = event.message == WM_LBUTTONDOWN;
+        if (m_state != State::Idle) {
+            // A press while one is still held: the release of the last one never came.
+            const bool panning = m_state == State::Panning;
+            m_state = State::Idle;
+            m_swallowLeftUp = false;
+            m_swallowMiddleUp = false;
+            if (panning) {
+                InputCommand end = make(InputCommand::Kind::PanEnd);
+                end.time = timeOf(event);
+                send(end);
+            }
+        }
         if (snapshot->gliding && m_state == State::Idle) {
             send(make(InputCommand::Kind::StopMotion));
             (left ? m_swallowLeftUp : m_swallowMiddleUp) = true;

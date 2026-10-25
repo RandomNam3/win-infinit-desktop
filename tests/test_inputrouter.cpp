@@ -59,6 +59,27 @@ class TestInputRouter : public QObject
         return result;
     }
 
+    // Like Windows: a swallowed press never counts as down, and the desktop's press is up once
+    // its release was sent. Pans must go on regardless.
+    void useRealButtonStates(bool *leftDown)
+    {
+        m_router = std::make_unique<InputRouter>(
+            [this](const InputCommand &command) {
+                m_commands.append(command);
+            },
+            [this](POINT) {
+                return m_desktop;
+            },
+            [this, leftDown]() {
+                ++m_releases;
+                *leftDown = false;
+            },
+            [leftDown](int vk) {
+                return vk == VK_LBUTTON && *leftDown;
+            });
+        m_router->setSnapshot(snapshot());
+    }
+
 private Q_SLOTS:
     void init()
     {
@@ -131,29 +152,56 @@ private Q_SLOTS:
         QCOMPARE(kinds(), (QList<Kind>{Kind::PanBegin, Kind::PanEnd}));
     }
 
-    void lostReleaseEndsThePan()
+    void modifierPanGoesOnWhileWindowsSeesNoButton()
     {
-        bool held = true;
-        m_router = std::make_unique<InputRouter>(
-            [this](const InputCommand &command) {
-                m_commands.append(command);
-            },
-            [](POINT) {
-                return false;
-            },
-            [] {},
-            [&held](int) {
-                return held;
-            });
-        m_router->setSnapshot(snapshot());
+        bool leftDown = false; // swallowed: Windows never saw it
+        useRealButtonStates(&leftDown);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONDOWN, 100, 100), MOD_WIN | MOD_ALT), HookAction::Swallow);
+        for (int x = 110; x <= 150; x += 10) {
+            m_router->mouse(mouse(WM_MOUSEMOVE, x, 100), MOD_WIN | MOD_ALT);
+        }
+        QCOMPARE(kinds().count(Kind::PanDelta), 5);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONUP, 150, 100), MOD_WIN | MOD_ALT), HookAction::Swallow);
+        QCOMPARE(m_commands.last().kind, Kind::PanEnd);
+    }
+
+    void desktopPanGoesOnAfterItsReleaseWasSent()
+    {
+        bool leftDown = true; // the desktop got the press
+        useRealButtonStates(&leftDown);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONDOWN, 100, 100), 0), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_MOUSEMOVE, 110, 100), 0), HookAction::Swallow);
+        QCOMPARE(m_releases, 1);
+        QVERIFY(!leftDown);
+        for (int x = 120; x <= 160; x += 10) {
+            QCOMPARE(m_router->mouse(mouse(WM_MOUSEMOVE, x, 100), 0), HookAction::Pass);
+        }
+        QCOMPARE(kinds().count(Kind::PanDelta), 6);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONUP, 160, 100), 0), HookAction::Swallow);
+        QCOMPARE(m_commands.last().kind, Kind::PanEnd);
+    }
+
+    void pendingPressWithoutButtonIsForgotten()
+    {
+        bool leftDown = true;
+        useRealButtonStates(&leftDown);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONDOWN, 100, 100), 0), HookAction::Pass);
+        leftDown = false; // released, but the hook never saw it
+        QCOMPARE(m_router->mouse(mouse(WM_MOUSEMOVE, 200, 100), 0), HookAction::Pass);
+        QVERIFY(m_commands.isEmpty());
+    }
+
+    void lostReleaseEndsThePanWithTheNextPress()
+    {
         QCOMPARE(m_router->mouse(mouse(WM_LBUTTONDOWN, 100, 100), MOD_WIN | MOD_ALT), HookAction::Swallow);
         m_router->mouse(mouse(WM_MOUSEMOVE, 120, 100), MOD_WIN | MOD_ALT);
-        held = false;
-        // The release never came: the next move ends the pan and is not a pan delta.
-        QCOMPARE(m_router->mouse(mouse(WM_MOUSEMOVE, 300, 100), 0), HookAction::Pass);
+        // The release never came; the next press ends that pan and is a press of its own.
+        m_desktop = false;
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONDOWN, 300, 100), 0), HookAction::Pass);
         QCOMPARE(m_commands.last().kind, Kind::PanEnd);
         const int count = m_commands.size();
         m_router->mouse(mouse(WM_MOUSEMOVE, 400, 100), 0);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONUP, 400, 100), 0), HookAction::Pass);
         QCOMPARE(m_commands.size(), count);
     }
 
