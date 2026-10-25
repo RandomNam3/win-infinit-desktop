@@ -40,9 +40,11 @@ function WindowState($hwnd) {
     $state.windows | Where-Object { (Handle $_.hwnd) -eq $hwnd } | Select-Object -First 1
 }
 
+# -NoNewWindow: the console program would otherwise get a terminal window of its own, which the
+# service adopts and reveals like any new window (and so moves the camera).
 function StartWindow($x, $y) {
     $output = Join-Path ([IO.Path]::GetTempPath()) ("wid-testwindow-{0}.txt" -f [Guid]::NewGuid())
-    $process = Start-Process -FilePath $testWindow -ArgumentList "$x $y 640 400 180" -PassThru -RedirectStandardOutput $output
+    $process = Start-Process -FilePath $testWindow -ArgumentList "$x $y 640 400 180" -PassThru -NoNewWindow -RedirectStandardOutput $output
     for ($i = 0; $i -lt 50; $i++) {
         if ((Test-Path $output -PathType Leaf) -and (Get-Item $output).Length -gt 0) { break }
         Start-Sleep -Milliseconds 100
@@ -123,8 +125,9 @@ try {
         if (-not $reopened) {
             Fail "the reopened window was not adopted"
         } else {
-            Note "reopened: frame $($reopened.frame.x),$($reopened.frame.y)"
-            if (-not (Near $reopened.frame.x $back.frame.x) -or -not (Near $reopened.frame.y $back.frame.y)) { Fail "the reopened window did not get its remembered place" }
+            Note "reopened: frame $($reopened.frame.x),$($reopened.frame.y), canvas $($reopened.canvasRect.x),$($reopened.canvasRect.y)"
+            # The place on the canvas counts: another new window (revealed) may move the camera.
+            if (-not (Near $reopened.canvasRect.x $back.canvasRect.x) -or -not (Near $reopened.canvasRect.y $back.canvasRect.y)) { Fail "the reopened window did not get its remembered place (canvas $($back.canvasRect.x),$($back.canvasRect.y))" }
 
             # Groups: a group with this program 1500 px further right. Opening it moves the
             # window there and the camera follows, so it is on the screen again.
