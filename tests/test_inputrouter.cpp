@@ -181,6 +181,21 @@ private Q_SLOTS:
         QCOMPARE(m_router->key(key(WM_KEYDOWN, VK_ESCAPE), MOD_CONTROL), HookAction::Pass);
     }
 
+    void anOpenMenuGetsAllInput()
+    {
+        auto open = snapshot();
+        open->overviewOpen = true;
+        open->menuOpen = true;
+        m_router->setSnapshot(open);
+        // Esc closes the menu, not the overview; clicks and drags reach the menu too.
+        QCOMPARE(m_router->key(key(WM_KEYDOWN, VK_ESCAPE), 0), HookAction::Pass);
+        QCOMPARE(m_router->key(key(WM_KEYUP, VK_ESCAPE), 0), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONDOWN, 100, 100), MOD_WIN | MOD_ALT), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_MOUSEMOVE, 200, 100), MOD_WIN | MOD_ALT), HookAction::Pass);
+        QCOMPARE(m_router->mouse(mouse(WM_LBUTTONUP, 200, 100), MOD_WIN | MOD_ALT), HookAction::Pass);
+        QVERIFY(m_commands.isEmpty());
+    }
+
     void canvasMenu()
     {
         auto menu = snapshot();

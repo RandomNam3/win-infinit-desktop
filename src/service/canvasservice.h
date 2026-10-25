@@ -285,6 +285,7 @@ private:
     bool m_safeMode = false;
     bool m_paused = false;
     bool m_shuttingDown = false;
+    bool m_menuOpen = false; ///< the canvas menu runs its message loop (Organizer)
     Tray *m_tray = nullptr;
 
     UniqueWindow m_serviceWindow;

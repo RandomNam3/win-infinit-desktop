@@ -331,7 +331,7 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
     Gleiten, Mausrad-Varianten, Touchpad, Pause und Sperre, Kürzel, Fenster ziehen mit Kante und Wurf;
   - Markierungen, IPC-Zeilen, Absturzschutz;
   - Canvas-Menü, Startbefehle von Gruppenmitgliedern, Fenster-Handles und Notiz-IDs aus der IPC,
-    Esc für Karte und Auswahl, Win + Rechtsklick.
+    Esc für Karte und Auswahl, Win + Rechtsklick, ein offenes Menü bekommt alle Eingaben.
 - **AddressSanitizer:** Ein eigener CI-Job baut alles mit MSVC `/fsanitize=address` und führt die
   Unit-Tests aus.
 - **Laufzeittest** (`tests/runtime/smoke.ps1`, in der CI auf Windows Server 2025):
@@ -432,6 +432,8 @@ Dateien und seinen Overlay-Fenstern, wie der gleichnamige Teil des KWin-Effekts.
 - Es ist ein natives Menü (`TrackPopupMenuEx`) des Dienstfensters. Es öffnet sich erst nach dem
   laufenden Ereignis (`QTimer::singleShot(0)`), denn es hat eine eigene Nachrichtenschleife. Danach
   wird alles neu nachgeschlagen.
+- Solange es offen ist, steht `menuOpen` im Snapshot des Hook-Threads: Tasten und Klicks gehen
+  unverändert an das Menü. Esc schließt so das Menü und nicht die Übersicht dahinter.
 - Einträge wie unter KDE, dazu „Beenden“.
 - **Heller und dunkler Modus:** Native Menüs sind von sich aus immer hell. `menutheme.h` (in
   `src/shared`) stellt den Prozess auf `SetPreferredAppMode(AllowDark)` (uxtheme, Ordinal 135) und

@@ -1699,9 +1699,14 @@ void Organizer::showCanvasMenu(const QPointF &screenPos)
     const HWND owner = m_service.m_serviceWindow.get();
     const HWND previous = GetForegroundWindow();
     m_service.forceForeground(owner);
+    // While it is open, every key and click belongs to the menu (Esc closes it, not the overview).
+    m_service.m_menuOpen = true;
+    m_service.publishSnapshot();
     const UINT chosen = TrackPopupMenuEx(menu.get(), TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON, int(std::lround(screenPos.x())),
                                          int(std::lround(screenPos.y())), owner, nullptr);
     PostMessageW(owner, WM_NULL, 0, 0);
+    m_service.m_menuOpen = false;
+    m_service.publishSnapshot();
     menu.reset();
     if (chosen != UINT(CanvasMenuItem::NewNote) && previous && previous != owner && IsWindow(previous)) {
         SetForegroundWindow(previous);

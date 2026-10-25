@@ -510,6 +510,7 @@ void CanvasService::publishSnapshot()
     }
     snapshot->overlayOpen = m_organizer && m_organizer->overlayOpen();
     snapshot->canvasMenu = m_started && !m_safeMode;
+    snapshot->menuOpen = m_menuOpen;
     const HWND foreground = m_foreground && IsWindow(m_foreground) && !IsIconic(m_foreground) ? m_foreground : nullptr;
     QRectF foregroundFrame;
     bool lockingForeground = false;
