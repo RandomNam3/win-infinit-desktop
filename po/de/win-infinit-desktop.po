@@ -1,0 +1,2628 @@
+# German translation of WIN Infinit Desktop (based on the catalog of KDE Infinit Desktop).
+# SPDX-FileCopyrightText: 2026 KDE Infinit Desktop and WIN Infinit Desktop contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Terminology: canvas = Arbeitsfläche, desktop = Desktop, screen = Bildschirm,
+# shortcut = Kurzbefehl, pan = verschieben, Ctrl = Strg, Shift = Umschalt,
+# notification area = Infobereich, Snap = Andocken. Formal address ("Sie").
+msgid ""
+msgstr ""
+"Project-Id-Version: win-infinit-desktop\n"
+"Report-Msgid-Bugs-To: https://github.com/RandomNam3/win-infinit-desktop/issues\n"
+"POT-Creation-Date: 2026-10-24 11:35+0000\n"
+"PO-Revision-Date: 2026-10-25 02:00+0200\n"
+"Last-Translator: WIN Infinit Desktop contributors\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ---------------------------------------------------------------------------
+# Settings (src/settings/win-infinit-desktop.kcfg)
+# ---------------------------------------------------------------------------
+msgid "Drag the empty desktop to pan"
+msgstr "Leeren Desktop ziehen zum Verschieben"
+
+msgid ""
+"Hold the left mouse button on an empty part of the desktop and drag to move "
+"the whole canvas. A short click still reaches the desktop, so desktop icons "
+"and the context menu keep working."
+msgstr ""
+"Halten Sie die linke Maustaste auf einer freien Stelle des Desktops gedrückt "
+"und ziehen Sie, um die ganze Arbeitsfläche zu verschieben. Ein kurzer Klick "
+"erreicht weiterhin den Desktop, Symbole und Kontextmenü funktionieren also wie"
+" gewohnt."
+
+msgid "Middle mouse button drag pans"
+msgstr "Ziehen mit der mittleren Maustaste verschiebt"
+
+msgid ""
+"Drag with the middle mouse button on the empty desktop to pan the canvas, like"
+" in map or CAD applications."
+msgstr ""
+"Ziehen Sie mit der mittleren Maustaste auf dem leeren Desktop, um die "
+"Arbeitsfläche zu verschieben – wie in Karten- oder CAD-Programmen."
+
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+msgid "Ctrl + Alt"
+msgstr "Strg + Alt"
+
+msgid "Pan anywhere with modifier + left mouse button"
+msgstr "Überall verschieben mit Sondertaste + linker Maustaste"
+
+msgid "Mouse wheel on the empty desktop zooms"
+msgstr "Mausrad auf dem leeren Desktop zoomt"
+
+msgid ""
+"Turn the mouse wheel over an empty part of the desktop to zoom in and out. "
+"Over windows the wheel keeps scrolling their content."
+msgstr ""
+"Drehen Sie das Mausrad über einer freien Stelle des Desktops, um hinein- und "
+"herauszuzoomen. Über Fenstern rollt das Mausrad weiterhin deren Inhalt."
+
+msgid "Zoom anywhere with modifier + mouse wheel"
+msgstr "Überall zoomen mit Sondertaste + Mausrad"
+
+msgid "Invert wheel zoom direction"
+msgstr "Zoomrichtung des Mausrads umkehren"
+
+msgid ""
+"By default turning the wheel away from you zooms in. Enable this to zoom out "
+"instead."
+msgstr ""
+"Normalerweise zoomt ein Drehen des Mausrads von Ihnen weg hinein. Aktivieren "
+"Sie diese Einstellung, um stattdessen herauszuzoomen."
+
+msgid "Shift + wheel on the desktop pans horizontally"
+msgstr "Umschalt + Mausrad auf dem Desktop verschiebt waagerecht"
+
+msgid ""
+"Hold Shift and turn the mouse wheel over the empty desktop to move the canvas "
+"sideways. Ctrl + wheel moves it up and down."
+msgstr ""
+"Halten Sie die Umschalttaste gedrückt und drehen Sie das Mausrad über dem "
+"leeren Desktop, um die Arbeitsfläche seitwärts zu verschieben. Strg + Mausrad "
+"verschiebt sie nach oben und unten."
+
+msgid "Two-finger scrolling on the empty desktop pans"
+msgstr "Bildlauf mit zwei Fingern auf dem leeren Desktop verschiebt"
+
+msgid ""
+"Scroll with two fingers on the touchpad while the pointer is over the empty "
+"desktop to move the canvas."
+msgstr ""
+"Scrollen Sie mit zwei Fingern auf dem Touchpad, während der Zeiger über dem "
+"leeren Desktop steht, um die Arbeitsfläche zu verschieben."
+
+msgid "Pinch on the empty desktop zooms"
+msgstr "Zusammenziehen auf dem leeren Desktop zoomt"
+
+msgid ""
+"Pinch with two fingers on the touchpad while the pointer is over the empty "
+"desktop to zoom. Over windows the gesture is passed to the application."
+msgstr ""
+"Ziehen Sie zwei Finger auf dem Touchpad zusammen oder auseinander, während der"
+" Zeiger über dem leeren Desktop steht, um zu zoomen. Über Fenstern erhält die "
+"Anwendung die Geste."
+
+msgid "Invert scroll panning"
+msgstr "Verschieberichtung beim Scrollen umkehren"
+
+msgid ""
+"Reverse the direction in which touchpad scrolling and swiping move the canvas."
+msgstr ""
+"Kehrt die Richtung um, in die Scrollen und Wischen auf dem Touchpad die "
+"Arbeitsfläche verschieben."
+
+msgid "Touchpad pan speed"
+msgstr "Verschiebegeschwindigkeit des Touchpads"
+
+msgid "How fast touchpad scrolling and swiping move the canvas, in percent."
+msgstr ""
+"Wie schnell Scrollen und Wischen auf dem Touchpad die Arbeitsfläche "
+"verschieben, in Prozent."
+
+msgid "Zoom step per wheel notch"
+msgstr "Zoomschritt pro Mausrad-Raste"
+
+msgid "How much one notch of the mouse wheel zooms, in percent."
+msgstr "Wie stark eine Raste des Mausrads zoomt, in Prozent."
+
+msgid "Maximum zoom out"
+msgstr "Stärkstes Herauszoomen"
+
+msgid ""
+"The smallest zoom level in percent. 10 % shows an area ten times as wide as "
+"the screen."
+msgstr ""
+"Die kleinste Zoomstufe in Prozent. Bei 10 % ist der sichtbare Bereich zehnmal "
+"so breit wie der Bildschirm."
+
+msgid "Maximum zoom in"
+msgstr "Stärkstes Hineinzoomen"
+
+msgid ""
+"The largest zoom level in percent. Above 100 % windows are magnified and only "
+"shown as a preview."
+msgstr ""
+"Die größte Zoomstufe in Prozent. Über 100 % werden Fenster vergrößert und nur "
+"als Vorschau angezeigt."
+
+msgid "Snap to 100 %"
+msgstr "Bei 100 % einrasten"
+
+msgid ""
+"When zooming close to 100 %, snap exactly to 100 % so that windows become "
+"directly usable again."
+msgstr ""
+"Beim Zoomen in die Nähe von 100 % genau auf 100 % einrasten, damit Fenster "
+"sofort wieder direkt bedienbar sind."
+
+msgid "Glide after flicking"
+msgstr "Nachgleiten nach schnellem Ziehen"
+
+msgid ""
+"After a quick drag or swipe the canvas keeps gliding and slows down smoothly, "
+"like scrolling on a phone."
+msgstr ""
+"Nach schnellem Ziehen oder Wischen gleitet die Arbeitsfläche weiter und bremst"
+" sanft ab – wie beim Scrollen auf dem Smartphone."
+
+msgid "Glide friction"
+msgstr "Bremswirkung beim Nachgleiten"
+
+msgid "How quickly the glide comes to a stop. Higher values stop sooner."
+msgstr ""
+"Wie schnell das Nachgleiten zum Stillstand kommt. Höhere Werte bremsen früher."
+
+msgid "Animation duration"
+msgstr "Animationsdauer"
+
+msgid ""
+"Duration of camera animations (jumping to windows, zoom to fit, bookmarks) in "
+"milliseconds. 0 disables animations."
+msgstr ""
+"Dauer der Kamerafahrten (Sprung zu Fenstern, Zoom auf alle Fenster, "
+"Lesezeichen) in Millisekunden. 0 schaltet Animationen ab."
+
+msgid "Keyboard pan step"
+msgstr "Verschiebeschritt per Tastatur"
+
+msgid ""
+"How far one press of a pan shortcut moves the canvas, in percent of the screen"
+" size."
+msgstr ""
+"Wie weit ein Druck auf einen Verschiebe-Kurzbefehl die Arbeitsfläche bewegt, "
+"in Prozent der Bildschirmgröße."
+
+msgid "Bring activated windows into view"
+msgstr "Aktivierte Fenster ins Bild holen"
+
+msgid ""
+"When a window outside the visible area is activated, for example from the task"
+" bar or with Alt+Tab, the canvas moves so that the window becomes visible."
+msgstr ""
+"Wird ein Fenster außerhalb des sichtbaren Bereichs aktiviert, etwa über die "
+"Fensterleiste oder mit Alt+Tab, verschiebt sich die Arbeitsfläche, bis das "
+"Fenster sichtbar ist."
+
+msgid "Scroll just enough"
+msgstr "Nur so weit wie nötig"
+
+msgid "Center the window"
+msgstr "Fenster zentrieren"
+
+msgid "How windows are brought into view"
+msgstr "Wie Fenster ins Bild geholt werden"
+
+msgid ""
+"\"Scroll just enough\" moves the canvas as little as possible. \"Center\" "
+"always puts the window in the middle of the screen."
+msgstr ""
+"„Nur so weit wie nötig“ verschiebt die Arbeitsfläche so wenig wie möglich. "
+"„Fenster zentrieren“ setzt das Fenster immer in die Bildschirmmitte."
+
+msgid "New windows return to 100 %"
+msgstr "Neue Fenster kehren zu 100 % zurück"
+
+msgid ""
+"When a new window opens while the canvas is zoomed, zoom back to 100 % on the "
+"new window so it can be used right away. Windows that are not shown in the "
+"task bar, like splash screens of launchers, keep the zoom."
+msgstr ""
+"Öffnet sich ein neues Fenster, während die Arbeitsfläche gezoomt ist, wird auf"
+" das neue Fenster mit 100 % gezoomt, damit es sofort benutzbar ist. Fenster, "
+"die nicht in der Taskleiste stehen, etwa Startbildschirme von Launchern, "
+"lassen den Zoom, wie er ist."
+
+msgid "Excluded applications"
+msgstr "Ausgenommene Anwendungen"
+
+msgid "Reopen applications where they were closed"
+msgstr "Anwendungen dort öffnen, wo sie geschlossen wurden"
+
+msgid ""
+"Remembers the place, size and screen of every application window when it is "
+"closed. The next window of that application opens there again; the view moves "
+"to it if necessary. Screens are recognised by manufacturer, model and serial "
+"number, so this also works after re-plugging monitors. If the screen is "
+"missing, the window opens on the current screen. Dialogs and fullscreen "
+"windows are not affected."
+msgstr ""
+"Merkt sich beim Schließen Position, Größe und Bildschirm jedes "
+"Anwendungsfensters. Das nächste Fenster dieser Anwendung öffnet sich wieder "
+"dort; die Ansicht wird bei Bedarf dorthin verschoben. Bildschirme werden an "
+"Hersteller, Modell und Seriennummer erkannt, das funktioniert also auch nach "
+"dem Umstecken von Monitoren. Fehlt der Bildschirm, öffnet sich das Fenster auf"
+" dem aktuellen Bildschirm. Dialoge und Vollbildfenster sind nicht betroffen."
+
+msgid "Same place on the canvas"
+msgstr "Gleiche Stelle auf der Arbeitsfläche"
+
+msgid "Same place on the screen"
+msgstr "Gleiche Stelle auf dem Bildschirm"
+
+msgid "Where reopened windows appear"
+msgstr "Wo wieder geöffnete Fenster erscheinen"
+
+msgid ""
+"\"Same place on the canvas\" puts the window back exactly where it was on the "
+"infinite desktop and moves the view there. \"Same place on the screen\" only "
+"restores the position on the screen, wherever the canvas currently is."
+msgstr ""
+"„Gleiche Stelle auf der Arbeitsfläche“ setzt das Fenster genau dorthin zurück,"
+" wo es auf der unendlichen Arbeitsfläche war, und verschiebt die Ansicht "
+"dorthin. „Gleiche Stelle auf dem Bildschirm“ stellt nur die Position auf dem "
+"Bildschirm wieder her, egal wo sich die Arbeitsfläche gerade befindet."
+
+msgid "Also restore the window size"
+msgstr "Auch die Fenstergröße wiederherstellen"
+
+msgid ""
+"Reopened windows get the size (and maximized state) they had when they were "
+"closed. Some applications may still choose a different size."
+msgstr ""
+"Wieder geöffnete Fenster erhalten die Größe (und den maximierten Zustand), die"
+" sie beim Schließen hatten. Manche Anwendungen wählen trotzdem eine andere "
+"Größe."
+
+msgid "Applications that always open normally"
+msgstr "Anwendungen, die immer normal öffnen"
+
+msgid "Only a fast drag moves windows to another screen"
+msgstr "Nur schnelles Ziehen bringt Fenster auf einen anderen Bildschirm"
+
+msgid ""
+"Every screen has its own canvas. A window only moves over to the neighbouring "
+"screen when it is dragged quickly against the screen edge. Dragged slowly, it "
+"stays on its screen and the canvas scrolls instead."
+msgstr ""
+"Jeder Bildschirm hat seine eigene Arbeitsfläche. Ein Fenster wechselt nur auf "
+"den Nachbarbildschirm, wenn es schnell gegen den Bildschirmrand gezogen wird. "
+"Langsam gezogen bleibt es auf seinem Bildschirm und die Arbeitsfläche "
+"verschiebt sich stattdessen."
+
+msgid "Speed needed to change screens"
+msgstr "Nötige Geschwindigkeit für den Bildschirmwechsel"
+
+msgid ""
+"The minimum pointer speed (pixels per second) at the screen edge that moves a "
+"dragged window to the other screen. Lower values make it easier."
+msgstr ""
+"Die Mindestgeschwindigkeit des Zeigers am Bildschirmrand (Pixel pro Sekunde), "
+"ab der ein gezogenes Fenster auf den anderen Bildschirm wechselt. Kleinere "
+"Werte machen es leichter."
+
+msgid "Scroll the canvas when dragging a window to the screen edge"
+msgstr ""
+"Arbeitsfläche verschieben, wenn ein Fenster an den Bildschirmrand gezogen wird"
+
+msgid "Edge scrolling zone"
+msgstr "Randbereich für das Verschieben"
+
+msgid ""
+"Width of the zone at the screen edge that starts edge scrolling, in pixels."
+msgstr ""
+"Breite des Bereichs am Bildschirmrand, der das Verschieben auslöst, in Pixel."
+
+msgid "Edge scrolling speed"
+msgstr "Geschwindigkeit am Bildschirmrand"
+
+msgid "Maximum speed of edge scrolling in pixels per second."
+msgstr ""
+"Höchstgeschwindigkeit des Verschiebens am Bildschirmrand in Pixel pro Sekunde."
+
+msgid "Keep focused fullscreen windows in place"
+msgstr "Aktive Vollbildfenster an ihrem Platz halten"
+
+msgid ""
+"While a fullscreen window (video, game) has the focus, the canvas of its "
+"screen cannot be moved or zoomed, so it cannot be scrolled away by accident."
+msgstr ""
+"Solange ein Vollbildfenster (Video, Spiel) aktiv ist, lässt sich die "
+"Arbeitsfläche seines Bildschirms weder verschieben noch zoomen – es kann also "
+"nicht versehentlich weggeschoben werden."
+
+msgid "Never"
+msgstr "Nie"
+
+msgid "While moving or zooming"
+msgstr "Beim Verschieben oder Zoomen"
+
+msgid "Always"
+msgstr "Immer"
+
+msgid "Markers for windows outside the view"
+msgstr "Markierungen für Fenster außerhalb des Bildes"
+
+msgid ""
+"Shows a small marker with the application icon at the screen edge for every "
+"window outside the visible area, pointing towards it. Click a marker to fly to"
+" the window."
+msgstr ""
+"Zeigt am Bildschirmrand für jedes Fenster außerhalb des sichtbaren Bereichs "
+"eine kleine Markierung mit dem Programmsymbol, die in seine Richtung zeigt. "
+"Ein Klick auf die Markierung fliegt zum Fenster."
+
+msgid "Grid spacing"
+msgstr "Rasterabstand"
+
+msgid "Distance between the dots of the grid at 100 % zoom, in pixels."
+msgstr "Abstand zwischen den Punkten des Rasters bei 100 % Zoom, in Pixel."
+
+msgid "Grid opacity"
+msgstr "Deckkraft des Rasters"
+
+msgid "How strongly the dots are visible, in percent."
+msgstr "Wie deutlich die Punkte sichtbar sind, in Prozent."
+
+msgid "Grid color"
+msgstr "Rasterfarbe"
+
+msgid "Color of the dots."
+msgstr "Farbe der Punkte."
+
+msgid "Safe mode after repeated crashes"
+msgstr "Abgesicherter Modus nach wiederholten Abstürzen"
+
+msgid "Remember camera positions and bookmarks"
+msgstr "Kamerapositionen und Lesezeichen merken"
+
+msgid ""
+"Stores the camera position, zoom and bookmarks of every canvas and restores "
+"them after a restart."
+msgstr ""
+"Speichert Kameraposition, Zoom und Lesezeichen jeder Arbeitsfläche und stellt "
+"sie nach einem Neustart wieder her."
+
+msgid "Debug logging"
+msgstr "Debug-Protokoll"
+
+# ---------------------------------------------------------------------------
+# Categories and search keywords (settingsmeta.cpp)
+# ---------------------------------------------------------------------------
+msgid "Mouse"
+msgstr "Maus"
+
+msgid "Pan and zoom with the mouse"
+msgstr "Mit der Maus verschieben und zoomen"
+
+msgid "Zoom & Motion"
+msgstr "Zoom & Bewegung"
+
+msgid "Zoom levels, gliding and animations"
+msgstr "Zoomstufen, Nachgleiten und Animationen"
+
+msgid "Windows"
+msgstr "Fenster"
+
+msgid "How windows live on the canvas"
+msgstr "Wie Fenster auf der Arbeitsfläche leben"
+
+msgid "Multiple Screens"
+msgstr "Mehrere Bildschirme"
+
+msgid "One canvas per screen and moving windows between them"
+msgstr "Eine Arbeitsfläche pro Bildschirm und Fenster dazwischen verschieben"
+
+msgid "Fullscreen & Games"
+msgstr "Vollbild & Spiele"
+
+msgid "Videos, games and other fullscreen windows"
+msgstr "Videos, Spiele und andere Vollbildfenster"
+
+msgid "Appearance"
+msgstr "Erscheinungsbild"
+
+msgid "Dot grid and visual feedback"
+msgstr "Punktraster und visuelle Rückmeldung"
+
+msgid "Shortcuts"
+msgstr "Kurzbefehle"
+
+msgid "Keyboard shortcuts for fast navigation"
+msgstr "Tastaturkurzbefehle für schnelle Navigation"
+
+msgid "Advanced"
+msgstr "Erweitert"
+
+msgid "Stability, persistence and diagnostics"
+msgstr "Stabilität, Speicherung und Diagnose"
+
+msgid "move,drag,scroll,canvas,left button"
+msgstr "bewegen,ziehen,scrollen,arbeitsfläche,linke maustaste,leinwand"
+
+msgid "move,drag,scroll,middle button"
+msgstr "bewegen,ziehen,scrollen,mittlere maustaste"
+
+msgid "scroll,wheel,magnify,zoom"
+msgstr "scrollen,mausrad,vergrößern,zoom"
+
+msgid "reverse,direction,scroll,wheel"
+msgstr "umkehren,richtung,scrollen,mausrad"
+
+msgid "horizontal,sideways,scroll,shift,ctrl"
+msgstr "waagerecht,horizontal,seitwärts,scrollen,umschalt,strg"
+
+msgid "two fingers,scroll,move,trackpad"
+msgstr "zwei finger,scrollen,bewegen,trackpad"
+
+msgid "gesture,pinch,magnify,trackpad"
+msgstr "geste,zusammenziehen,kneifen,vergrößern,trackpad"
+
+msgid "natural,reverse,direction"
+msgstr "natürlich,umkehren,richtung"
+
+msgid "sensitivity,speed,acceleration"
+msgstr "empfindlichkeit,geschwindigkeit,beschleunigung"
+
+msgid "wheel,notch,sensitivity"
+msgstr "mausrad,raste,empfindlichkeit"
+
+msgid "minimum,overview,zoom out,limit"
+msgstr "minimum,übersicht,herauszoomen,grenze"
+
+msgid "maximum,magnify,zoom in,limit"
+msgstr "maximum,vergrößern,hineinzoomen,grenze"
+
+msgid "snap,100,normal,magnet"
+msgstr "einrasten,100,normal,magnet"
+
+msgid "inertia,kinetic,flick,glide"
+msgstr "trägheit,schwung,kinetisch,gleiten"
+
+msgid "inertia,kinetic,deceleration,stop"
+msgstr "trägheit,schwung,abbremsen,stopp,reibung"
+
+msgid "speed,animation,transition,time"
+msgstr "geschwindigkeit,animation,übergang,zeit"
+
+msgid "keyboard,arrow,step,distance"
+msgstr "tastatur,pfeiltaste,schritt,abstand"
+
+msgid "taskbar,alt tab,activate,follow,jump"
+msgstr "fensterleiste,alt tab,aktivieren,folgen,springen"
+
+msgid "center,scroll,follow"
+msgstr "zentrieren,mitte,scrollen,folgen"
+
+msgid "open,launch,new,zoom"
+msgstr "öffnen,starten,neu,zoom"
+
+msgid "pin,always on top,keep above,fixed,sticky"
+msgstr "anheften,immer im vordergrund,vordergrund,fixiert"
+
+msgid "exclude,ignore,blacklist,application,class"
+msgstr "ausnehmen,ignorieren,ausschließen,anwendung,klasse"
+
+msgid "remember,restore,session,position,size,reopen,monitor"
+msgstr "merken,wiederherstellen,sitzung,position,größe,wieder öffnen,monitor"
+
+msgid "remember,restore,canvas,screen,position"
+msgstr "merken,wiederherstellen,arbeitsfläche,bildschirm,position"
+
+msgid "remember,restore,size,maximized"
+msgstr "merken,wiederherstellen,größe,maximiert"
+
+msgid "remember,restore,exclude,ignore,application"
+msgstr "merken,wiederherstellen,ausnehmen,ignorieren,anwendung"
+
+msgid "monitor,display,drag,throw,move"
+msgstr "monitor,anzeige,ziehen,werfen,bewegen"
+
+msgid "monitor,speed,fast,throw"
+msgstr "monitor,geschwindigkeit,schnell,werfen"
+
+msgid "edge,border,scroll,drag"
+msgstr "rand,kante,scrollen,ziehen"
+
+msgid "edge,border,zone,width"
+msgstr "rand,kante,bereich,breite"
+
+msgid "edge,border,speed"
+msgstr "rand,kante,geschwindigkeit"
+
+msgid "game,video,movie,lock,focus"
+msgstr "spiel,video,film,sperren,fokus"
+
+msgid "find,lost,far away,offscreen,arrow,indicator,edge,navigation"
+msgstr "finden,verloren,weit weg,außerhalb,pfeil,markierung,rand,navigation"
+
+msgid "dots,grid,distance"
+msgstr "punkte,raster,abstand"
+
+msgid "dots,grid,transparency,visibility"
+msgstr "punkte,raster,transparenz,sichtbarkeit"
+
+msgid "dots,grid,colour"
+msgstr "punkte,raster,farbe"
+
+msgid "crash,safe mode,stability,recovery"
+msgstr "absturz,abgesicherter modus,stabilität,wiederherstellung"
+
+msgid "restore,session,persist,save,bookmarks"
+msgstr "wiederherstellen,sitzung,speichern,lesezeichen"
+
+msgid "log,journal,debug,bug report"
+msgstr "protokoll,journal,debug,fehlerbericht"
+
+# ---------------------------------------------------------------------------
+# Global shortcuts (shortcutdefs.cpp)
+# ---------------------------------------------------------------------------
+msgid "Infinit Desktop: Zoom In"
+msgstr "Infinit Desktop: Hineinzoomen"
+
+msgid "Zoom into the canvas around the mouse pointer."
+msgstr "Rund um den Mauszeiger in die Arbeitsfläche hineinzoomen."
+
+msgid "Infinit Desktop: Zoom Out"
+msgstr "Infinit Desktop: Herauszoomen"
+
+msgid "Zoom out of the canvas around the mouse pointer."
+msgstr "Rund um den Mauszeiger aus der Arbeitsfläche herauszoomen."
+
+msgid "Infinit Desktop: Zoom to 100 %"
+msgstr "Infinit Desktop: Zoom auf 100 %"
+
+msgid "Return to 100 % zoom so that windows can be used directly again."
+msgstr "Zurück zu 100 % Zoom, damit Fenster wieder direkt bedienbar sind."
+
+msgid "Infinit Desktop: Show All Windows"
+msgstr "Infinit Desktop: Alle Fenster zeigen"
+
+msgid ""
+"Zoom out until every window of this screen is visible. Press again to go back."
+msgstr ""
+"So weit herauszoomen, bis alle Fenster dieses Bildschirms sichtbar sind. "
+"Erneut drücken, um zurückzukehren."
+
+msgid "Infinit Desktop: Go Home"
+msgstr "Infinit Desktop: Zum Ursprung"
+
+msgid ""
+"Jump to the origin of the canvas. Press again to return to where you were."
+msgstr ""
+"Zum Ursprung der Arbeitsfläche springen. Erneut drücken, um an die vorherige "
+"Stelle zurückzukehren."
+
+msgid "Infinit Desktop: Center Active Window"
+msgstr "Infinit Desktop: Aktives Fenster zentrieren"
+
+msgid ""
+"Move the canvas so that the active window is in the middle of the screen."
+msgstr ""
+"Die Arbeitsfläche so verschieben, dass das aktive Fenster in der "
+"Bildschirmmitte liegt."
+
+msgid "Infinit Desktop: Pan Left"
+msgstr "Infinit Desktop: Nach links verschieben"
+
+msgid "Move the view to the left."
+msgstr "Die Ansicht nach links verschieben."
+
+msgid "Infinit Desktop: Pan Right"
+msgstr "Infinit Desktop: Nach rechts verschieben"
+
+msgid "Move the view to the right."
+msgstr "Die Ansicht nach rechts verschieben."
+
+msgid "Infinit Desktop: Pan Up"
+msgstr "Infinit Desktop: Nach oben verschieben"
+
+msgid "Move the view up."
+msgstr "Die Ansicht nach oben verschieben."
+
+msgid "Infinit Desktop: Pan Down"
+msgstr "Infinit Desktop: Nach unten verschieben"
+
+msgid "Move the view down."
+msgstr "Die Ansicht nach unten verschieben."
+
+msgid "Infinit Desktop: Focus Window to the Left"
+msgstr "Infinit Desktop: Fenster links aktivieren"
+
+msgid ""
+"Activate the nearest window to the left on the canvas and bring it into view."
+msgstr ""
+"Das nächstgelegene Fenster links auf der Arbeitsfläche aktivieren und ins Bild"
+" holen."
+
+msgid "Infinit Desktop: Focus Window to the Right"
+msgstr "Infinit Desktop: Fenster rechts aktivieren"
+
+msgid ""
+"Activate the nearest window to the right on the canvas and bring it into view."
+msgstr ""
+"Das nächstgelegene Fenster rechts auf der Arbeitsfläche aktivieren und ins "
+"Bild holen."
+
+msgid "Infinit Desktop: Focus Window Above"
+msgstr "Infinit Desktop: Fenster oberhalb aktivieren"
+
+msgid "Activate the nearest window above on the canvas and bring it into view."
+msgstr ""
+"Das nächstgelegene Fenster oberhalb auf der Arbeitsfläche aktivieren und ins "
+"Bild holen."
+
+msgid "Infinit Desktop: Focus Window Below"
+msgstr "Infinit Desktop: Fenster unterhalb aktivieren"
+
+msgid "Activate the nearest window below on the canvas and bring it into view."
+msgstr ""
+"Das nächstgelegene Fenster unterhalb auf der Arbeitsfläche aktivieren und ins "
+"Bild holen."
+
+msgid "Infinit Desktop: Go to Bookmark 1"
+msgstr "Infinit Desktop: Zu Lesezeichen 1"
+
+msgid "Jump to the canvas position saved as bookmark 1."
+msgstr "Zur als Lesezeichen 1 gespeicherten Position springen."
+
+msgid "Infinit Desktop: Go to Bookmark 2"
+msgstr "Infinit Desktop: Zu Lesezeichen 2"
+
+msgid "Jump to the canvas position saved as bookmark 2."
+msgstr "Zur als Lesezeichen 2 gespeicherten Position springen."
+
+msgid "Infinit Desktop: Go to Bookmark 3"
+msgstr "Infinit Desktop: Zu Lesezeichen 3"
+
+msgid "Jump to the canvas position saved as bookmark 3."
+msgstr "Zur als Lesezeichen 3 gespeicherten Position springen."
+
+msgid "Infinit Desktop: Go to Bookmark 4"
+msgstr "Infinit Desktop: Zu Lesezeichen 4"
+
+msgid "Jump to the canvas position saved as bookmark 4."
+msgstr "Zur als Lesezeichen 4 gespeicherten Position springen."
+
+msgid "Infinit Desktop: Save Bookmark 1"
+msgstr "Infinit Desktop: Lesezeichen 1 speichern"
+
+msgid "Remember the current position and zoom as bookmark 1."
+msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 1 merken."
+
+msgid "Infinit Desktop: Save Bookmark 2"
+msgstr "Infinit Desktop: Lesezeichen 2 speichern"
+
+msgid "Remember the current position and zoom as bookmark 2."
+msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 2 merken."
+
+msgid "Infinit Desktop: Save Bookmark 3"
+msgstr "Infinit Desktop: Lesezeichen 3 speichern"
+
+msgid "Remember the current position and zoom as bookmark 3."
+msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 3 merken."
+
+msgid "Infinit Desktop: Save Bookmark 4"
+msgstr "Infinit Desktop: Lesezeichen 4 speichern"
+
+msgid "Remember the current position and zoom as bookmark 4."
+msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 4 merken."
+
+msgid "Infinit Desktop: Pin Window to Screen"
+msgstr "Infinit Desktop: Fenster an Bildschirm anheften"
+
+msgid ""
+"Pin the active window to the screen so it does not move with the canvas, or "
+"release it again."
+msgstr ""
+"Das aktive Fenster am Bildschirm anheften, damit es sich nicht mit der "
+"Arbeitsfläche bewegt, oder es wieder lösen."
+
+msgid "Infinit Desktop: Pin Window to Screen, Always on Top"
+msgstr "Infinit Desktop: Fenster anheften und im Vordergrund halten"
+
+msgid ""
+"Pin the active window to the screen and keep it above all other windows, or "
+"release it again."
+msgstr ""
+"Das aktive Fenster am Bildschirm anheften und vor allen anderen Fenstern "
+"halten, oder es wieder lösen."
+
+msgid "Infinit Desktop: Pause / Resume"
+msgstr "Infinit Desktop: Pausieren / Fortsetzen"
+
+msgid ""
+"Temporarily turn off the mouse and touchpad gestures of the canvas, so "
+"applications receive them. Shortcuts keep working."
+msgstr ""
+"Die Maus- und Touchpad-Gesten der Arbeitsfläche vorübergehend abschalten, "
+"damit Anwendungen sie erhalten. Kurzbefehle funktionieren weiterhin."
+
+# ---------------------------------------------------------------------------
+# Settings app
+# ---------------------------------------------------------------------------
+msgctxt "unit suffix: pixels"
+msgid " px"
+msgstr " px"
+
+msgctxt "unit suffix: pixels per second"
+msgid " px/s"
+msgstr " px/s"
+
+msgctxt "unit suffix: percent"
+msgid " %"
+msgstr " %"
+
+msgctxt "unit suffix: milliseconds"
+msgid " ms"
+msgstr " ms"
+
+msgctxt "@title shortcut group"
+msgid "Zoom"
+msgstr "Zoom"
+
+msgctxt "@title shortcut group"
+msgid "Panning"
+msgstr "Verschieben"
+
+msgctxt "@title shortcut group"
+msgid "Window Focus"
+msgstr "Fensterfokus"
+
+msgctxt "@title shortcut group"
+msgid "Bookmarks"
+msgstr "Lesezeichen"
+
+msgctxt "@title shortcut group"
+msgid "Windows"
+msgstr "Fenster"
+
+msgctxt "@action:button %1 is the name of a setting"
+msgid "More information about “%1”"
+msgstr "Mehr Informationen zu „%1“"
+
+msgctxt "@label no keyboard shortcut assigned"
+msgid "None"
+msgstr "Keiner"
+
+msgctxt "@label separator between alternative shortcuts"
+msgid ", "
+msgstr ", "
+
+msgctxt "@info %1 is a key combination, %2 an action, %3 an application"
+msgid "%1 is also used by “%2” (%3)"
+msgstr "%1 wird auch von „%2“ (%3) verwendet"
+
+msgid "Open the given page, for example “mouse” or “shortcuts”."
+msgstr "Die angegebene Seite öffnen, zum Beispiel „mouse“ oder „shortcuts“."
+
+msgctxt "@info:shell value name"
+msgid "page"
+msgstr "Seite"
+
+msgid ""
+"Render every page into PNG files in <directory> and quit (for documentation)."
+msgstr ""
+"Jede Seite als PNG-Datei in <Ordner> speichern und beenden (für die "
+"Dokumentation)."
+
+msgctxt "@info:shell value name"
+msgid "directory"
+msgstr "Ordner"
+
+msgid "Window size for --screenshot, for example 1120x760."
+msgstr "Fenstergröße für --screenshot, zum Beispiel 1120x760."
+
+msgctxt "@info:shell value name"
+msgid "size"
+msgstr "Größe"
+
+msgctxt "@label range of a setting, %1 is the minimum, %2 the maximum"
+msgid "%1 – %2"
+msgstr "%1 – %2"
+
+msgctxt "@label state of a switch"
+msgid "On"
+msgstr "Ein"
+
+msgctxt "@label state of a switch"
+msgid "Off"
+msgstr "Aus"
+
+msgctxt "@label number of entries in a list"
+msgid "%1 entry"
+msgid_plural "%1 entries"
+msgstr[0] "%1 Eintrag"
+msgstr[1] "%1 Einträge"
+
+msgctxt "keyboard key"
+msgid "Space"
+msgstr "Leertaste"
+
+msgctxt "keyboard key"
+msgid "Enter"
+msgstr "Eingabe"
+
+msgctxt "keyboard key"
+msgid "Esc"
+msgstr "Esc"
+
+msgctxt "keyboard key"
+msgid "Backspace"
+msgstr "Rücktaste"
+
+msgctxt "keyboard key"
+msgid "Del"
+msgstr "Entf"
+
+msgctxt "keyboard key"
+msgid "Ins"
+msgstr "Einfg"
+
+msgctxt "keyboard key"
+msgid "PgUp"
+msgstr "Bild↑"
+
+msgctxt "keyboard key"
+msgid "PgDown"
+msgstr "Bild↓"
+
+msgctxt "keyboard key"
+msgid "Home"
+msgstr "Pos1"
+
+msgctxt "keyboard key"
+msgid "End"
+msgstr "Ende"
+
+msgctxt "keyboard key"
+msgid "Print"
+msgstr "Druck"
+
+msgctxt "keyboard key"
+msgid "Ctrl"
+msgstr "Strg"
+
+msgctxt "keyboard key"
+msgid "Alt"
+msgstr "Alt"
+
+msgctxt "keyboard key"
+msgid "Shift"
+msgstr "Umschalt"
+
+msgctxt "search keywords for shortcuts"
+msgid "shortcut,keyboard,key,hotkey"
+msgstr "kurzbefehl,tastenkürzel,tastatur,taste,hotkey"
+
+msgctxt "@label name of this plugin"
+msgid "Infinit Desktop"
+msgstr "Infinit Desktop"
+
+msgctxt "@label unknown screen"
+msgid "Unknown screen"
+msgstr "Unbekannter Bildschirm"
+
+msgctxt ""
+"@label screen product name and connector, for example Dell U2720Q (DP-1)"
+msgid "%1 (%2)"
+msgstr "%1 (%2)"
+
+msgctxt "@label window state"
+msgid "Maximized"
+msgstr "Maximiert"
+
+msgctxt "@label window state"
+msgid "Pinned"
+msgstr "Angeheftet"
+
+msgctxt "@label window state"
+msgid "Kept above"
+msgstr "Im Vordergrund"
+
+msgctxt "@label window size in pixels"
+msgid "%1 × %2"
+msgstr "%1 × %2"
+
+msgctxt "@label number of remembered windows"
+msgid "%1 window"
+msgid_plural "%1 windows"
+msgstr[0] "%1 Fenster"
+msgstr[1] "%1 Fenster"
+
+msgid "The remembered positions could not be removed: %1"
+msgstr "Die gemerkten Positionen konnten nicht entfernt werden: %1"
+
+msgid "The shortcut could not be assigned. It may be reserved by the system."
+msgstr ""
+"Der Kurzbefehl konnte nicht zugewiesen werden. Möglicherweise ist er vom "
+"System reserviert."
+
+msgctxt "@label badge for actions of this plugin"
+msgid "Infinit Desktop"
+msgstr "Infinit Desktop"
+
+msgctxt "@action:button %1 is a key combination"
+msgid "Reset to default (%1)"
+msgstr "Auf Standard zurücksetzen (%1)"
+
+msgctxt "@info:placeholder"
+msgid "Filter by action, application or key…"
+msgstr "Nach Aktion, Anwendung oder Taste filtern …"
+
+msgctxt "@label"
+msgid "Filter shortcuts"
+msgstr "Kurzbefehle filtern"
+
+msgctxt "@action:button filter"
+msgid "Only conflicts"
+msgstr "Nur Konflikte"
+
+msgctxt "@action:button"
+msgid "Reload"
+msgstr "Neu laden"
+
+msgctxt "@info:status"
+msgid "Loading shortcuts…"
+msgstr "Kurzbefehle werden geladen …"
+
+msgctxt "@info:status"
+msgid "Showing %1 of %2 shortcuts"
+msgid_plural "Showing %1 of %2 shortcuts"
+msgstr[0] "%1 von %2 Kurzbefehlen angezeigt"
+msgstr[1] "%1 von %2 Kurzbefehlen angezeigt"
+
+msgctxt "@info:status"
+msgid "Shortcuts are not available"
+msgstr "Kurzbefehle sind nicht verfügbar"
+
+msgctxt "@info:status"
+msgid "No conflicts"
+msgstr "Keine Konflikte"
+
+msgctxt "@info:status"
+msgid "No matching shortcuts"
+msgstr "Keine passenden Kurzbefehle"
+
+msgid "No key combination is used by more than one action."
+msgstr "Keine Tastenkombination wird von mehr als einer Aktion verwendet."
+
+msgid "Try another name or key."
+msgstr "Versuchen Sie einen anderen Namen oder eine andere Taste."
+
+msgctxt "@title"
+msgid "Reset all settings"
+msgstr "Alle Einstellungen zurücksetzen"
+
+msgid ""
+"Restore the defaults of every setting on every page. Keyboard shortcuts are "
+"not changed."
+msgstr ""
+"Setzt jede Einstellung auf jeder Seite auf ihren Standardwert zurück. "
+"Kurzbefehle bleiben unverändert."
+
+msgctxt "@action:button"
+msgid "Reset All…"
+msgstr "Alle zurücksetzen …"
+
+msgctxt "@label color as hexadecimal value"
+msgid "Hex value"
+msgstr "Hexadezimalwert"
+
+msgctxt "@action:button"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt "@info %1 is an action, %2 the application or component"
+msgid "Already used by “%1” (%2). Reassign it?"
+msgstr "Bereits von „%1“ (%2) verwendet. Neu zuweisen?"
+
+msgctxt "@info %2 is an action, %3 the application or component"
+msgid "Already used by “%2” (%3) and one more action. Reassign it?"
+msgid_plural "Already used by “%2” (%3) and %1 more actions. Reassign it?"
+msgstr[0] ""
+"Bereits von „%2“ (%3) und einer weiteren Aktion verwendet. Neu zuweisen?"
+msgstr[1] ""
+"Bereits von „%2“ (%3) und %1 weiteren Aktionen verwendet. Neu zuweisen?"
+
+msgctxt "@action:button keep the old shortcut"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt "@action:button take the shortcut away from the other action"
+msgid "Reassign"
+msgstr "Neu zuweisen"
+
+msgctxt "@label default value of a setting"
+msgid "Default"
+msgstr "Standard"
+
+msgctxt "@label allowed values of a setting"
+msgid "Range"
+msgstr "Bereich"
+
+msgctxt "@action:button"
+msgid "Reset to Default"
+msgstr "Auf Standard zurücksetzen"
+
+msgctxt "@info accessible name while recording a shortcut"
+msgid ""
+"Recording a shortcut for “%1”. Press the new key combination, Escape to "
+"cancel, Backspace to remove it."
+msgstr ""
+"Kurzbefehl für „%1“ wird aufgenommen. Drücken Sie die neue Tastenkombination, "
+"Esc zum Abbrechen oder die Rücktaste zum Entfernen."
+
+msgctxt "@action:button %1 is a key combination, %2 the action"
+msgid "%1, shortcut for “%2”. Press to change it."
+msgstr "%1, Kurzbefehl für „%2“. Drücken, um ihn zu ändern."
+
+msgctxt "@action:button %1 is the action"
+msgid "No shortcut for “%1”. Press to assign one."
+msgstr "Kein Kurzbefehl für „%1“. Drücken, um einen zuzuweisen."
+
+msgctxt "@label no shortcut assigned"
+msgid "Not assigned"
+msgstr "Nicht zugewiesen"
+
+msgctxt "@info while recording a shortcut"
+msgid "Press a key combination…"
+msgstr "Tastenkombination drücken …"
+
+msgctxt "@title:window"
+msgid "Reset all settings?"
+msgstr "Alle Einstellungen zurücksetzen?"
+
+msgid ""
+"Every setting on every page goes back to its default value. Keyboard shortcuts"
+" are not changed."
+msgstr ""
+"Jede Einstellung auf jeder Seite erhält wieder ihren Standardwert. Kurzbefehle"
+" bleiben unverändert."
+
+msgctxt "@action:button"
+msgid "Reset All"
+msgstr "Alle zurücksetzen"
+
+msgid "All settings were reset"
+msgstr "Alle Einstellungen wurden zurückgesetzt"
+
+msgctxt "@title:window"
+msgid "Forget all remembered positions?"
+msgstr "Alle gemerkten Positionen vergessen?"
+
+msgid ""
+"Applications will open at their normal place again until their windows are "
+"closed once more."
+msgstr ""
+"Anwendungen öffnen sich wieder an ihrem normalen Platz, bis ihre Fenster "
+"erneut geschlossen werden."
+
+msgctxt "@action:button"
+msgid "Forget All"
+msgstr "Alle vergessen"
+
+msgctxt "@title:window"
+msgid "Reset all shortcuts?"
+msgstr "Alle Kurzbefehle zurücksetzen?"
+
+msgid ""
+"All Infinit Desktop shortcuts go back to their default key combinations. "
+"Shortcuts of other applications are not changed."
+msgstr ""
+"Alle Kurzbefehle von Infinit Desktop erhalten wieder ihre Standard-"
+"Tastenkombinationen. Kurzbefehle anderer Anwendungen bleiben unverändert."
+
+msgid "All shortcuts were reset"
+msgstr "Alle Kurzbefehle wurden zurückgesetzt"
+
+msgctxt "@title start page"
+msgid "Overview"
+msgstr "Übersicht"
+
+msgctxt "@title sidebar section"
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgctxt "@info keyboard shortcut of the search field"
+msgid "Ctrl+F"
+msgstr "Strg+F"
+
+msgid "Remembered positions were removed"
+msgstr "Gemerkte Positionen wurden entfernt"
+
+msgid "Drag the empty desktop to move the canvas"
+msgstr "Leeren Desktop ziehen, um die Arbeitsfläche zu verschieben"
+
+msgid "Drag the empty desktop with the middle mouse button to move the canvas"
+msgstr ""
+"Leeren Desktop mit der mittleren Maustaste ziehen, um die Arbeitsfläche zu "
+"verschieben"
+
+msgid "Pan anywhere, even over windows: hold these keys and drag"
+msgstr "Überall verschieben, auch über Fenstern: diese Tasten halten und ziehen"
+
+msgid ""
+"Zoom with the mouse wheel on the empty desktop, or anywhere while holding"
+msgstr "Mit dem Mausrad auf dem leeren Desktop zoomen – oder überall mit"
+
+msgid "Zoom anywhere: hold these keys and turn the mouse wheel"
+msgstr "Überall zoomen: diese Tasten halten und das Mausrad drehen"
+
+msgid "Turn the mouse wheel over the empty desktop to zoom"
+msgstr "Mausrad über dem leeren Desktop drehen, um zu zoomen"
+
+msgctxt "@action:button turn the plugin on"
+msgid "Turn On"
+msgstr "Einschalten"
+
+msgctxt "@action:button"
+msgid "Leave Safe Mode"
+msgstr "Abgesicherten Modus verlassen"
+
+msgctxt "@action:button resume the paused canvas"
+msgid "Resume"
+msgstr "Fortsetzen"
+
+msgctxt "@action:button pause the canvas"
+msgid "Pause"
+msgstr "Pausieren"
+
+msgctxt "@action:button turn the plugin off"
+msgid "Turn Off"
+msgstr "Ausschalten"
+
+msgctxt "@action:button check the plugin state again"
+msgid "Check Again"
+msgstr "Erneut prüfen"
+
+msgctxt "@title quick guide on the start page"
+msgid "Getting around"
+msgstr "So bewegen Sie sich"
+
+msgctxt "@title"
+msgid "All settings"
+msgstr "Alle Einstellungen"
+
+msgctxt "@info %1 is a version number"
+msgid "Version %1"
+msgstr "Version %1"
+
+msgctxt "@action:button"
+msgid "Reset All Settings…"
+msgstr "Alle Einstellungen zurücksetzen …"
+
+msgctxt "@title"
+msgid "Remembered windows"
+msgstr "Gemerkte Fenster"
+
+msgctxt "@info:status"
+msgid "Not available right now"
+msgstr "Gerade nicht verfügbar"
+
+msgctxt "@info:status"
+msgid "No remembered windows yet"
+msgstr "Noch keine gemerkten Fenster"
+
+msgctxt "@info:status"
+msgid "Positions of %1 application remembered"
+msgid_plural "Positions of %1 applications remembered"
+msgstr[0] "Positionen von %1 Anwendung gemerkt"
+msgstr[1] "Positionen von %1 Anwendungen gemerkt"
+
+msgid ""
+"Reopened applications appear where their windows were closed, on the same "
+"screen and canvas position."
+msgstr ""
+"Wieder geöffnete Anwendungen erscheinen dort, wo ihre Fenster geschlossen "
+"wurden – auf demselben Bildschirm und an derselben Stelle der Arbeitsfläche."
+
+msgctxt "@action:button collapse a list"
+msgid "Hide"
+msgstr "Ausblenden"
+
+msgctxt "@action:button expand a list"
+msgid "Show"
+msgstr "Anzeigen"
+
+msgctxt "@action:button"
+msgid "Hide remembered windows"
+msgstr "Gemerkte Fenster ausblenden"
+
+msgctxt "@action:button"
+msgid "Show remembered windows"
+msgstr "Gemerkte Fenster anzeigen"
+
+msgctxt "@action:button"
+msgid "Forget All…"
+msgstr "Alle vergessen …"
+
+msgctxt "@label accessible name of the search field"
+msgid "Search settings"
+msgstr "Einstellungen durchsuchen"
+
+msgctxt "@info:placeholder"
+msgid "Search settings…"
+msgstr "Suchen …"
+
+msgctxt "@action:button"
+msgid "Clear search"
+msgstr "Suche leeren"
+
+msgctxt "@title search results page"
+msgid "Search"
+msgstr "Suche"
+
+msgctxt "@info %2 is the search text"
+msgid "One result for “%2”"
+msgid_plural "%1 results for “%2”"
+msgstr[0] "Ein Treffer für „%2“"
+msgstr[1] "%1 Treffer für „%2“"
+
+msgctxt "@info %1 is the search text"
+msgid "No results for “%1”"
+msgstr "Keine Treffer für „%1“"
+
+msgctxt "@action:button go to the page of a category"
+msgid "Open page"
+msgstr "Seite öffnen"
+
+msgctxt "@action:button go to the list of all shortcuts"
+msgid "Show all"
+msgstr "Alle anzeigen"
+
+msgctxt "@info:status"
+msgid "No matching settings"
+msgstr "Keine passenden Einstellungen"
+
+msgid ""
+"Try a different word, for example “zoom”, “touchpad”, “grid” or “fullscreen”."
+msgstr ""
+"Versuchen Sie ein anderes Wort, zum Beispiel „Zoom“, „Touchpad“, „Raster“ oder"
+" „Vollbild“."
+
+msgctxt "@info %1 is the name of another setting"
+msgid "Requires “%1”"
+msgstr "Erfordert „%1“"
+
+msgctxt "@action:button %1 is the default value"
+msgid "Reset to default (%1)"
+msgstr "Auf Standard zurücksetzen (%1)"
+
+msgctxt "@title:tab shortcuts of this plugin"
+msgid "Infinit Desktop"
+msgstr "Infinit Desktop"
+
+msgctxt "@label"
+msgid "Shortcut list"
+msgstr "Kurzbefehlsliste"
+
+msgid ""
+"Click a shortcut and press the new key combination. Backspace removes it, Esc "
+"cancels. Changes are applied immediately."
+msgstr ""
+"Klicken Sie auf einen Kurzbefehl und drücken Sie die neue Tastenkombination. "
+"Die Rücktaste entfernt ihn, Esc bricht ab. Änderungen gelten sofort."
+
+msgctxt "@title short product name"
+msgid "Infinit Desktop"
+msgstr "Infinit Desktop"
+
+msgctxt "@label accessible name of the page list"
+msgid "Pages"
+msgstr "Seiten"
+
+msgctxt "@label plugin state"
+msgid "Active"
+msgstr "Aktiv"
+
+msgctxt "@label plugin state"
+msgid "Paused"
+msgstr "Pausiert"
+
+msgctxt "@label plugin state"
+msgid "Turned off"
+msgstr "Ausgeschaltet"
+
+msgctxt "@label plugin state"
+msgid "Safe mode"
+msgstr "Abgesicherter Modus"
+
+msgctxt "@label plugin state"
+msgid "Not installed"
+msgstr "Nicht installiert"
+
+msgctxt "@label plugin state"
+msgid "Checking…"
+msgstr "Wird geprüft …"
+
+msgid ""
+"Every screen is an infinite canvas: pan and zoom freely and place windows "
+"anywhere. Changes are applied immediately."
+msgstr ""
+"Jeder Bildschirm ist eine unendliche Arbeitsfläche: frei verschieben und "
+"zoomen und Fenster überall ablegen. Änderungen gelten sofort."
+
+msgid ""
+"Mouse and touchpad gestures of the canvas are paused. Windows stay where they "
+"are and the desktop behaves normally."
+msgstr ""
+"Die Maus- und Touchpad-Gesten der Arbeitsfläche sind pausiert. Fenster "
+"bleiben, wo sie sind, und der Desktop verhält sich wie gewohnt."
+
+msgctxt "@action:button decrease a number"
+msgid "Decrease"
+msgstr "Verringern"
+
+msgctxt "@action:button increase a number"
+msgid "Increase"
+msgstr "Erhöhen"
+
+msgctxt "@action:button add an entry to a list"
+msgid "Add"
+msgstr "Hinzufügen"
+
+# Application lists, application picker, remembered windows
+msgctxt "@label when a window was closed, %1 is a time of day"
+msgid "Today, %1"
+msgstr "Heute, %1"
+
+msgctxt "@label when a window was closed, %1 is a time of day"
+msgid "Yesterday, %1"
+msgstr "Gestern, %1"
+
+msgctxt ""
+"date format of the remembered windows list, see QDate::toString(), for example"
+" Oct 24, 2026"
+msgid "MMM d, yyyy"
+msgstr "dd.MM.yyyy"
+
+msgctxt "@label %1 is a date, %2 a time of day"
+msgid "%1, %2"
+msgstr "%1, %2"
+
+msgid "The remembered position of “%1” could not be removed: %2"
+msgstr "Die gemerkte Position von „%1“ konnte nicht entfernt werden: %2"
+
+msgctxt "@info:status"
+msgid "No applications in this list"
+msgstr "Keine Anwendungen in dieser Liste"
+
+msgid "Add an application to treat it differently."
+msgstr "Fügen Sie eine Anwendung hinzu, um sie anders zu behandeln."
+
+msgctxt "@info an entry without a desktop file"
+msgid "Window class"
+msgstr "Fensterklasse"
+
+msgctxt "@action:button %1 is an application"
+msgid "Remove “%1”"
+msgstr "„%1“ entfernen"
+
+msgctxt "@action:button"
+msgid "Show fewer"
+msgstr "Weniger anzeigen"
+
+msgctxt "@action:button"
+msgid "Show %1 more"
+msgid_plural "Show %1 more"
+msgstr[0] "%1 weitere anzeigen"
+msgstr[1] "%1 weitere anzeigen"
+
+msgctxt "@action:button"
+msgid "Add Application…"
+msgstr "Anwendung hinzufügen …"
+
+msgctxt "@info number of entries in a list"
+msgid "%1 entry"
+msgid_plural "%1 entries"
+msgstr[0] "%1 Eintrag"
+msgstr[1] "%1 Einträge"
+
+msgctxt "@title:window"
+msgid "Add Application"
+msgstr "Anwendung hinzufügen"
+
+msgctxt "@action:button"
+msgid "Close"
+msgstr "Schließen"
+
+msgctxt "@info:placeholder"
+msgid "Search applications…"
+msgstr "Anwendungen suchen …"
+
+msgctxt "@label"
+msgid "Search applications"
+msgstr "Anwendungen suchen"
+
+msgctxt "@label"
+msgid "Installed applications"
+msgstr "Installierte Anwendungen"
+
+msgctxt "@info %1 is an application"
+msgid "%1, already in the list"
+msgstr "%1, bereits in der Liste"
+
+msgctxt "@info already in the list"
+msgid "Added"
+msgstr "Hinzugefügt"
+
+msgctxt "@info:status"
+msgid "No application matches “%1”. You can enter its window class below."
+msgstr ""
+"Keine Anwendung passt zu „%1“. Sie können die Fensterklasse unten eingeben."
+
+msgid "Not listed? Enter a window class or desktop file name:"
+msgstr ""
+"Nicht dabei? Geben Sie eine Fensterklasse oder den Namen einer Desktop-Datei "
+"ein:"
+
+msgctxt "@info:placeholder"
+msgid "for example org.kde.konsole"
+msgstr "zum Beispiel org.kde.konsole"
+
+msgctxt "@label"
+msgid "Window class"
+msgstr "Fensterklasse"
+
+msgctxt "@info %1 is an application"
+msgid "Forgot the position of “%1”"
+msgstr "Position von „%1“ wurde vergessen"
+
+msgctxt "@action:button %1 is an application"
+msgid "Forget the position of “%1”"
+msgstr "Position von „%1“ vergessen"
+
+# ---------------------------------------------------------------------------
+# Update check (settings app)
+# ---------------------------------------------------------------------------
+msgid "GitHub sent an unexpected answer."
+msgstr "GitHub hat unerwartet geantwortet."
+
+msgid "The update failed, see the messages above."
+msgstr "Das Update ist fehlgeschlagen, siehe die Meldungen oben."
+
+msgid "Looking for updates…"
+msgstr "Suche nach Updates …"
+
+msgctxt "@info %1 is a version number"
+msgid "Version %1 is up to date"
+msgstr "Version %1 ist aktuell"
+
+msgctxt "@info %1 is a version number"
+msgid "Version %1 is available"
+msgstr "Version %1 ist verfügbar"
+
+msgid "Could not look for updates"
+msgstr "Die Suche nach Updates ist fehlgeschlagen"
+
+msgctxt "@info %1 is a time"
+msgid "Checked at %1"
+msgstr "Geprüft um %1"
+
+msgctxt "@info %1 is a version number"
+msgid "You have version %1. What is new:"
+msgstr "Installiert ist Version %1. Das ist neu:"
+
+msgid "Not checked for updates yet"
+msgstr "Noch nicht nach Updates gesucht"
+
+msgctxt "@action:button look for a new version"
+msgid "Check Now"
+msgstr "Jetzt prüfen"
+
+msgctxt "@title %1 is a version number"
+msgid "Version %1"
+msgstr "Version %1"
+
+msgctxt "@title %1 is a version number, %2 a date"
+msgid "Version %1 – %2"
+msgstr "Version %1 – %2"
+
+msgctxt "@action:button"
+msgid "Install Update"
+msgstr "Update installieren"
+
+msgctxt "@action:button"
+msgid "Open on GitHub"
+msgstr "Auf GitHub öffnen"
+
+msgid "Look for updates when this app starts"
+msgstr "Beim Start dieser App nach Updates suchen"
+
+# ---------------------------------------------------------------------------
+# Notes, groups, areas and the map
+# ---------------------------------------------------------------------------
+msgid "Infinit Desktop: New Note"
+msgstr "Infinit Desktop: Neue Notiz"
+
+msgid "Put a new note on the canvas at the mouse pointer."
+msgstr "Eine neue Notiz an der Mausposition auf die Arbeitsfläche legen."
+
+msgid "Infinit Desktop: Show / Hide Notes"
+msgstr "Infinit Desktop: Notizen ein-/ausblenden"
+
+msgid "Hide all notes, or show them again."
+msgstr "Alle Notizen ausblenden oder wieder einblenden."
+
+msgid "Infinit Desktop: Show Map"
+msgstr "Infinit Desktop: Karte zeigen"
+
+msgid ""
+"Show a map of this screen's canvas with its windows, groups and areas; click "
+"or drag on it to move the view."
+msgstr ""
+"Eine Karte der Arbeitsfläche dieses Bildschirms mit Fenstern, Gruppen und "
+"Bereichen zeigen; Klicken oder Ziehen darauf verschiebt die Ansicht."
+
+msgid "Infinit Desktop: New Group from Selection"
+msgstr "Infinit Desktop: Neue Gruppe aus Auswahl"
+
+msgid "Draw a rectangle with the mouse: the windows inside become a new group."
+msgstr ""
+"Mit der Maus ein Rechteck aufziehen: Die Fenster darin werden zu einer neuen "
+"Gruppe."
+
+msgid "Infinit Desktop: New Area from Selection"
+msgstr "Infinit Desktop: Neuer Bereich aus Auswahl"
+
+msgid ""
+"Draw a rectangle with the mouse: it becomes an area of the canvas that grows "
+"and shrinks with its windows."
+msgstr ""
+"Mit der Maus ein Rechteck aufziehen: Es wird zu einem Bereich der "
+"Arbeitsfläche, der mit seinen Fenstern wächst und schrumpft."
+
+msgid "Infinit Desktop: Save Group Arrangement"
+msgstr "Infinit Desktop: Anordnung der Gruppe speichern"
+
+msgid "Remember how the windows of the active window's group are arranged now."
+msgstr ""
+"Die jetzige Anordnung der Fenster in der Gruppe des aktiven Fensters merken."
+
+msgid "Infinit Desktop: Open Group 1"
+msgstr "Infinit Desktop: Gruppe 1 öffnen"
+
+msgid ""
+"Bring the windows of group 1 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 1 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 2"
+msgstr "Infinit Desktop: Gruppe 2 öffnen"
+
+msgid ""
+"Bring the windows of group 2 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 2 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 3"
+msgstr "Infinit Desktop: Gruppe 3 öffnen"
+
+msgid ""
+"Bring the windows of group 3 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 3 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 4"
+msgstr "Infinit Desktop: Gruppe 4 öffnen"
+
+msgid ""
+"Bring the windows of group 4 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 4 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 5"
+msgstr "Infinit Desktop: Gruppe 5 öffnen"
+
+msgid ""
+"Bring the windows of group 5 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 5 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 6"
+msgstr "Infinit Desktop: Gruppe 6 öffnen"
+
+msgid ""
+"Bring the windows of group 6 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 6 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 7"
+msgstr "Infinit Desktop: Gruppe 7 öffnen"
+
+msgid ""
+"Bring the windows of group 7 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 7 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 8"
+msgstr "Infinit Desktop: Gruppe 8 öffnen"
+
+msgid ""
+"Bring the windows of group 8 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 8 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Infinit Desktop: Open Group 9"
+msgstr "Infinit Desktop: Gruppe 9 öffnen"
+
+msgid ""
+"Bring the windows of group 9 together at its place, start the missing ones, "
+"and jump there."
+msgstr ""
+"Die Fenster von Gruppe 9 an ihrem Ort zusammenholen, fehlende starten und "
+"dorthin springen."
+
+msgid "Notes & Groups"
+msgstr "Notizen und Gruppen"
+
+msgid "Notes, groups of windows, areas and the map"
+msgstr "Notizen, Fenstergruppen, Bereiche und die Karte"
+
+msgid "note,sticky,post-it,memo,markdown,text"
+msgstr "Notiz,Zettel,Haftnotiz,Memo,Markdown,Text"
+
+msgid "note,sticky,colour,paper"
+msgstr "Notiz,Zettel,Farbe,Papier"
+
+msgid "group,arrangement,layout,save,workspace,session"
+msgstr "Gruppe,Anordnung,Layout,speichern,Arbeitsbereich,Sitzung"
+
+msgid "group,launch,start,open,application"
+msgstr "Gruppe,starten,öffnen,Anwendung,Programm"
+
+msgid "group,zoom,fit,camera,jump"
+msgstr "Gruppe,Zoom,einpassen,Kamera,springen"
+
+msgid "area,region,zone,frame,section"
+msgstr "Bereich,Region,Zone,Rahmen,Abschnitt"
+
+msgid "area,region,margin,space,grow"
+msgstr "Bereich,Region,Rand,Abstand,wachsen"
+
+msgid "map,minimap,overview,navigator"
+msgstr "Karte,Minikarte,Übersicht,Navigator"
+
+msgctxt "@title shortcut group"
+msgid "Notes, Groups & Map"
+msgstr "Notizen, Gruppen und Karte"
+
+msgctxt "@title shortcut group"
+msgid "Open Groups"
+msgstr "Gruppen öffnen"
+
+msgid "The groups could not be saved."
+msgstr "Die Gruppen konnten nicht gespeichert werden."
+
+msgid "The areas could not be saved."
+msgstr "Die Bereiche konnten nicht gespeichert werden."
+
+msgctxt "@item name of a new group, %1 is a number"
+msgid "Group %1"
+msgstr "Gruppe %1"
+
+msgctxt "@item note color"
+msgid "Blue"
+msgstr "Blau"
+
+msgctxt "@item note color"
+msgid "Green"
+msgstr "Grün"
+
+msgctxt "@item note color"
+msgid "Pink"
+msgstr "Rosa"
+
+msgctxt "@item note color"
+msgid "Gray"
+msgstr "Grau"
+
+msgctxt "@item note color"
+msgid "Yellow"
+msgstr "Gelb"
+
+msgid "Notes on the infinite canvas"
+msgstr "Notizen auf der unendlichen Arbeitsfläche"
+
+msgid "Create a new note (also when the app is already running)."
+msgstr "Eine neue Notiz anlegen (auch wenn die App schon läuft)."
+
+msgctxt "@title:window untitled note"
+msgid "Note"
+msgstr "Notiz"
+
+msgctxt "@title:window"
+msgid "Note"
+msgstr "Notiz"
+
+msgctxt "@title untitled note"
+msgid "Note"
+msgstr "Notiz"
+
+msgctxt "@info:tooltip"
+msgid "Release from the screen"
+msgstr "Vom Bildschirm lösen"
+
+msgctxt "@info:tooltip"
+msgid "Pin to the screen: stays visible while the canvas moves"
+msgstr ""
+"An den Bildschirm anheften: bleibt sichtbar, während sich die Arbeitsfläche "
+"bewegt"
+
+msgctxt "@info:tooltip"
+msgid "More"
+msgstr "Mehr"
+
+msgctxt "@info:tooltip"
+msgid "Hide this note (it is kept)"
+msgstr "Diese Notiz ausblenden (sie bleibt erhalten)"
+
+msgctxt "@info:placeholder"
+msgid ""
+"Write a note… Markdown works: # heading, **bold**, - list, [link](https://…)"
+msgstr ""
+"Notiz schreiben … Markdown geht: # Überschrift, **fett**, - Liste, "
+"[Link](https://…)"
+
+msgctxt "@action note menu"
+msgid "New Note"
+msgstr "Neue Notiz"
+
+msgctxt "@action note menu"
+msgid "Show Formatted"
+msgstr "Formatiert anzeigen"
+
+msgctxt "@action note menu"
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgctxt "@action note menu"
+msgid "Release from the Screen"
+msgstr "Vom Bildschirm lösen"
+
+msgctxt "@action note menu"
+msgid "Pin to the Screen"
+msgstr "An den Bildschirm anheften"
+
+msgctxt "@action note menu"
+msgid "Pinned and Always on Top"
+msgstr "Angeheftet und immer im Vordergrund"
+
+msgctxt "@action note menu"
+msgid "Color"
+msgstr "Farbe"
+
+msgctxt "@action note menu"
+msgid "Hide This Note"
+msgstr "Diese Notiz ausblenden"
+
+msgctxt "@action note menu"
+msgid "Hide All Notes"
+msgstr "Alle Notizen ausblenden"
+
+msgctxt "@action note menu"
+msgid "Show Map"
+msgstr "Karte zeigen"
+
+msgctxt "@action note menu"
+msgid "Delete Note…"
+msgstr "Notiz löschen …"
+
+msgctxt "@info"
+msgid "Delete this note? This cannot be undone."
+msgstr "Diese Notiz löschen? Das lässt sich nicht rückgängig machen."
+
+msgctxt "@action:button"
+msgid "Delete"
+msgstr "Löschen"
+
+msgctxt "@title"
+msgid "On the canvas"
+msgstr "Auf der Arbeitsfläche"
+
+msgctxt "@action:button"
+msgid "New Note"
+msgstr "Neue Notiz"
+
+msgctxt "@action:button"
+msgid "Show Map"
+msgstr "Karte zeigen"
+
+msgctxt "@action:button"
+msgid "Group from Selection"
+msgstr "Gruppe aus Auswahl"
+
+msgctxt "@action:button"
+msgid "Draw an Area"
+msgstr "Bereich aufziehen"
+
+msgctxt "@title"
+msgid "Groups"
+msgstr "Gruppen"
+
+msgctxt "@action:button"
+msgid "New Group"
+msgstr "Neue Gruppe"
+
+msgctxt "@label"
+msgid "Group name"
+msgstr "Name der Gruppe"
+
+msgctxt "@action:button"
+msgid "Move up (changes the shortcut)"
+msgstr "Nach oben (ändert den Kurzbefehl)"
+
+msgctxt "@action:button"
+msgid "Move down (changes the shortcut)"
+msgstr "Nach unten (ändert den Kurzbefehl)"
+
+msgctxt "@action:button"
+msgid "Delete group"
+msgstr "Gruppe löschen"
+
+msgctxt "@action:button %1 is an application"
+msgid "Remove “%1” from the group"
+msgstr "„%1“ aus der Gruppe entfernen"
+
+msgctxt "@action:button"
+msgid "Application…"
+msgstr "Anwendung …"
+
+msgctxt "@label"
+msgid "Arrangement is saved"
+msgstr "Anordnung wird gespeichert"
+
+msgctxt "@option group arrangement"
+msgid "When saved"
+msgstr "Beim Speichern"
+
+msgctxt "@option group arrangement"
+msgid "Automatically"
+msgstr "Automatisch"
+
+msgctxt "@info:status"
+msgid "%1 window open"
+msgid_plural "%1 windows open"
+msgstr[0] "%1 Fenster offen"
+msgstr[1] "%1 Fenster offen"
+
+msgctxt "@action:button"
+msgid "Save Arrangement"
+msgstr "Anordnung speichern"
+
+msgctxt "@action:button"
+msgid "Open"
+msgstr "Öffnen"
+
+msgctxt "@title:window"
+msgid "Add Application to the Group"
+msgstr "Anwendung zur Gruppe hinzufügen"
+
+msgctxt "@title:window"
+msgid "Delete group?"
+msgstr "Gruppe löschen?"
+
+msgid "The group “%1” is deleted. Its windows stay open where they are."
+msgstr "Die Gruppe „%1“ wird gelöscht. Ihre Fenster bleiben offen, wo sie sind."
+
+msgctxt "@title"
+msgid "Areas"
+msgstr "Bereiche"
+
+msgctxt "@label"
+msgid "Area name"
+msgstr "Name des Bereichs"
+
+msgctxt "@label"
+msgid "Grows with its windows"
+msgstr "Wächst mit seinen Fenstern"
+
+msgctxt "@action:button"
+msgid "Remove area"
+msgstr "Bereich entfernen"
+
+msgid "Notes on the canvas"
+msgstr "Notizen auf der Arbeitsfläche"
+
+msgid "Color of new notes"
+msgstr "Farbe neuer Notizen"
+
+msgid ""
+"The paper color a new note gets. Every note can get another color from its "
+"menu."
+msgstr ""
+"Die Papierfarbe einer neuen Notiz. Über ihr Menü kann jede Notiz eine andere "
+"Farbe bekommen."
+
+msgid "Yellow"
+msgstr "Gelb"
+
+msgid "Blue"
+msgstr "Blau"
+
+msgid "Green"
+msgstr "Grün"
+
+msgid "Pink"
+msgstr "Rosa"
+
+msgid "Gray"
+msgstr "Grau"
+
+msgid "Arrangement of new groups is saved"
+msgstr "Anordnung neuer Gruppen wird gespeichert"
+
+msgid "Only when saved"
+msgstr "Nur beim Speichern"
+
+msgid "Automatically when windows are moved"
+msgstr "Automatisch beim Verschieben von Fenstern"
+
+msgid "Opening a group starts missing applications"
+msgstr "Öffnen einer Gruppe startet fehlende Anwendungen"
+
+msgid ""
+"When a group is opened and one of its applications has no window, it is "
+"started and its window is placed in the group. An application in several "
+"groups, like the browser, moves along with the group you open as long as only "
+"one window of it is open."
+msgstr ""
+"Hat eine Anwendung der Gruppe beim Öffnen kein Fenster, wird sie gestartet und"
+" ihr Fenster in die Gruppe gelegt. Eine Anwendung in mehreren Gruppen, etwa "
+"der Browser, springt mit der geöffneten Gruppe mit, solange nur ein Fenster "
+"von ihr offen ist."
+
+msgid "Zoom out for groups larger than the screen"
+msgstr "Bei Gruppen größer als der Bildschirm herauszoomen"
+
+msgid ""
+"When an opened group does not fit on the screen at 100 %, the camera zooms out"
+" until all its windows are visible. Otherwise the camera centers the group at "
+"100 %."
+msgstr ""
+"Passt eine geöffnete Gruppe bei 100 % nicht auf den Bildschirm, zoomt die "
+"Kamera heraus, bis alle ihre Fenster sichtbar sind. Sonst zeigt die Kamera die"
+" Gruppe bei 100 % in der Mitte."
+
+msgid "Show areas on the canvas"
+msgstr "Bereiche auf der Arbeitsfläche zeigen"
+
+msgid "Space around the windows of an area"
+msgstr "Abstand um die Fenster eines Bereichs"
+
+msgid ""
+"An area grows when you drag windows into it or make them larger, and shrinks "
+"when they leave or get smaller. It keeps this much space around its windows, "
+"in pixels at 100 %."
+msgstr ""
+"Ein Bereich wächst, wenn Sie Fenster hineinziehen oder vergrößern, und "
+"schrumpft, wenn sie ihn verlassen oder kleiner werden. Um seine Fenster lässt "
+"er so viel Platz, in Pixeln bei 100 %."
+
+msgid "Size of the map"
+msgstr "Größe der Karte"
+
+# ---------------------------------------------------------------------------
+# Windows only: the service state, Windows' own shortcuts, texts for Windows
+# ---------------------------------------------------------------------------
+
+msgctxt "@info %1 is a release like 25H2, %2 a build number"
+msgid "Windows 11 %1 (build %2)"
+msgstr "Windows 11 %1 (Build %2)"
+
+msgid "The canvas service is not installed next to this app."
+msgstr "Der Arbeitsflächen-Dienst ist nicht neben dieser App installiert."
+
+msgid "The canvas service could not be started."
+msgstr "Der Arbeitsflächen-Dienst konnte nicht gestartet werden."
+
+msgid "Safe mode could not be left: %1"
+msgstr "Der abgesicherte Modus konnte nicht verlassen werden: %1"
+
+msgid ""
+"Shortcuts of Windows cannot be changed here. Give the Infinit Desktop action "
+"another shortcut instead."
+msgstr ""
+"Kurzbefehle von Windows lassen sich hier nicht ändern. Geben Sie stattdessen "
+"der Aktion von Infinit Desktop einen anderen Kurzbefehl."
+
+msgctxt "@title shortcut component"
+msgid "Windows"
+msgstr "Windows"
+
+msgctxt "@title shortcut component"
+msgid "Windows: windows and Snap"
+msgstr "Windows: Fenster und Andocken"
+
+msgctxt "@title shortcut component"
+msgid "Windows: virtual desktops"
+msgstr "Windows: virtuelle Desktops"
+
+msgctxt "@title shortcut component"
+msgid "Windows: accessibility"
+msgstr "Windows: Barrierefreiheit"
+
+msgctxt "@title shortcut component"
+msgid "Xbox Game Bar"
+msgstr "Xbox Game Bar"
+
+msgctxt "@action Windows shortcut"
+msgid "Open quick settings"
+msgstr "Schnelleinstellungen öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Focus the notification area"
+msgstr "Infobereich auswählen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open Copilot"
+msgstr "Copilot öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Show or hide the desktop"
+msgstr "Desktop anzeigen oder ausblenden"
+
+msgctxt "@action Windows shortcut"
+msgid "Open File Explorer"
+msgstr "Explorer öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Start voice typing"
+msgstr "Spracheingabe starten"
+
+msgctxt "@action Windows shortcut"
+msgid "Open Settings"
+msgstr "Einstellungen öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Cast to a display"
+msgstr "Auf einen Bildschirm übertragen"
+
+msgctxt "@action Windows shortcut"
+msgid "Lock the computer"
+msgstr "Computer sperren"
+
+msgctxt "@action Windows shortcut"
+msgid "Minimize all windows"
+msgstr "Alle Fenster minimieren"
+
+msgctxt "@action Windows shortcut"
+msgid "Restore minimized windows"
+msgstr "Minimierte Fenster wiederherstellen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open notifications and calendar"
+msgstr "Benachrichtigungen und Kalender öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Choose a presentation display mode"
+msgstr "Anzeigemodus für Präsentationen wählen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open the Run dialog"
+msgstr "Dialog „Ausführen“ öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open search"
+msgstr "Suche öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Cycle through the apps on the taskbar"
+msgstr "Apps auf der Taskleiste durchlaufen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open accessibility settings"
+msgstr "Einstellungen für Barrierefreiheit öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open the clipboard history"
+msgstr "Zwischenablageverlauf öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open widgets"
+msgstr "Widgets öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open the Quick Link menu"
+msgstr "Schnellzugriffsmenü öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open the emoji panel"
+msgstr "Emoji-Bereich öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Switch the input language"
+msgstr "Eingabesprache wechseln"
+
+msgctxt "@action Windows shortcut"
+msgid "Take a screenshot of a region"
+msgstr "Screenshot eines Bereichs aufnehmen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open Task Manager"
+msgstr "Task-Manager öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Switch between open apps"
+msgstr "Zwischen geöffneten Apps wechseln"
+
+msgctxt "@action Windows shortcut"
+msgid "Close the active window"
+msgstr "Aktives Fenster schließen"
+
+msgctxt "@action Windows shortcut"
+msgid "Show date and time on the taskbar"
+msgstr "Datum und Uhrzeit auf der Taskleiste anzeigen"
+
+msgctxt "@action Windows shortcut"
+msgid "Mute the microphone in calls"
+msgstr "Mikrofon in Anrufen stummschalten"
+
+msgctxt "@action Windows shortcut"
+msgid "Open Task View"
+msgstr "Taskansicht öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open snap layouts"
+msgstr "Andocklayouts öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Maximize the window"
+msgstr "Fenster maximieren"
+
+msgctxt "@action Windows shortcut"
+msgid "Restore or minimize the window"
+msgstr "Fenster wiederherstellen oder minimieren"
+
+msgctxt "@action Windows shortcut"
+msgid "Snap the window to the left"
+msgstr "Fenster links andocken"
+
+msgctxt "@action Windows shortcut"
+msgid "Snap the window to the right"
+msgstr "Fenster rechts andocken"
+
+msgctxt "@action Windows shortcut"
+msgid "Stretch the window to the top and bottom"
+msgstr "Fenster nach oben und unten strecken"
+
+msgctxt "@action Windows shortcut"
+msgid "Move the window to the monitor on the left"
+msgstr "Fenster auf den linken Bildschirm verschieben"
+
+msgctxt "@action Windows shortcut"
+msgid "Move the window to the monitor on the right"
+msgstr "Fenster auf den rechten Bildschirm verschieben"
+
+msgctxt "@action Windows shortcut"
+msgid "Minimize all windows except the active one"
+msgstr "Alle Fenster außer dem aktiven minimieren"
+
+msgctxt "@action Windows shortcut"
+msgid "Peek at the desktop"
+msgstr "Kurz auf den Desktop schauen"
+
+msgctxt "@action Windows shortcut"
+msgid "Add a virtual desktop"
+msgstr "Virtuellen Desktop hinzufügen"
+
+msgctxt "@action Windows shortcut"
+msgid "Close the virtual desktop"
+msgstr "Virtuellen Desktop schließen"
+
+msgctxt "@action Windows shortcut"
+msgid "Switch to the virtual desktop on the left"
+msgstr "Zum linken virtuellen Desktop wechseln"
+
+msgctxt "@action Windows shortcut"
+msgid "Switch to the virtual desktop on the right"
+msgstr "Zum rechten virtuellen Desktop wechseln"
+
+msgctxt "@action Windows shortcut"
+msgid "Magnifier: zoom in"
+msgstr "Bildschirmlupe: vergrößern"
+
+msgctxt "@action Windows shortcut"
+msgid "Magnifier: zoom out"
+msgstr "Bildschirmlupe: verkleinern"
+
+msgctxt "@action Windows shortcut"
+msgid "Close the Magnifier"
+msgstr "Bildschirmlupe schließen"
+
+msgctxt "@action Windows shortcut"
+msgid "Turn Narrator on or off"
+msgstr "Sprachausgabe ein- oder ausschalten"
+
+msgctxt "@action Windows shortcut"
+msgid "Turn color filters on or off"
+msgstr "Farbfilter ein- oder ausschalten"
+
+msgctxt "@action Windows shortcut"
+msgid "Open the on-screen keyboard"
+msgstr "Bildschirmtastatur öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Open the Game Bar"
+msgstr "Game Bar öffnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Record the last moments"
+msgstr "Die letzten Momente aufzeichnen"
+
+msgctxt "@action Windows shortcut"
+msgid "Start or stop recording"
+msgstr "Aufnahme starten oder beenden"
+
+msgctxt "@action Windows shortcut"
+msgid "Show or hide the recording timer"
+msgstr "Aufnahmezeit ein- oder ausblenden"
+
+msgctxt "@action Windows shortcut"
+msgid "Turn the microphone on or off while recording"
+msgstr "Mikrofon während der Aufnahme ein- oder ausschalten"
+
+msgctxt "@action Windows shortcut"
+msgid "Turn HDR on or off"
+msgstr "HDR ein- oder ausschalten"
+
+msgctxt "@action Windows shortcut"
+msgid "Take a screenshot of the game"
+msgstr "Screenshot des Spiels aufnehmen"
+
+msgctxt "@action Windows shortcut, %1 is a number"
+msgid "Open app %1 on the taskbar"
+msgstr "App %1 auf der Taskleiste öffnen"
+
+msgctxt "@action Windows shortcut, %1 is a number"
+msgid "Open the jump list of app %1 on the taskbar"
+msgstr "Sprungliste von App %1 auf der Taskleiste öffnen"
+
+msgctxt "@title application name"
+msgid "WIN Infinit Desktop"
+msgstr "WIN Infinit Desktop"
+
+msgctxt "@title:window"
+msgid "WIN Infinit Desktop"
+msgstr "WIN Infinit Desktop"
+
+msgid "Settings for the infinite canvas of Windows"
+msgstr "Einstellungen für die unendliche Arbeitsfläche von Windows"
+
+msgctxt "@info:status %1 shortcuts of Infinit Desktop and Windows"
+msgid ""
+"%1 shortcut of Infinit Desktop and Windows. Windows' own shortcuts cannot be "
+"changed; while the canvas service runs, a shortcut of Infinit Desktop wins."
+msgid_plural ""
+"%1 shortcuts of Infinit Desktop and Windows. Windows' own shortcuts cannot be "
+"changed; while the canvas service runs, a shortcut of Infinit Desktop wins."
+msgstr[0] ""
+"%1 Kurzbefehl von Infinit Desktop und Windows. Die Kurzbefehle von Windows "
+"lassen sich nicht ändern; solange der Arbeitsflächen-Dienst läuft, gewinnt ein"
+" Kurzbefehl von Infinit Desktop."
+msgstr[1] ""
+"%1 Kurzbefehle von Infinit Desktop und Windows. Die Kurzbefehle von Windows "
+"lassen sich nicht ändern; solange der Arbeitsflächen-Dienst läuft, gewinnt ein"
+" Kurzbefehl von Infinit Desktop."
+
+msgid "The list of shortcuts could not be loaded."
+msgstr "Die Liste der Kurzbefehle konnte nicht geladen werden."
+
+msgctxt "@info while recording a shortcut"
+msgid "Add Win, Ctrl or Alt"
+msgstr "Win, Strg oder Alt hinzunehmen"
+
+msgid "Scroll with two fingers on the touchpad over the empty desktop to pan"
+msgstr ""
+"Mit zwei Fingern auf dem Touchpad über dem leeren Desktop scrollen, um zu "
+"verschieben"
+
+msgid ""
+"Version %1 of the canvas service is running, these settings belong to version "
+"%2. Quit WIN Infinit Desktop from its icon in the notification area and start "
+"it again."
+msgstr ""
+"Version %1 des Arbeitsflächen-Dienstes läuft, diese Einstellungen gehören zu "
+"Version %2. Beenden Sie WIN Infinit Desktop über sein Symbol im Infobereich "
+"und starten Sie es erneut."
+
+msgid "The list is shown while the canvas service is running."
+msgstr "Die Liste wird angezeigt, solange der Arbeitsflächen-Dienst läuft."
+
+msgctxt "@title search result section"
+msgid "Shortcuts of Windows"
+msgstr "Kurzbefehle von Windows"
+
+msgctxt "@action:button open the Game Bar page of the Windows settings"
+msgid "Game Bar Settings"
+msgstr "Game-Bar-Einstellungen"
+
+msgctxt "@title:tab %1 is the number of conflicts"
+msgid "With Windows · %1 conflict"
+msgid_plural "With Windows · %1 conflicts"
+msgstr[0] "Mit Windows · %1 Konflikt"
+msgstr[1] "Mit Windows · %1 Konflikte"
+
+msgctxt "@title:tab"
+msgid "With Windows"
+msgstr "Mit Windows"
+
+msgid ""
+"The settings file cannot be written, so shortcuts cannot be changed right now."
+" The defaults are shown."
+msgstr ""
+"Die Einstellungsdatei kann nicht geschrieben werden, daher lassen sich "
+"Kurzbefehle gerade nicht ändern. Die Standardwerte werden angezeigt."
+
+msgctxt "@title subtitle of the product name"
+msgid "Infinite canvas for Windows"
+msgstr "Unendliche Arbeitsfläche für Windows"
+
+msgid ""
+"The canvas service is installed but not running. Turn it on to make every "
+"screen an infinite canvas; it then also starts when you sign in."
+msgstr ""
+"Der Arbeitsflächen-Dienst ist installiert, läuft aber nicht. Schalten Sie ihn "
+"ein, damit jeder Bildschirm eine unendliche Arbeitsfläche wird; er startet "
+"dann auch bei der Anmeldung."
+
+msgid ""
+"WIN Infinit Desktop crashed several times in a row, so it was started in safe "
+"mode and leaves the windows alone. Leave safe mode to use the canvas again."
+msgstr ""
+"WIN Infinit Desktop ist mehrmals hintereinander abgestürzt und wurde deshalb "
+"im abgesicherten Modus gestartet; die Fenster bleiben unberührt. Verlassen Sie"
+" den abgesicherten Modus, um die Arbeitsfläche wieder zu nutzen."
+
+msgid ""
+"The canvas service win-infinit-desktop.exe is not next to this app. Install "
+"WIN Infinit Desktop again."
+msgstr ""
+"Der Arbeitsflächen-Dienst win-infinit-desktop.exe liegt nicht neben dieser "
+"App. Installieren Sie WIN Infinit Desktop erneut."
+
+msgid "Asking the canvas service…"
+msgstr "Der Arbeitsflächen-Dienst wird abgefragt …"
+
+msgid ""
+"The update opens a PowerShell window: it downloads the new version from "
+"GitHub, closes WIN Infinit Desktop, installs the new version and starts it "
+"again."
+msgstr ""
+"Das Update öffnet ein PowerShell-Fenster: Es lädt die neue Version von GitHub "
+"herunter, beendet WIN Infinit Desktop, installiert die neue Version und "
+"startet sie wieder."
+
+msgid ""
+"This release has no package for this computer yet. Download it from GitHub."
+msgstr ""
+"Für diesen Computer gibt es in dieser Version noch kein Paket. Laden Sie es "
+"von GitHub herunter."
+
+msgid "The update is running in the PowerShell window."
+msgstr "Das Update läuft im PowerShell-Fenster."
+
+msgid "PowerShell could not be started. Run this command in PowerShell:"
+msgstr ""
+"PowerShell konnte nicht gestartet werden. Führen Sie diesen Befehl in "
+"PowerShell aus:"
+
+msgid "Available while the canvas service is running."
+msgstr "Verfügbar, solange der Arbeitsflächen-Dienst läuft."
+
+msgid ""
+"%1 note. Right click on the empty canvas in the overview (Win + right click on"
+" the desktop at 100 %) for the canvas menu."
+msgid_plural ""
+"%1 notes. Right click on the empty canvas in the overview (Win + right click "
+"on the desktop at 100 %) for the canvas menu."
+msgstr[0] ""
+"%1 Notiz. Rechtsklick auf die freie Arbeitsfläche in der Übersicht (bei 100 % "
+"Win + Rechtsklick auf den Desktop) öffnet das Menü der Arbeitsfläche."
+msgstr[1] ""
+"%1 Notizen. Rechtsklick auf die freie Arbeitsfläche in der Übersicht (bei 100 "
+"% Win + Rechtsklick auf den Desktop) öffnet das Menü der Arbeitsfläche."
+
+msgid ""
+"A group opens its applications together, always arranged the same way, at the "
+"place where it was last – and the view jumps there. Draw a rectangle around "
+"open windows with Win+Alt+G, or create a group here and add applications."
+msgstr ""
+"Eine Gruppe öffnet ihre Anwendungen gemeinsam, immer gleich angeordnet, an der"
+" Stelle, an der sie zuletzt war – und die Ansicht springt dorthin. Ziehen Sie "
+"mit Win+Alt+G ein Rechteck um offene Fenster oder legen Sie hier eine Gruppe "
+"an und fügen Sie Anwendungen hinzu."
+
+msgid ""
+"Areas divide the canvas into named parts, for example “Project” or “Reading”. "
+"Draw one with Win+Alt+B; it grows and shrinks with the windows you drag into "
+"it."
+msgstr ""
+"Bereiche teilen die Arbeitsfläche in benannte Teile, zum Beispiel „Projekt“ "
+"oder „Lesen“. Ziehen Sie einen mit Win+Alt+B auf; er wächst und schrumpft mit "
+"den Fenstern, die Sie hineinziehen."
+
+msgid "Touchpad"
+msgstr "Touchpad"
+
+msgid "Scrolling and pinching on the touchpad"
+msgstr "Scrollen und Zoomen mit zwei Fingern auf dem Touchpad"
+
+msgid "move,drag,key,windows key,win,alt,modifier"
+msgstr ""
+"verschieben,ziehen,taste,windows-"
+"taste,win,alt,modifikator,move,drag,key,windows key,modifier"
+
+msgid "scroll,wheel,magnify,key,windows key,win"
+msgstr ""
+"scrollen,mausrad,vergrößern,taste,windows-"
+"taste,win,scroll,wheel,magnify,key,windows key"
+
+msgctxt "keyboard key"
+msgid "Win"
+msgstr "Win"
+
+msgid "The update is installed. WIN Infinit Desktop has been started again."
+msgstr "Das Update ist installiert. WIN Infinit Desktop wurde wieder gestartet."
+
+msgid "Press Enter to close this window"
+msgstr "Drücken Sie die Eingabetaste, um dieses Fenster zu schließen"
+
+msgid ""
+"Hold these keys and drag with the left mouse button to pan the canvas, even on"
+" top of windows. The Start menu stays closed."
+msgstr ""
+"Halten Sie diese Tasten und ziehen Sie mit der linken Maustaste, um die "
+"Arbeitsfläche zu verschieben, auch über Fenstern. Das Startmenü bleibt dabei "
+"geschlossen."
+
+msgid "Win + Alt"
+msgstr "Win + Alt"
+
+msgid "Win + Ctrl"
+msgstr "Win + Strg"
+
+msgid "Win + Shift"
+msgstr "Win + Umschalt"
+
+msgid "Win"
+msgstr "Win"
+
+msgid ""
+"Hold these keys and turn the mouse wheel to zoom at the mouse pointer, even on"
+" top of windows. The Start menu stays closed."
+msgstr ""
+"Halten Sie diese Tasten und drehen Sie das Mausrad, um am Mauszeiger zu "
+"zoomen, auch über Fenstern. Das Startmenü bleibt dabei geschlossen."
+
+msgid "Windows that are always on top are pinned to the screen"
+msgstr ""
+"Fenster, die immer im Vordergrund sind, werden an den Bildschirm angeheftet"
+
+msgid ""
+"Windows that stay on top of all others (an option of many programs, for "
+"example video players) stay fixed on the screen and are not moved by panning "
+"or zooming. Use the shortcut \"Pin Window to Screen\" to pin a window without "
+"keeping it above."
+msgstr ""
+"Fenster, die über allen anderen bleiben (eine Option vieler Programme, zum "
+"Beispiel von Videoplayern), bleiben fest auf dem Bildschirm und werden beim "
+"Verschieben und Zoomen nicht bewegt. Mit dem Kurzbefehl „Fenster an Bildschirm"
+" anheften“ heften Sie ein Fenster an, ohne es im Vordergrund zu halten."
+
+msgid ""
+"Programs whose windows never move with the canvas: the program name (for "
+"example notepad), its full path or its app ID, one per entry."
+msgstr ""
+"Programme, deren Fenster sich nie mit der Arbeitsfläche bewegen: der "
+"Programmname (zum Beispiel notepad), der vollständige Pfad oder die App-ID, "
+"ein Programm pro Eintrag."
+
+msgid ""
+"Programs whose position is never remembered: the program name (for example "
+"snippingtool), its full path or its app ID, one per entry."
+msgstr ""
+"Programme, deren Position nie gemerkt wird: der Programmname (zum Beispiel "
+"snippingtool), der vollständige Pfad oder die App-ID, ein Programm pro "
+"Eintrag."
+
+msgid ""
+"While moving a window, hold the pointer near the edge of the screen to scroll "
+"the canvas in that direction. The window travels with the pointer. While a "
+"window is dragged, this replaces Snap (\"drag to the screen edge to snap or "
+"maximize\"); switch it off to use Snap instead."
+msgstr ""
+"Halten Sie beim Verschieben eines Fensters den Mauszeiger nahe am "
+"Bildschirmrand, um die Arbeitsfläche in diese Richtung zu scrollen. Das "
+"Fenster wandert mit dem Mauszeiger mit. Solange ein Fenster gezogen wird, "
+"ersetzt dies das Andocken („an den Bildschirmrand ziehen, um anzudocken oder "
+"zu maximieren“); schalten Sie es aus, um stattdessen anzudocken."
+
+msgid ""
+"Notes are small windows with Markdown text that lie on the canvas like other "
+"windows and are saved automatically. Create one with Win+Alt+N, from the "
+"canvas menu (right click on the empty canvas in the overview, Win + right "
+"click on the desktop at 100 %) or from the WIN Infinit Desktop icon in the "
+"notification area. Pin a note to keep it on the screen while the canvas moves."
+msgstr ""
+"Notizen sind kleine Fenster mit Markdown-Text, die wie andere Fenster auf der "
+"Arbeitsfläche liegen und automatisch gespeichert werden. Legen Sie eine mit "
+"Win+Alt+N an, über das Menü der Arbeitsfläche (Rechtsklick auf die freie "
+"Arbeitsfläche in der Übersicht, bei 100 % Win + Rechtsklick auf den Desktop) "
+"oder über das Symbol von WIN Infinit Desktop im Infobereich. Heften Sie eine "
+"Notiz an, damit sie auf dem Bildschirm bleibt, während sich die Arbeitsfläche "
+"bewegt."
+
+msgid ""
+"A group remembers how its windows are arranged and always opens like that. "
+"Either the arrangement only changes when you save it (Win+Alt+Shift+G or in "
+"this app), or every move and resize of a group window while the group is open "
+"becomes the new arrangement. Each group can be switched on its own. Where the "
+"group lies on the canvas always moves with its windows."
+msgstr ""
+"Eine Gruppe merkt sich, wie ihre Fenster angeordnet sind, und öffnet sich "
+"immer so. Entweder ändert sich die Anordnung nur, wenn Sie sie speichern "
+"(Win+Alt+Umschalt+G oder in dieser App), oder jedes Verschieben und jede "
+"Größenänderung eines Gruppenfensters bei offener Gruppe wird zur neuen "
+"Anordnung. Jede Gruppe lässt sich einzeln umstellen. Wo die Gruppe auf der "
+"Arbeitsfläche liegt, wandert immer mit ihren Fenstern mit."
+
+msgid ""
+"Areas are named parts of the canvas that you draw with Win+Alt+B. They are "
+"drawn as colored frames in the overview and on the map."
+msgstr ""
+"Bereiche sind benannte Teile der Arbeitsfläche, die Sie mit Win+Alt+B "
+"aufziehen. Sie werden in der Übersicht und auf der Karte als farbige Rahmen "
+"gezeichnet."
+
+msgid "How much of the screen the map (Win+Alt+M) covers, in percent."
+msgstr "Wie viel des Bildschirms die Karte (Win+Alt+M) bedeckt, in Prozent."
+
+msgid ""
+"If WIN Infinit Desktop crashes several times in a row, it starts in safe mode "
+"and leaves the windows alone until you turn it on again. This keeps your "
+"desktop usable."
+msgstr ""
+"Stürzt WIN Infinit Desktop mehrmals hintereinander ab, startet es im "
+"abgesicherten Modus und lässt die Fenster unberührt, bis Sie es wieder "
+"einschalten. So bleibt Ihr Desktop benutzbar."
+
+msgid ""
+"Writes detailed messages to the file service.log in %LOCALAPPDATA%\\WIN "
+"Infinit Desktop. Only useful for bug reports."
+msgstr ""
+"Schreibt ausführliche Meldungen in die Datei service.log in "
+"%LOCALAPPDATA%\\WIN Infinit Desktop. Nur für Fehlerberichte nützlich."

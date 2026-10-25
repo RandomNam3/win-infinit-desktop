@@ -1,0 +1,249 @@
+# WIN Infinit Desktop installieren
+
+> „Wenn es Windows 11 ausführt, läuft auch WIN Infinit Desktop.“
+
+WIN Infinit Desktop ist ein Hintergrundprogramm für **Windows 11**. Es macht jeden Monitor zu einer
+unendlichen Arbeitsfläche, die man verschieben und zoomen kann. Dazu gehören eine Notiz-App und eine
+eigene Einstellungs-App.
+
+**Voraussetzungen**
+
+- Windows 11 **24H2 oder neuer** (Build 26100 und höher; 25H2 und 26H2 werden unterstützt)
+- ein **x64**-Prozessor
+- ein normales Benutzerkonto, Administratorrechte sind nicht nötig
+
+---
+
+## Inhalt
+
+1. [Schnellstart](#1-schnellstart)
+2. [Was der Installer ändert](#2-was-der-installer-ändert)
+3. [Smart App Control und SmartScreen](#3-smart-app-control-und-smartscreen)
+4. [Starten, beenden, Autostart](#4-starten-beenden-autostart)
+5. [Updates](#5-updates)
+6. [Deinstallieren](#6-deinstallieren)
+7. [Selbst bauen](#7-selbst-bauen)
+8. [Fehlerbehebung](#8-fehlerbehebung)
+9. [Für Entwickler](#9-für-entwickler)
+
+---
+
+## 1. Schnellstart
+
+1. Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest) die
+   Datei `win-infinit-desktop-<Version>-x64.zip` herunterladen.
+2. Das ZIP entpacken (Rechtsklick → *Alle extrahieren*).
+3. Im entpackten Ordner ein PowerShell-Fenster öffnen (Rechtsklick in den Ordner → *Im Terminal öffnen*)
+   und ausführen:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+Der Installer
+
+1. prüft die Windows-Version (mindestens Build 26100),
+2. beendet eine laufende ältere Version sauber, sodass alle Fenster auf den Bildschirm zurückkommen,
+3. kopiert die Programme nach `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`,
+4. legt die Einträge im Startmenü, im Autostart und unter *Einstellungen → Apps* an,
+5. startet WIN Infinit Desktop. Das Symbol erscheint im Infobereich der Taskleiste.
+
+Vorher ansehen, was passieren würde (ändert nichts):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -DryRun
+```
+
+Mit `-NoStart` wird nur installiert, nicht gestartet.
+
+---
+
+## 2. Was der Installer ändert
+
+| Was | Wo |
+|---|---|
+| Programme | `%LOCALAPPDATA%\Programs\WIN Infinit Desktop` (Dienst `win-infinit-desktop.exe`, Notiz-App `wid-notes.exe`, Einstellungs-App `wid-settings.exe`, `wid-ctl.exe`, `wid-probe.exe`, Qt, `install.ps1`) |
+| Startmenü | Ordner *WIN Infinit Desktop* mit „WIN Infinit Desktop“ und „WIN Infinit Desktop Settings“ |
+| Autostart | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, Wert *WIN Infinit Desktop* |
+| Eintrag unter *Einstellungen → Apps* | `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\WinInfinitDesktop` |
+
+Alles liegt im eigenen Benutzerprofil. Andere Benutzer des Rechners sind nicht betroffen, Dienste oder
+Treiber werden nicht installiert.
+
+Deine Daten legen die Programme selbst an; der Installer fasst sie nicht an:
+
+| Daten | Ort |
+|---|---|
+| Einstellungen und Tastenkürzel | `%APPDATA%\WIN Infinit Desktop\settings.ini` |
+| Notizen | `%APPDATA%\WIN Infinit Desktop\notes\` (eine Markdown-Datei je Notiz) |
+| Kameras, Lesezeichen, gemerkte Fensterplätze, Gruppen, Bereiche, Protokoll | `%LOCALAPPDATA%\WIN Infinit Desktop\` |
+
+---
+
+## 3. Smart App Control und SmartScreen
+
+Die Programme sind nicht digital signiert.
+
+- **SmartScreen** warnt beim ersten Start von Programmen aus dem Internet. Der Installer entfernt die
+  Download-Markierung von den kopierten Dateien, die Warnung erscheint deshalb in der Regel nicht.
+- **Smart App Control** blockiert nicht signierte Programme ganz. Ist es eingeschaltet, startet
+  WIN Infinit Desktop nicht, und der Installer meldet *„The service did not start“*. Abhilfe: *Windows-
+  Sicherheit → App- und Browsersteuerung → Smart App Control* ausschalten.
+
+---
+
+## 4. Starten, beenden, Autostart
+
+- **Starten:** Startmenü → *WIN Infinit Desktop*. Nach der Anmeldung startet es automatisch.
+- **Beenden:** Symbol im Infobereich → *Beenden*. Alle Fenster außerhalb der Bildschirme kommen dabei
+  zurück, Snap und „immer im Vordergrund“ werden wiederhergestellt. Dasselbe passiert beim Abmelden und
+  Herunterfahren.
+- **Pausieren:** Symbol im Infobereich → *Gesten pausieren*. Die Fläche bleibt, Maus und Tastatur
+  verhalten sich wie ohne WIN Infinit Desktop.
+- **Autostart ein- und ausschalten:** in der Einstellungs-App (*Einschalten* / *Ausschalten* auf der
+  Startseite) oder unter *Einstellungen → Apps → Autostart*.
+
+---
+
+## 5. Updates
+
+Die Einstellungs-App sieht beim Start auf GitHub nach, ob es eine neue Version gibt. **Update
+installieren** lädt das passende ZIP aus dem Release herunter und führt dessen `install.ps1 -Update` in
+einem PowerShell-Fenster aus. Der Installer beendet dabei den laufenden Dienst sauber und startet danach
+die neue Version.
+
+Von Hand: das neue ZIP herunterladen, entpacken und im Ordner ausführen:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Update
+```
+
+Einstellungen, Notizen und gemerkte Plätze bleiben erhalten.
+
+---
+
+## 6. Deinstallieren
+
+*Einstellungen → Apps → Installierte Apps → WIN Infinit Desktop → Deinstallieren*, oder:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\install.ps1" -Uninstall
+# zusätzlich Einstellungen, Notizen und gespeicherte Arbeitsflächen löschen:
+powershell -NoProfile -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\install.ps1" -Uninstall -RemoveData
+```
+
+Das beendet alle Programme von WIN Infinit Desktop (die Notiz-App speichert vorher), entfernt den
+Autostart, den Startmenü-Ordner, den Eintrag unter *Apps* und den Programmordner. Ohne `-RemoveData`
+bleiben `%APPDATA%\WIN Infinit Desktop` und `%LOCALAPPDATA%\WIN Infinit Desktop` erhalten.
+
+---
+
+## 7. Selbst bauen
+
+Voraussetzungen:
+
+- Visual Studio 2022 oder 2026 mit *Desktopentwicklung mit C++*
+- CMake ≥ 3.22 und Ninja (beide bringt Visual Studio mit)
+- Qt ≥ 6.8 für MSVC (Module Core, Gui, Network, Qml, Quick, QuickControls2, Test), z. B. über den
+  Qt Online Installer
+
+In der *Developer PowerShell for VS*:
+
+```powershell
+git clone https://github.com/RandomNam3/win-infinit-desktop.git
+cd win-infinit-desktop
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Qt\6.8.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+Installierbares ZIP wie im Release (braucht `windeployqt` im `PATH`):
+
+```powershell
+$env:PATH = "C:\Qt\6.8.3\msvc2022_64\bin;$env:PATH"
+pwsh scripts/package.ps1 -Build build -Output dist -Arch x64
+```
+
+Danach `dist\install.ps1` ausführen wie in [Abschnitt 1](#1-schnellstart).
+
+CMake-Optionen:
+
+| Option | Standard | Wirkung |
+|---|---|---|
+| `WID_WITH_QT` | `ON` | alle Qt-Teile; `OFF` baut nur die Win32-Schicht und `wid-probe` |
+| `WID_BUILD_APPS` | `ON` | Notiz-App und Einstellungs-App (Qt Quick) |
+| `WID_BUILD_PROBE` | `ON` | das Diagnose-Werkzeug `wid-probe` |
+| `WID_ASAN` | `OFF` | AddressSanitizer (`/fsanitize=address`), nur zum Entwickeln |
+
+---
+
+## 8. Fehlerbehebung
+
+**Das Programm startet nicht, kein Symbol im Infobereich**
+
+- Smart App Control prüfen ([Abschnitt 3](#3-smart-app-control-und-smartscreen)).
+- Die Windows-Version prüfen: `winver`. Unter Build 26100 startet WIN Infinit Desktop nicht.
+- Das Protokoll ansehen: `%LOCALAPPDATA%\WIN Infinit Desktop\service.log`.
+
+**Der Installer meldet „The service did not quit“**
+
+Die laufende Version hat auf die Bitte zum Beenden nicht reagiert. Über das Symbol im Infobereich
+beenden und den Installer noch einmal ausführen. Der Installer beendet den Dienst nie gewaltsam, damit
+keine Fenster außerhalb der Bildschirme liegen bleiben.
+
+**Fenster liegen außerhalb der Bildschirme**
+
+Symbol im Infobereich → *Alle Fenster zurückholen*. Nach einem Absturz holt der nächste Start alle
+Fenster zurück, die ganz außerhalb aller Bildschirme liegen.
+
+**Abgesicherter Modus**
+
+Stürzt der Dienst dreimal hintereinander ab, startet er im abgesicherten Modus: keine Gesten, keine
+Fensterverwaltung, nur das Symbol im Infobereich. Verlassen über das Symbol (*Abgesicherten Modus
+verlassen*) oder die Einstellungs-App. Von Hand:
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\wid-ctl.exe" leaveSafeMode
+# Absturzzähler zurücksetzen (bei beendetem Dienst)
+Remove-Item "$env:LOCALAPPDATA\WIN Infinit Desktop\crashguard"
+```
+
+**Ausführliches Protokoll**
+
+In der Einstellungs-App unter *Erweitert* das *Debug-Protokoll* einschalten. Die Meldungen stehen in
+`%LOCALAPPDATA%\WIN Infinit Desktop\service.log`.
+
+**Bericht über das System**
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\wid-probe.exe" > bericht.txt
+```
+
+Der Bericht enthält Windows-Version, Bildschirme und alle Fenster mit ihrer Einordnung. Fenstertitel
+stehen nur mit `--titles` darin, Pfade im Benutzerprofil werden zu `%USERPROFILE%`.
+
+---
+
+## 9. Für Entwickler
+
+```powershell
+ctest --test-dir build --output-on-failure        # Unit-Tests
+pwsh tests/runtime/smoke.ps1 -Build build         # Laufzeittest auf dem eigenen Desktop
+& build\tools\wid-ctl\wid-ctl.exe state           # Zustand des laufenden Dienstes
+& build\tools\wid-ctl\wid-ctl.exe pan dx=-500 dy=0
+```
+
+`wid-ctl` spricht die Named-Pipe-Schnittstelle des Dienstes (Methoden in
+[ARCHITEKTUR.md](ARCHITEKTUR.md#11-ipc-schnittstelle)). Mit `WID_DEBUG=1` schreibt der Dienst ausführliche
+Meldungen ins Protokoll.
+
+CI (`.github/workflows/ci.yml`):
+- Build und Unit-Tests mit MSVC auf x64, zusätzlich mit AddressSanitizer;
+- ARM64-Build der Win32-Schicht und von `wid-probe`;
+- der gemeinsame Kern und die plattformneutralen Teile der Apps unter Linux, Prüfung des deutschen
+  Katalogs;
+- auf x64: Paket bauen, installieren und deinstallieren, alle Seiten der Einstellungs-App rendern, die
+  Notiz-App starten und den Laufzeittest ausführen.
+
+`.github/workflows/release.yml` baut für jede neue Version auf `main` das ZIP, setzt den Tag `v<Version>`
+und veröffentlicht das Release mit den Notizen aus `docs/releases/<Version>.md`.

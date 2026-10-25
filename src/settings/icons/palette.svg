@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+<!-- SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+     SPDX-License-Identifier: GPL-3.0-or-later -->
+<g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.1 0 1.75-.75 1.75-1.6 0-.45-.2-.8-.45-1.1-.25-.3-.45-.65-.45-1.1 0-.9.7-1.7 1.65-1.7h2A4 4 0 0 0 20.5 11c0-4.15-3.8-7.5-8.5-7.5z"/><circle cx="7.75" cy="11.5" r="0.6" fill="currentColor"/><circle cx="10" cy="7.75" r="0.6" fill="currentColor"/><circle cx="14.25" cy="7.75" r="0.6" fill="currentColor"/>
+</g>
+</svg>

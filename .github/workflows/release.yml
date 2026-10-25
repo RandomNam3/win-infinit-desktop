@@ -1,0 +1,193 @@
+# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Every version gets its tag (vX.Y.Z) and its GitHub release with the installable zip,
+# which the update check of the settings app reads.
+#
+# - Push to main: if the project version in CMakeLists.txt has no tag yet, the package is
+#   built, the tag is created on that commit and the release is published with the zip.
+# - Manual run with a commit: releases the version of that commit (for a version that was
+#   merged without its release). GitHub only lets this workflow's token create a tag on a
+#   commit whose workflow files match the ones on main.
+# - Pushing a tag vX.Y.Z by hand still works; it has to match the version.
+#
+# Release notes: docs/releases/X.Y.Z.md (Markdown without a title line, taken from main so
+# they can be added afterwards); without that file, the body of an annotated tag.
+# Asset: win-infinit-desktop-X.Y.Z-x64.zip (programs, Qt, install.ps1).
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths: ['CMakeLists.txt', 'docs/releases/**']
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit (or branch) whose version is released
+        default: main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Version and notes
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+      released: ${{ steps.version.outputs.released }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          fetch-depth: 0
+
+      - name: Version, tag and notes
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ver=$(sed -n 's/^project(win-infinit-desktop VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
+          [ -n "$ver" ] || { echo "::error::no project version in CMakeLists.txt"; exit 1; }
+          tag="v$ver"
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "$tag" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match the project version $ver"
+            exit 1
+          fi
+          echo "version $ver, tag $tag, commit $(git rev-parse --short HEAD)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          # A release that already has its zip is only refreshed (notes), not rebuilt.
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null \
+              | grep -qx "win-infinit-desktop-$ver-x64.zip"; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          git fetch --force --no-tags origin "refs/tags/$tag:refs/tags/$tag" 2>/dev/null || true
+          git fetch --no-tags origin main
+          if git show "origin/main:docs/releases/$ver.md" > notes.md 2>/dev/null && [ -s notes.md ]; then
+            echo "notes: docs/releases/$ver.md"
+          elif [ -s "docs/releases/$ver.md" ]; then
+            cp "docs/releases/$ver.md" notes.md
+            echo "notes: docs/releases/$ver.md of this commit"
+          elif git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            git for-each-ref "refs/tags/$tag" --format='%(contents:body)' > notes.md
+            echo "notes: body of the tag"
+          fi
+          if [ ! -s notes.md ]; then
+            echo "::warning::no release notes in docs/releases/$ver.md"
+            echo "WIN Infinit Desktop $ver" > notes.md
+          fi
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: notes
+          path: notes.md
+
+  package:
+    name: Package x64
+    needs: version
+    if: needs.version.outputs.released != 'true'
+    runs-on: windows-2025
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          arch: win64_msvc2022_64
+          cache: true
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DWID_WITH_QT=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Unit tests
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Package
+        id: package
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:QT_ROOT_DIR\bin;$env:PATH"
+          ./scripts/package.ps1 -Build build -Output dist -Arch x64
+
+      - name: Install and uninstall the package
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "package"
+          Expand-Archive -Path "${{ steps.package.outputs.zip }}" -DestinationPath $dir -Force
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -NoStart
+          if ($LASTEXITCODE -ne 0) { throw "install.ps1 failed" }
+          $installed = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinit Desktop\win-infinit-desktop.exe"
+          if (-not (Test-Path $installed)) { throw "not installed" }
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -Uninstall
+          if ($LASTEXITCODE -ne 0 -or (Test-Path $installed)) { throw "uninstall failed" }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: package-x64
+          path: ${{ steps.package.outputs.zip }}
+
+  release:
+    name: Tag and GitHub release
+    needs: [version, package]
+    if: always() && needs.version.result == 'success' && (needs.package.result == 'success' || needs.package.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v7
+        with:
+          path: artifacts
+
+      - name: Create the tag
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          git fetch --force --no-tags origin "refs/tags/$TAG:refs/tags/$TAG" 2>/dev/null || true
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "$TAG exists ($(git rev-parse --short "$TAG^{commit}"))"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          { echo "WIN Infinit Desktop ${TAG#v}"; echo; cat artifacts/notes/notes.md; } > tag-message.md
+          git tag -a --cleanup=verbatim -F tag-message.md "$TAG" HEAD
+          git push origin "refs/tags/$TAG"
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          zips=$(find artifacts -name 'win-infinit-desktop-*.zip')
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file artifacts/notes/notes.md
+            [ -z "$zips" ] || gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber $zips
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
+              --title "WIN Infinit Desktop ${TAG#v}" --notes-file artifacts/notes/notes.md $zips
+          fi

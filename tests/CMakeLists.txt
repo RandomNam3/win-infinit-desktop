@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set(CMAKE_AUTOMOC ON)
+
+set(core_tests camera motion velocitytracker parking navigation placementmemory groups areas)
+foreach(name IN LISTS core_tests)
+    add_executable(test_${name} test_${name}.cpp)
+    target_link_libraries(test_${name} PRIVATE infinitdesktop_core Qt6::Test)
+    add_test(NAME test_${name} COMMAND test_${name})
+endforeach()
+
+if(WIN32)
+    # The pure parts of the canvas service.
+    set(service_tests shortcuts inputrouter service organizer)
+    foreach(name IN LISTS service_tests)
+        add_executable(test_${name} test_${name}.cpp)
+        target_link_libraries(test_${name} PRIVATE wid_service Qt6::Test)
+        add_test(NAME test_${name} COMMAND test_${name})
+    endforeach()
+    # Unit tests need no window system.
+    foreach(name IN LISTS core_tests service_tests)
+        set_tests_properties(test_${name} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    endforeach()
+endif()
+
+if(WID_BUILD_APPS)
+    # The notes app and the settings app: their parts without QML.
+    set(app_tests notestore localizer ipcclient keycombo settingsschema updatechecker)
+    foreach(name IN LISTS app_tests)
+        add_executable(test_${name} test_${name}.cpp)
+        target_link_libraries(test_${name} PRIVATE wid_appshared Qt6::Test)
+        add_test(NAME test_${name} COMMAND test_${name})
+    endforeach()
+    target_link_libraries(test_notestore PRIVATE wid_notestore)
+    target_compile_definitions(test_localizer PRIVATE WID_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
+    target_link_libraries(test_keycombo PRIVATE wid_settings_core)
+    target_link_libraries(test_settingsschema PRIVATE wid_settings_core)
+    target_sources(test_updatechecker PRIVATE ${PROJECT_SOURCE_DIR}/src/settings/updatechecker.cpp ${PROJECT_SOURCE_DIR}/src/settings/updatechecker.h)
+    target_link_libraries(test_updatechecker PRIVATE wid_settings_core)
+    set_target_properties(test_updatechecker PROPERTIES AUTOMOC ON)
+    if(WIN32)
+        # What the settings app writes, read by the service's own code.
+        add_executable(test_settingsinterop test_settingsinterop.cpp)
+        target_link_libraries(test_settingsinterop PRIVATE wid_settings_core wid_service Qt6::Test)
+        add_test(NAME test_settingsinterop COMMAND test_settingsinterop)
+        list(APPEND app_tests settingsinterop)
+    endif()
+    foreach(name IN LISTS app_tests)
+        set_tests_properties(test_${name} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    endforeach()
+endif()
