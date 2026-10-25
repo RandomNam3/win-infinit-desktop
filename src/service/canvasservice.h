@@ -14,6 +14,7 @@
 #include "organizer.h"
 #include "overview.h"
 #include "placementmemory.h"
+#include "placementrules.h"
 #include "settings.h"
 #include "shortcuts.h"
 #include "toplevel.h"
@@ -95,16 +96,9 @@ struct ManagedWindow
     bool parked = false;
     quint64 placementEntry = 0;
     // Our own recent moves, to tell them from foreign ones.
-    struct Request
-    {
-        POINT position; ///< frame
-        POINT windowPosition; ///< window rect, as passed to SetWindowPos
-        ULONGLONG tick;
-    };
-    std::array<Request, 8> requests{};
-    int requestCount = 0;
-    int requestHead = 0;
+    MoveRequests requests;
     POINT lastRequest = {LONG_MIN, LONG_MIN};
+    bool pendingMove = false; ///< lastRequest is held back: the program is behind with our moves
     int foreignWhileParked = 0;
     ULONGLONG foreignWindowStart = 0;
 
@@ -265,8 +259,13 @@ private:
     void flush();
     void applyAll();
     void applyCanvas(Canvas &canvas, HWND except = nullptr);
-    void placeWindow(ManagedWindow &window, const Canvas &canvas, const MonitorState &monitor);
+    /// On its screen if it shows there, else parked. A window that would reach into a neighbouring
+    /// screen is parked too, unless it stays where it is or `asPlaced` (where the program put it).
+    void placeWindow(ManagedWindow &window, const Canvas &canvas, const MonitorState &monitor, bool asPlaced = false);
+    /// Moves asynchronously; while the program is busy with earlier moves, only remembers it.
     void requestMove(ManagedWindow &window, POINT frameTopLeft);
+    /// The moves held back for programs that were busy, if they are free now.
+    void sendPendingMoves();
     bool isOwnMove(ManagedWindow &window, POINT frameTopLeft, POINT windowTopLeft);
     QRectF canvasRect(const ManagedWindow &window) const;
 
@@ -358,6 +357,7 @@ private:
     QTimer m_tickTimer; ///< runs only while a camera motion runs
     QTimer m_edgeTimer; ///< runs only while a dragged window touches an edge
     QTimer m_markerTimer; ///< hides the markers after navigating
+    QTimer m_pendingTimer; ///< runs only while moves are held back for busy programs
     QTimer m_saveTimer;
     QTimer m_displayTimer; ///< settles monitor changes
     QFileSystemWatcher *m_settingsWatcher = nullptr;

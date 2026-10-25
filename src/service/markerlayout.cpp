@@ -14,7 +14,7 @@
 namespace Wid
 {
 
-QList<MarkerPlace> layoutMarkers(const QRectF &area, const QList<QRectF> &windows, qreal size, qreal margin)
+QList<MarkerPlace> layoutMarkers(const QRectF &area, const QList<QRectF> &windows, qreal size, qreal margin, const QList<bool> &parked)
 {
     QList<MarkerPlace> markers;
     const qreal inset = size / 2.0 + margin;
@@ -25,7 +25,7 @@ QList<MarkerPlace> layoutMarkers(const QRectF &area, const QList<QRectF> &window
     const QPointF center = inner.center();
     for (int i = 0; i < windows.size(); ++i) {
         const QRectF &visual = windows[i];
-        if (visual.isEmpty() || visual.intersects(area)) {
+        if (visual.isEmpty() || (visual.intersects(area) && !parked.value(i))) {
             continue;
         }
         const QPointF direction = visual.center() - center;

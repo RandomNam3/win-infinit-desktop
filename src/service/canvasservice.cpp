@@ -50,7 +50,6 @@ namespace
 constexpr UINT InputMessage = WM_APP + 10;
 const wchar_t *const s_serviceClass = L"WinInfinitDesktopService";
 constexpr auto ZoomStepDuration = 150ms;
-constexpr ULONGLONG OwnMoveWindowMs = 1500;
 constexpr ULONGLONG NewWindowMs = 5000;
 constexpr qreal RevealMargin = 24;
 // Between monitor identity and desktop GUID in canvas keys; monitor identities have no "::".
@@ -155,6 +154,9 @@ CanvasService::CanvasService(QObject *parent)
             }
         }
     });
+    m_pendingTimer.setSingleShot(true);
+    m_pendingTimer.setInterval(100);
+    connect(&m_pendingTimer, &QTimer::timeout, this, &CanvasService::sendPendingMoves);
     m_saveTimer.setSingleShot(true);
     m_saveTimer.setInterval(3000);
     connect(&m_saveTimer, &QTimer::timeout, this, &CanvasService::saveState);
@@ -938,7 +940,7 @@ void CanvasService::tryAdopt(HWND hwnd, bool isNew)
         } else {
             const int homeIndex = monitorIndexOf(key);
             if (homeIndex >= 0) {
-                placeWindow(adopted, home, m_monitors[std::size_t(homeIndex)]);
+                placeWindow(adopted, home, m_monitors[std::size_t(homeIndex)], true);
             }
         }
     }
@@ -1015,7 +1017,8 @@ void CanvasService::settleNewWindow(HWND hwnd, int delayMs, int attempts)
         if (window.parked || (QLineF(frame.topLeft(), target).length() > 2 && frame.intersects(monitor.viewport))) {
             window.lastRequest = POINT{LONG_MIN, LONG_MIN};
         }
-        placeWindow(window, home, monitor);
+        // Where the program opened it, also across the edge to a neighbouring screen.
+        placeWindow(window, home, monitor, !window.parked);
         if (attempts > 1) {
             settleNewWindow(hwnd, 300, attempts - 1);
         }
@@ -1252,18 +1255,14 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
 
 bool CanvasService::isOwnMove(ManagedWindow &window, POINT position, POINT windowPosition)
 {
-    const ULONGLONG nowTick = GetTickCount64();
-    const auto same = [](POINT a, POINT b) {
-        return std::abs(a.x - b.x) <= 1 && std::abs(a.y - b.y) <= 1;
-    };
-    for (int i = 0; i < window.requestCount; ++i) {
-        const ManagedWindow::Request &request = window.requests[std::size_t(i)];
-        // The window rect is what SetWindowPos got; the frame may differ while DWM catches up.
-        if (nowTick - request.tick <= OwnMoveWindowMs && (same(request.position, position) || same(request.windowPosition, windowPosition))) {
-            return true;
-        }
+    if (!window.requests.answer(position, windowPosition, GetTickCount64())) {
+        return false;
     }
-    return false;
+    if (window.pendingMove) {
+        // The program got to our earlier moves: the newest one, held back, goes out now.
+        requestMove(window, window.lastRequest);
+    }
+    return true;
 }
 
 void CanvasService::onLocationChanged(ManagedWindow &window)
@@ -1341,9 +1340,16 @@ void CanvasService::onLocationChanged(ManagedWindow &window)
         }
         return;
     }
-    // Moved by the application or by Windows (Win + arrows): take it over.
-    window.canvasKey = canvasKeyOn(window, monitor);
-    window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+    // Moved by the application or by Windows (Win + arrows): take it over. It changes to another
+    // screen's canvas only once it left its own screen.
+    QList<QRectF> screens;
+    for (const MonitorState &m : m_monitors) {
+        screens.append(m.viewport);
+    }
+    const int owner = screenAfterForeignMove(frame, screens, monitorIndexOf(window.canvasKey));
+    const MonitorState &target = owner >= 0 ? m_monitors[std::size_t(owner)] : monitor;
+    window.canvasKey = canvasKeyOn(window, target);
+    window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(frame.topLeft(), target.viewport);
     window.lastRequest = position;
 }
 
@@ -1490,21 +1496,36 @@ void CanvasService::applyCanvas(Canvas &canvas, HWND except)
     }
 }
 
-void CanvasService::placeWindow(ManagedWindow &window, const Canvas &canvas, const MonitorState &monitor)
+void CanvasService::placeWindow(ManagedWindow &window, const Canvas &canvas, const MonitorState &monitor, bool asPlaced)
 {
     const QPointF screen = canvas.committed.canvasToScreen(window.canvasPos, monitor.viewport);
     const QRectF rect(screen, window.size);
-    if (rect.intersects(monitor.viewport)) {
-        window.parked = false;
-        requestMove(window, rounded(screen));
-        return;
-    }
-    // Off its monitor: park it in the void next to it, where it can get no input.
+    const POINT target = rounded(screen);
     QList<QRectF> rects;
     for (const MonitorState &m : m_monitors) {
         rects.append(m.viewport);
     }
     const int index = int(&monitor - m_monitors.data());
+    // Windows cannot cut a window off at the edge to a neighbouring screen: moved there, it
+    // would show on the neighbour. It is parked instead, like a window off its screen. One that
+    // is there already (the user or the program put it there) stays; one larger than its
+    // screen could never be shown otherwise.
+    const auto isThere = [&]() {
+        if (!window.parked && window.lastRequest.x == target.x && window.lastRequest.y == target.y) {
+            return true;
+        }
+        const QRectF frame = frameOf(window.hwnd);
+        return std::abs(frame.left() - target.x) <= 1 && std::abs(frame.top() - target.y) <= 1;
+    };
+    const bool fits = rect.width() <= monitor.viewport.width() && rect.height() <= monitor.viewport.height();
+    const bool reachesOver = fits && !asPlaced && reachesOtherScreen(rect, rects, index) && !isThere();
+    if (rect.intersects(monitor.viewport) && !reachesOver) {
+        window.parked = false;
+        requestMove(window, target);
+        return;
+    }
+    // Off its monitor or at the edge to a neighbour: park it in the void next to it, where it
+    // can get no input.
     const InfinitDesktop::ParkingSpot spot = InfinitDesktop::computeParkingSpot(rects, index, window.size);
     window.parked = true;
     requestMove(window, rounded(spot.topLeft));
@@ -1512,23 +1533,54 @@ void CanvasService::placeWindow(ManagedWindow &window, const Canvas &canvas, con
 
 void CanvasService::requestMove(ManagedWindow &window, POINT position)
 {
-    if (window.lastRequest.x == position.x && window.lastRequest.y == position.y) {
+    if (window.lastRequest.x == position.x && window.lastRequest.y == position.y && !window.pendingMove) {
         return;
     }
     window.lastRequest = position;
+    if (window.requests.busy(GetTickCount64())) {
+        // The program is behind with our moves: they would pile up and be replayed long after
+        // the canvas stopped. Only the newest position counts; it goes out when the program
+        // answers (isOwnMove) or a little later.
+        window.pendingMove = true;
+        if (!m_pendingTimer.isActive()) {
+            m_pendingTimer.start();
+        }
+        return;
+    }
+    window.pendingMove = false;
     DWORD error = 0;
     POINT windowPosition = {};
     const bool moved = moveFrameTo(window.hwnd, position, false, &error, &windowPosition);
-    ManagedWindow::Request &request = window.requests[std::size_t(window.requestHead)];
-    request = ManagedWindow::Request{position, windowPosition, GetTickCount64()};
-    window.requestHead = (window.requestHead + 1) % int(window.requests.size());
-    window.requestCount = std::min<int>(window.requestCount + 1, int(window.requests.size()));
+    window.requests.add(position, windowPosition, GetTickCount64());
     if (!moved) {
         if (error == ERROR_ACCESS_DENIED) {
             // Elevated: Windows does not let a normal process move it.
             window.unmovable = true;
             qCInfo(lcService) << "cannot move an elevated window" << hwndText(window.hwnd);
         }
+    }
+}
+
+void CanvasService::sendPendingMoves()
+{
+    if (m_shuttingDown) {
+        return;
+    }
+    bool waiting = false;
+    for (auto &[hwnd, window] : m_windows) {
+        if (!window.pendingMove) {
+            continue;
+        }
+        if (!window.onCanvas() || !IsWindow(hwnd)) {
+            // Someone else has it now (the user drags it, it was minimized, ...).
+            window.pendingMove = false;
+            continue;
+        }
+        requestMove(window, window.lastRequest);
+        waiting |= window.pendingMove;
+    }
+    if (waiting) {
+        m_pendingTimer.start();
     }
 }
 
@@ -1832,14 +1884,17 @@ void CanvasService::updateMarkersNow()
         }
         const Canvas &home = currentCanvas(monitor);
         QList<QRectF> rects;
+        QList<bool> parked;
         QList<HWND> handles;
         for (const auto &[hwnd, window] : m_windows) {
             if (window.canvasKey == home.key && window.onCanvas()) {
                 rects.append(home.camera.canvasToScreen(canvasRect(window), monitor.viewport));
+                // At 100 % a window parked at the edge to a neighbour is not on the screen either.
+                parked.append(window.parked && !home.overview);
                 handles.append(hwnd);
             }
         }
-        const QList<MarkerPlace> places = layoutMarkers(monitor.work, rects, Markers::Size, 10);
+        const QList<MarkerPlace> places = layoutMarkers(monitor.work, rects, Markers::Size, 10, parked);
         if (places.isEmpty()) {
             if (monitor.markers) {
                 monitor.markers->hide();
@@ -2495,6 +2550,7 @@ void CanvasService::shutdown()
     m_applyTimer.stop();
     m_tickTimer.stop();
     m_edgeTimer.stop();
+    m_pendingTimer.stop();
     if (m_snapChanged) {
         setSnap(m_snapBefore != FALSE);
         m_snapChanged = false;
@@ -2519,6 +2575,11 @@ void CanvasService::shutdown()
         if (window.unmovable || window.minimized) {
             continue;
         }
+        if (window.pendingMove && !window.parked && !window.moving) {
+            // Held back for a busy program; it ends on a screen. Queued after its other moves.
+            moveFrameTo(hwnd, window.lastRequest);
+            continue;
+        }
         const QRectF frame = frameOf(hwnd);
         const int index = monitorIndexOf(window.canvasKey);
         if (index < 0 || frame.isEmpty()) {
@@ -2528,7 +2589,8 @@ void CanvasService::shutdown()
         const bool onScreen = std::any_of(m_monitors.cbegin(), m_monitors.cend(), [&frame](const MonitorState &m) {
             return m.work.intersects(frame);
         });
-        if (onScreen) {
+        // A window on its way to being parked is brought back too.
+        if (onScreen && !window.parked) {
             continue;
         }
         const int step = cascade[window.canvasKey]++ % 12;

@@ -18,6 +18,7 @@ add_library(wid_service STATIC
     organizer.cpp
     overlays.cpp
     overview.cpp
+    placementrules.cpp
     settings.cpp
     shortcuts.cpp
     texts.cpp
