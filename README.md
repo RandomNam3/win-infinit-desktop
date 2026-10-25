@@ -1,54 +1,50 @@
 # WIN Infinit Desktop
 
 **Eine unendliche Arbeitsfläche für Windows 11 – auf jedem Bildschirm.**
+*If it runs Windows 11, it runs WIN Infinit Desktop.*
 
-WIN Infinit Desktop ist die Windows-Version von [KDE Infinit Desktop](https://github.com/RandomNam3/kde-infinit-desktop).
-Jeder Monitor wird zu einer in alle Richtungen unendlichen Fläche, auf der Fenster in Originalgröße liegen.
-Du verschiebst die Fläche mit Maus, Touchpad oder Tastatur, zoomst heraus, um alles zu überblicken, und
-wieder hinein, um weiterzuarbeiten. Taskleiste und Hintergrundbild bleiben dabei stehen.
+WIN Infinit Desktop ist die Windows-Version von [KDE Infinit Desktop](https://github.com/RandomNam3/kde-infinit-desktop)
+(Windows 11 24H2, 25H2 und 26H2). Jeder Monitor wird zu einer in alle Richtungen unendlichen Fläche, auf der
+Fenster in Originalgröße liegen. Du verschiebst die Fläche mit Maus, Touchpad oder Tastatur, zoomst mit dem
+Mausrad heraus, um alles zu überblicken, und wieder hinein, um weiterzuarbeiten. Taskleiste und
+Hintergrundbild bleiben dabei fest stehen.
 
-> **Stand:** Version 0.1.0 – Dienst, Notizen, Gruppen, Bereiche, Karte, Einstellungs-App und Installer.
-> Zielsysteme sind Windows 11 **25H2** und **26H2** (x64; ARM64 folgt).
+## Funktionen
 
-## Wie es unter Windows funktioniert
+- **Unendliche Fläche pro Bildschirm** mit eigener Kamera und Lesezeichen.
+- **Pannen**: Ziehen auf freiem Desktop, Win+Alt+Ziehen über Fenstern, mittlere Maustaste,
+  Zwei-Finger-Scrollen, Umschalt/Strg + Mausrad; mit **Nachgleiten**.
+- **Zoomen**: Mausrad auf freiem Desktop, Win+Mausrad überall, Pinch; rastet bei 100 % ein.
+- **Übersicht**: Herausgezoomt liegen alle Fenster als Live-Vorschau auf der Fläche. Fenster lassen sich
+  dort verschieben (Titelleiste) und in der Größe ändern (Ränder), ein Klick in ein Fenster taucht ein.
+- **Nichts geht verloren**: Markierungen am Bildschirmrand zeigen, wo Fenster außerhalb des Bildes liegen,
+  ein Klick fliegt hin. Taskleiste und Alt+Tab fahren die Kamera zum gewählten Fenster.
+- **Mehrere Bildschirme**:
+  - Jeder Monitor hat seine eigene Fläche.
+  - Auf den anderen Monitor kommt ein Fenster nur durch **schnelles Ziehen an den Rand**, die
+    Geschwindigkeit ist einstellbar.
+  - Langsames Ziehen scrollt stattdessen die Fläche.
+- **Vollbild**: Videos und Spiele bleiben stehen und lassen sich nicht wegscrollen, solange sie den Fokus
+  haben.
+- **Anpinnen** von Fenstern an den Bildschirm, optional **immer im Vordergrund**.
+- **Fenster öffnen sich dort, wo sie zuletzt waren**: Position, Größe und Bildschirm werden gemerkt.
+  Monitore werden über ihre EDID-Daten wiedererkannt.
+- **Notizen**: Zettel mit Markdown, die auf der Fläche liegen, automatisch gespeichert werden und sich
+  anheften lassen.
+- **Gruppen**: Programme, die zusammengehören, öffnen sich mit Win+Alt+F1 … F9 gemeinsam an ihrem Ort,
+  immer gleich angeordnet; fehlende Programme werden gestartet.
+- **Bereiche und Karte**: benannte Bereiche der Fläche, die mit ihren Fenstern wachsen, und eine Karte der
+  ganzen Fläche, auf der du die Kamera mit der Maus bewegst.
+- **Menü der Arbeitsfläche**: Rechtsklick auf die freie Fläche in der Übersicht, Win+Rechtsklick auf den
+  Desktop bei 100 %.
+- **Frei belegbare Tastenkürzel**: Zoom, Übersicht, Ursprung, Fenster in eine Richtung, Lesezeichen,
+  Anpinnen, Notizen, Gruppen. Überschneidungen mit Windows-Kürzeln zeigt die Einstellungs-App.
+- **Einstellungs-App** mit Suche, Erklärung zu jeder Option, sofortiger Übernahme und **Update-Check**.
+- **Symbol im Infobereich** mit allen Aktionen.
+- **Robust**: Absicherung gegen Absturzschleifen (abgesicherter Modus); beim Beenden, Abmelden und nach
+  einem Absturz kommen alle Fenster auf den Bildschirm zurück; in Ruhe keine Leistungskosten.
 
-Unter KDE ist Infinit Desktop ein Plugin im Compositor. Windows hat dafür keine Schnittstelle. Die
-Windows-Version ist deshalb ein Hintergrundprogramm:
-- Es **verschiebt Fenster wirklich**, sobald du die Fläche bewegst.
-- Herausgezoomt zeigt es eine **Übersicht** mit verkleinerten Live-Vorschauen (DWM-Thumbnails).
-- Eingaben fängt es über **Low-Level-Hooks** ab.
-
-Welche Windows-Schnittstellen das sind, was sie können und wo die Grenzen liegen, steht in
-[docs/SCHNITTSTELLEN.md](docs/SCHNITTSTELLEN.md). Was gleich bleibt und was sich unterscheidet, zeigt
-[docs/FAHRPLAN.md](docs/FAHRPLAN.md).
-
-## Bestandteile
-
-| Verzeichnis | Inhalt |
-|---|---|
-| `src/core/` | Kamera, Animationen, Nachgleiten, Parkplätze, Navigation, Fensterplatz-Gedächtnis – **gemeinsam mit KDE** (siehe [UPSTREAM.md](UPSTREAM.md)) |
-| `src/platform/` | Win32-Schicht: Bildschirme (mit EDID), Fenster und ihre Einordnung, Fenster-Ereignisse, Eingabe-Hooks mit Maskentaste, Touchpad-Kontakte, virtuelle Desktops, Vollbild, Verschieben |
-| `src/service/` | der Dienst `win-infinit-desktop.exe`: Fläche, Übersicht, Markierungen, Eingabe, Symbol im Infobereich, Steuerung per Named Pipe |
-| `src/notes/` | die Notiz-App `wid-notes.exe`: Notiz-Zettel mit Markdown auf der Fläche |
-| `src/settings/` | die Einstellungs-App `wid-settings.exe`, dieselbe Oberfläche wie unter KDE |
-| `src/shared/`, `po/de/` | Pipe-Protokoll und Übersetzungen der Apps, deutscher Katalog |
-| `tools/wid-ctl/` | Kommandozeile für den Dienst (`wid-ctl state`, `wid-ctl pan dx=-500 dy=0`, …) |
-| `tools/wid-probe/` | Diagnose-Werkzeug: prüft auf deinem Rechner, was die Schnittstellen tun |
-| `tests/` | Unit-Tests des Kerns und des Dienstes, Laufzeittest (`tests/runtime/smoke.ps1`) |
-
-## Bauen
-
-Voraussetzungen: Visual Studio 2022 oder 2026 (C++), CMake ≥ 3.22, Ninja, Qt ≥ 6.8 (MSVC).
-
-```powershell
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Qt\6.8.3\msvc2022_64
-cmake --build build
-ctest --test-dir build
-```
-
-Nur das Diagnose-Werkzeug (ohne Qt): `-DWID_WITH_QT=OFF`.
-
-## Installieren
+## Installation
 
 Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest)
 `win-infinit-desktop-<Version>-x64.zip` herunterladen, entpacken und im entpackten Ordner ausführen:
@@ -57,37 +53,38 @@ Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/rel
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-- Installiert wird für den angemeldeten Benutzer, ohne Administratorrechte, nach
-  `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`, mit Einträgen im Startmenü und im Autostart.
-- Updates kommen über die Einstellungs-App (Update-Check) oder mit `install.ps1 -Update` aus einem neuen ZIP.
-- Entfernen über Einstellungen › Apps oder mit `install.ps1 -Uninstall` (Einstellungen und Notizen
-  bleiben; `-RemoveData` löscht sie mit).
+Der Installer:
+- installiert für den angemeldeten Benutzer, **ohne Administratorrechte**, nach
+  `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`,
+- legt Einträge im **Startmenü** und im **Autostart** an,
+- trägt das Programm unter *Einstellungen → Apps* ein (dort lässt es sich auch entfernen),
+- startet WIN Infinit Desktop. Das Symbol erscheint im Infobereich.
 
-Danach:
-1. Das Symbol erscheint im Infobereich; sein Menü hat Notizen, Karte, Gruppen und die Einstellungen.
-2. Auf freiem Desktop ziehen oder mit dem Mausrad zoomen. Win + Alt + Ziehen verschiebt die Fläche
-   auch über Fenstern.
-3. Beim Beenden über das Symbol kommen alle Fenster auf den Bildschirm zurück.
+Updates installiert die Einstellungs-App. Alles Weitere, auch Deinstallieren und Fehlerbehebung, steht in
+[docs/INSTALL.md](docs/INSTALL.md).
 
-Jeder CI-Lauf hat außerdem ein Artefakt `win-infinit-desktop-x64` mit denselben Programmen.
+## Dokumentation
 
-Die Programme sind noch nicht signiert: Smart App Control blockiert sie, SmartScreen warnt (siehe
-[SCHNITTSTELLEN.md](docs/SCHNITTSTELLEN.md#verteilung-und-vertrauen)). Was unter Windows anders ist als
-unter KDE, steht in [FAHRPLAN.md](docs/FAHRPLAN.md), der technische Aufbau in
-[ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
+| Dokument | Inhalt |
+|---|---|
+| [docs/BENUTZERHANDBUCH.md](docs/BENUTZERHANDBUCH.md) | Bedienung, Tastenkürzel, Einstellungen, Fehlerbehebung |
+| [docs/INSTALL.md](docs/INSTALL.md) | Installieren, Updates, Deinstallieren, selbst bauen |
+| [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md) | Technische Dokumentation: Windows-Schnittstellen, Aufbau, Datenmodell, Stabilität, Tests |
 
-## Diagnose: wid-probe
+## Selbst bauen
 
 ```powershell
-wid-probe > bericht.txt              # System, Bildschirme, alle Fenster
-wid-probe --test-thumbnail           # bleiben Vorschauen geparkter Fenster live?
-wid-probe --watch-input 15           # Mausrad und Touchpad unterscheiden
-wid-probe --test-winkey 20           # Win + Mausrad, ohne dass sich Start öffnet
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Qt\6.8.3\msvc2022_64
+cmake --build build
+ctest --test-dir build
+pwsh scripts/package.ps1 -Build build      # ZIP wie im Release
 ```
 
-Fenstertitel stehen nur mit `--titles` im Bericht. Die fertigen `wid-probe.exe` (x64 und ARM64) liegen
-als Artefakte an jedem CI-Lauf.
+Abhängigkeiten: Visual Studio 2022 oder 2026 (C++), CMake ≥ 3.22, Ninja, Qt ≥ 6.8 für MSVC (Core, Gui,
+Network, Qml, Quick, QuickControls2). Nur das Diagnose-Werkzeug `wid-probe` (ohne Qt): `-DWID_WITH_QT=OFF`.
+Details in [docs/INSTALL.md](docs/INSTALL.md#7-selbst-bauen).
 
 ## Lizenz
 
-GPL-3.0-or-later, wie KDE Infinit Desktop.
+GPL-3.0-or-later. Windows ist eine Marke der Microsoft Corporation; dieses Projekt ist ein unabhängiges
+Community-Projekt.

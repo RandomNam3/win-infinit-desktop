@@ -6,7 +6,7 @@
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>
-        <!-- No elevation and no uiAccess in this version, see docs/SCHNITTSTELLEN.md. -->
+        <!-- No elevation and no uiAccess, see docs/ARCHITEKTUR.md (section 15). -->
         <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
       </requestedPrivileges>
     </security>

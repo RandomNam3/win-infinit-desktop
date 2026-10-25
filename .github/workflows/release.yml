@@ -13,8 +13,7 @@
 #
 # Release notes: docs/releases/X.Y.Z.md (Markdown without a title line, taken from main so
 # they can be added afterwards); without that file, the body of an annotated tag.
-# Asset: win-infinit-desktop-X.Y.Z-x64.zip (programs, Qt, install.ps1). ARM64 follows once
-# the ARM64 build has Qt.
+# Asset: win-infinit-desktop-X.Y.Z-x64.zip (programs, Qt, install.ps1).
 
 name: Release
 

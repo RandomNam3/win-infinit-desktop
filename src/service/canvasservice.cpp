@@ -2219,7 +2219,7 @@ void CanvasService::openSettingsApp()
         }
     }
     if (m_tray) {
-        m_tray->notify(L"WIN Infinit Desktop", text(L"The settings app is not installed yet.", L"Die Einstellungs-App ist noch nicht installiert."));
+        m_tray->notify(L"WIN Infinit Desktop", text(L"The settings app is not installed.", L"Die Einstellungs-App ist nicht installiert."));
     }
 }
 

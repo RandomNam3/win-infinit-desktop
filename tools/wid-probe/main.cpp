@@ -4,7 +4,7 @@
     SPDX-License-Identifier: GPL-3.0-or-later
 
     wid-probe: reports what the Windows interfaces the canvas relies on actually do on
-    this machine (docs/SCHNITTSTELLEN.md lists the open questions). Window titles are only
+    this machine (see docs/ARCHITEKTUR.md, section 15). Window titles are only
     included with --titles, and paths below the user profile are shortened to
     %USERPROFILE%, so the report can be shared.
 */

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Pure canvas logic, taken unchanged from KDE Infinit Desktop (src/core, see
-# UPSTREAM.md): camera, animations, velocity tracking, parking spots, navigation,
+# docs/ARCHITEKTUR.md, section 16): camera, animations, velocity tracking, parking spots, navigation,
 # window placement memory, groups, areas, note placements and the map. Only Qt Core,
 # everything is unit tested.
 

@@ -202,7 +202,7 @@ if (-not $NoStart) {
             Start-Process -FilePath $service -WorkingDirectory $target
         } catch {
             Write-Warning "The service did not start: $($_.Exception.Message)"
-            Write-Warning "If Smart App Control blocks unsigned programs, see the README (section on signing)."
+            Write-Warning "If Smart App Control blocks unsigned programs, see docs/INSTALL.md (troubleshooting)."
         }
     } "start $service"
 }
