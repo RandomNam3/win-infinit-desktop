@@ -236,6 +236,29 @@ void Organizer::load()
     m_groups.fromJson(loadJson(QStringLiteral("groups.json")));
     m_areas.fromJson(loadJson(QStringLiteral("areas.json")));
     m_notes.fromJson(loadJson(QStringLiteral("notes.json")));
+    claimForCurrentDesktop();
+}
+
+void Organizer::claimForCurrentDesktop()
+{
+    const QString desktop = m_service.currentDesktop();
+    if (desktop.isEmpty()) {
+        return;
+    }
+    for (Area &area : m_areas.areas()) {
+        if (area.desktopId.isEmpty()) {
+            area.desktopId = desktop;
+            markAreasDirty();
+        }
+    }
+    const QList<Group> groups = m_groups.groups();
+    for (Group group : groups) {
+        if (group.desktopId.isEmpty()) {
+            group.desktopId = desktop;
+            m_groups.update(group);
+            markGroupsDirty();
+        }
+    }
 }
 
 void Organizer::persist()
@@ -354,7 +377,7 @@ bool Organizer::placeNote(ManagedWindow &window)
             return false;
         }
         const auto &monitor = monitors[std::size_t(index)];
-        window.canvasKey = monitor.key;
+        window.canvasKey = m_service.canvasKeyOn(window, monitor);
         if (placement->pinned) {
             const QRectF &work = monitor.work;
             QPointF screenPos = monitor.viewport.topLeft() + placement->screenOffset;
@@ -391,7 +414,7 @@ bool Organizer::placeNote(ManagedWindow &window)
         return true;
     }
     const auto &monitor = monitors[std::size_t(index)];
-    const Canvas &canvas = m_service.canvas(monitor.key);
+    const Canvas &canvas = m_service.currentCanvas(monitor);
     const Camera camera = canvas.overview ? canvas.camera : canvas.committed;
     const QRectF &work = monitor.work;
     if (!work.contains(screenPos)) {
@@ -402,7 +425,7 @@ bool Organizer::placeNote(ManagedWindow &window)
     QPointF topLeft = screenPos - QPointF(24, 16);
     topLeft.setX(std::clamp(topLeft.x(), work.left(), std::max(work.left(), work.right() - window.size.width() * camera.zoom)));
     topLeft.setY(std::clamp(topLeft.y(), work.top(), std::max(work.top(), work.bottom() - window.size.height() * camera.zoom)));
-    window.canvasKey = monitor.key;
+    window.canvasKey = canvas.key;
     window.canvasPos = camera.screenToCanvas(topLeft, monitor.viewport);
     window.lastRequest = POINT{LONG_MIN, LONG_MIN};
     return true;
@@ -468,6 +491,7 @@ void Organizer::windowArranged(ManagedWindow &window)
     if (monitor >= 0) {
         group.output = outputIdentity(m_service.m_monitors[std::size_t(monitor)].info);
     }
+    group.desktopId = CanvasService::desktopOf(canvas.key);
     m_groups.update(group);
     markGroupsDirty();
     Q_EMIT ipcEvent(QStringLiteral("groupsChanged"), {});
@@ -551,9 +575,14 @@ QList<InfinitDesktop::OutputIdentity> Organizer::monitorIdentities() const
     return identities;
 }
 
-bool Organizer::areaBelongsTo(const Area &area, int monitor, const QList<InfinitDesktop::OutputIdentity> &identities)
+bool Organizer::onDesktop(const QString &stored, const QString &canvasDesktop)
 {
-    if (monitor < 0 || monitor >= identities.size()) {
+    return canvasDesktop.isEmpty() || stored == canvasDesktop;
+}
+
+bool Organizer::areaBelongsTo(const Area &area, int monitor, const QString &desktop, const QList<InfinitDesktop::OutputIdentity> &identities)
+{
+    if (monitor < 0 || monitor >= identities.size() || !onDesktop(area.desktopId, desktop)) {
         return false;
     }
     if (identities.size() == 1) {
@@ -570,9 +599,10 @@ QList<Area> Organizer::areasOf(const Canvas &canvas) const
         return result;
     }
     const int monitor = m_service.monitorIndexOf(canvas.key);
+    const QString desktop = CanvasService::desktopOf(canvas.key);
     const QList<InfinitDesktop::OutputIdentity> identities = monitorIdentities();
     for (const Area &area : m_areas.areas()) {
-        if (areaBelongsTo(area, monitor, identities)) {
+        if (areaBelongsTo(area, monitor, desktop, identities)) {
             result.append(area);
         }
     }
@@ -586,10 +616,11 @@ void Organizer::updateAreas(const Canvas &canvas)
         return;
     }
     const InfinitDesktop::AreaMetrics metrics{qreal(m_service.m_settings.areaPadding), QSizeF(320, 200)};
+    const QString desktop = CanvasService::desktopOf(canvas.key);
     const QList<InfinitDesktop::OutputIdentity> identities = monitorIdentities();
     bool changed = false;
     for (Area &area : m_areas.areas()) {
-        if (!areaBelongsTo(area, monitor, identities)) {
+        if (!areaBelongsTo(area, monitor, desktop, identities)) {
             continue;
         }
         QList<QRectF> members;
@@ -634,9 +665,11 @@ void Organizer::createAreaFromRect(const QRectF &canvasRect, int monitor)
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
+    Canvas &canvas = m_service.currentCanvas(state);
     Area area;
     area.name = m_areas.nextName(localized(L"Area %1", L"Bereich %1"));
     area.output = outputIdentity(state.info);
+    area.desktopId = CanvasService::desktopOf(canvas.key);
     area.drawnRect = canvasRect;
     area.dynamic = true;
     Area *added = m_areas.add(area);
@@ -648,13 +681,13 @@ void Organizer::createAreaFromRect(const QRectF &canvasRect, int monitor)
     const QString name = added->name;
     // Windows already inside belong to it.
     for (auto &[hwnd, window] : m_service.m_windows) {
-        if (window.canvasKey == state.key && window.onCanvas() && canvasRect.contains(m_service.canvasRect(window).center())) {
+        if (window.canvasKey == canvas.key && window.onCanvas() && canvasRect.contains(m_service.canvasRect(window).center())) {
             window.areaId = id;
         }
     }
     markAreasDirty();
-    updateAreas(m_service.canvas(state.key));
-    m_service.canvas(state.key).dirty = true;
+    updateAreas(canvas);
+    canvas.dirty = true;
     m_service.requestFlush();
     flash(localized(L"Area “%1” created", L"Bereich „%1“ angelegt").arg(name), monitor);
     Q_EMIT ipcEvent(QStringLiteral("areasChanged"), {});
@@ -793,9 +826,11 @@ void Organizer::fillMissingGeometry(Group &group, int monitor)
     }
     if (existing.isNull()) {
         // A new group without a place yet: in the middle of the view.
-        const QRectF visible = m_service.targetCamera(m_service.canvas(state.key)).visibleCanvasRect(state.viewport);
+        const Canvas &canvas = m_service.currentCanvas(state);
+        const QRectF visible = m_service.targetCamera(canvas).visibleCanvasRect(state.viewport);
         group.origin = visible.center() - group.layoutBounds().center();
         group.output = outputIdentity(state.info);
+        group.desktopId = CanvasService::desktopOf(canvas.key);
     }
     m_groups.update(group);
     markGroupsDirty();
@@ -823,8 +858,14 @@ void Organizer::openGroup(const QString &id)
     if (monitor < 0 || isLocked(monitor)) {
         return;
     }
-    const QString key = m_service.m_monitors[std::size_t(monitor)].key;
+    // Opens on the canvas of the current desktop, which it belongs to from now on.
+    const QString key = m_service.currentCanvasKey(m_service.m_monitors[std::size_t(monitor)]);
     fillMissingGeometry(group, monitor);
+    if (const QString desktop = CanvasService::desktopOf(key); !desktop.isEmpty() && group.desktopId != desktop) {
+        group.desktopId = desktop;
+        m_groups.update(group);
+        markGroupsDirty();
+    }
 
     QList<InfinitDesktop::GroupCandidate> candidates;
     for (const auto &[hwnd, window] : m_service.m_windows) {
@@ -935,7 +976,7 @@ void Organizer::revealGroup(const Group &group, int monitor)
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
-    Canvas &canvas = m_service.canvas(state.key);
+    Canvas &canvas = m_service.currentCanvas(state);
     const Camera base = m_service.targetCamera(canvas);
     const QRectF &area = state.work;
     const bool fits = bounds.width() <= area.width() - 2 * GroupMargin && bounds.height() <= area.height() - 2 * GroupMargin;
@@ -983,10 +1024,11 @@ void Organizer::createGroupFromRect(const QRectF &canvasRect, int monitor)
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
+    const QString key = m_service.currentCanvasKey(state);
     QList<HWND> windows;
     QList<QRectF> rects;
     for (const auto &[hwnd, window] : m_service.m_windows) {
-        if (window.noteId.isEmpty() && window.canvasKey == state.key && window.onCanvas() && !window.appKey.isEmpty()) {
+        if (window.noteId.isEmpty() && window.canvasKey == key && window.onCanvas() && !window.appKey.isEmpty()) {
             windows.append(hwnd);
             rects.append(m_service.canvasRect(window));
         }
@@ -999,6 +1041,7 @@ void Organizer::createGroupFromRect(const QRectF &canvasRect, int monitor)
     Group group;
     group.name = m_groups.nextName(localized(L"Group %1", L"Gruppe %1"));
     group.output = outputIdentity(state.info);
+    group.desktopId = CanvasService::desktopOf(key);
     group.layoutMode = m_service.m_settings.groupLayoutAutomatic ? InfinitDesktop::GroupLayoutMode::Automatic : InfinitDesktop::GroupLayoutMode::Manual;
     QList<QRectF> memberRects;
     QList<HWND> members;
@@ -1135,8 +1178,9 @@ void Organizer::storeNotePlacement(const ManagedWindow &window)
     InfinitDesktop::NotePlacement placement;
     placement.id = window.noteId;
     placement.output = outputIdentity(state.info);
+    placement.desktopId = CanvasService::desktopOf(window.canvasKey);
     placement.screenOffset = *frameTopLeft - state.viewport.topLeft();
-    placement.canvasPos = window.pinned ? m_service.canvas(state.key).committed.screenToCanvas(*frameTopLeft, state.viewport) : window.canvasPos;
+    placement.canvasPos = window.pinned ? m_service.currentCanvas(state).committed.screenToCanvas(*frameTopLeft, state.viewport) : window.canvasPos;
     placement.pinned = window.pinned;
     placement.keepAbove = window.pinnedAbove;
     if (m_notes.store(placement)) {
@@ -1345,7 +1389,7 @@ void Organizer::finishSelection(const QRect &screenRect)
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
-    const Canvas &canvas = m_service.canvas(state.key);
+    const Canvas &canvas = m_service.currentCanvas(state);
     // What the user sees: the overview's camera while zoomed out.
     const QRectF canvasRect = canvas.camera.screenToCanvas(QRectF(screenRect), state.viewport);
     if (group) {
@@ -1396,7 +1440,8 @@ void Organizer::updateMapView()
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
-    const Canvas &canvas = m_service.canvas(state.key);
+    const Canvas &canvas = m_service.currentCanvas(state);
+    const QString desktop = CanvasService::desktopOf(canvas.key);
     QList<QRectF> content;
     for (const auto &[hwnd, window] : m_service.m_windows) {
         if (window.canvasKey == canvas.key && window.onCanvas()) {
@@ -1407,7 +1452,7 @@ void Organizer::updateMapView()
         content.append(area.rect);
     }
     for (const Group &group : m_groups.groups()) {
-        if (monitorForGroup(group) == monitor) {
+        if (monitorForGroup(group) == monitor && onDesktop(group.desktopId, desktop)) {
             content.append(group.canvasBounds());
         }
     }
@@ -1428,7 +1473,8 @@ void Organizer::renderMap()
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
-    const Canvas &canvas = m_service.canvas(state.key);
+    const Canvas &canvas = m_service.currentCanvas(state);
+    const QString desktop = CanvasService::desktopOf(canvas.key);
     const qreal scale = state.info.dpi / 96.0;
     QImage image(m_mapPanel.size(), QImage::Format_RGB32);
     image.fill(PanelColor);
@@ -1462,7 +1508,7 @@ void Organizer::renderMap()
         }
     }
     for (const Group &group : m_groups.groups()) {
-        if (monitorForGroup(group) != monitor) {
+        if (monitorForGroup(group) != monitor || !onDesktop(group.desktopId, desktop)) {
             continue;
         }
         const QRectF rect = m_map.toScreen(group.canvasBounds().adjusted(-12, -12, 12, 12)).intersected(panel);
@@ -1527,7 +1573,7 @@ bool Organizer::panelEvent(UINT message, WPARAM wParam, LPARAM lParam)
         return false;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
-    Canvas &canvas = m_service.canvas(state.key);
+    Canvas &canvas = m_service.currentCanvas(state);
     switch (message) {
     case WM_LBUTTONDOWN: {
         const QPoint local = m_panel->screenPoint(lParam) - m_mapPanel.topLeft();

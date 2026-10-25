@@ -21,12 +21,13 @@ hineinzoomen – die Taskleiste und das Hintergrundbild bleiben dabei, wo sie si
 8. [Fenster öffnen sich dort, wo sie zuletzt waren](#fenster-öffnen-sich-dort-wo-sie-zuletzt-waren)
 9. [Notizen, Gruppen, Bereiche und die Karte](#notizen-gruppen-bereiche-und-die-karte)
 10. [Mehrere Bildschirme](#mehrere-bildschirme)
-11. [Vollbild, Videos und Spiele](#vollbild-videos-und-spiele)
-12. [Das Symbol im Infobereich](#das-symbol-im-infobereich)
-13. [Einstellungen](#einstellungen)
-14. [Verträglichkeit mit anderen Programmen](#verträglichkeit-mit-anderen-programmen)
-15. [Fehlerbehebung](#fehlerbehebung)
-16. [Häufige Fragen](#häufige-fragen)
+11. [Virtuelle Desktops](#virtuelle-desktops)
+12. [Vollbild, Videos und Spiele](#vollbild-videos-und-spiele)
+13. [Das Symbol im Infobereich](#das-symbol-im-infobereich)
+14. [Einstellungen](#einstellungen)
+15. [Verträglichkeit mit anderen Programmen](#verträglichkeit-mit-anderen-programmen)
+16. [Fehlerbehebung](#fehlerbehebung)
+17. [Häufige Fragen](#häufige-fragen)
 
 ---
 
@@ -57,7 +58,8 @@ Abmelden und Herunterfahren.
 
 ## Die wichtigsten Begriffe
 
-**Arbeitsfläche (Canvas)** – die unendliche Fläche. Jeder Bildschirm hat seine **eigene** Fläche.
+**Arbeitsfläche (Canvas)** – die unendliche Fläche. Jeder Bildschirm hat seine **eigene** Fläche, und jeder
+[virtuelle Desktop](#virtuelle-desktops) hat pro Bildschirm wieder eine eigene.
 
 **Kamera** – der sichtbare Ausschnitt. Verschieben („pannen“) bewegt die Kamera, zoomen verändert,
 wie viel der Fläche du siehst.
@@ -316,6 +318,23 @@ Pfeiltasten (Windows-Standard) geht es auch per Tastatur.
 Werden Bildschirme an- oder abgesteckt, ordnet WIN Infinit Desktop die Fenster neu ein; Fenster eines
 verschwundenen Bildschirms gehören danach zu dem, auf dem sie jetzt liegen.
 
+## Virtuelle Desktops
+
+Jeder virtuelle Desktop von Windows (Win + Tab, Win + Strg + D, Win + Strg + Pfeil links/rechts) hat auf
+jedem Bildschirm seine eigene Fläche – mit eigener Kameraposition, eigenen Lesezeichen und eigenen
+Bereichen. Wechselst du den Desktop, kommst du genau dort an, wo du ihn verlassen hast; die Fenster der
+anderen Desktops bleiben auf ihren Flächen liegen.
+
+- Schiebst du ein Fenster in Win + Tab auf einen anderen Desktop, oder schließt du einen Desktop und
+  Windows legt seine Fenster auf den Nachbardesktop, kommt das Fenster auf die Fläche dieses Desktops –
+  an die Stelle des Bildschirms, an der es gerade ist.
+- Fenster, die auf allen Desktops angezeigt werden, behalten beim Wechsel ihren Platz auf dem Bildschirm.
+- Gruppen öffnen sich auf dem Desktop, auf dem du gerade bist.
+
+Möchtest du lieber eine Fläche pro Bildschirm für alle Desktops, schalte *„Eigene Position der
+Arbeitsfläche für jeden virtuellen Desktop“* aus. Bereiche und Gruppen aller Desktops liegen dann auf
+dieser einen Fläche.
+
 ## Vollbild, Videos und Spiele
 
 - Programme im **Vollbild** bleiben im Vollbild und werden nicht verschoben.
@@ -402,8 +421,8 @@ verkleinerte Abbilder.
 fremden Programm Klicks in einer verkleinerten Darstellung zuzustellen. Der Klick bringt dich deshalb
 auf 100 % zu diesem Fenster, wo du direkt weiterarbeitest.
 
-**Kann ich virtuelle Desktops benutzen?** Ja. Die Kamera eines Bildschirms gilt für alle virtuellen
-Desktops; Fenster anderer Desktops behalten ihren Platz auf der Fläche.
+**Kann ich virtuelle Desktops benutzen?** Ja. Standardmäßig hat jeder Desktop pro Bildschirm seine
+eigene Fläche mit eigener Kameraposition, siehe [Virtuelle Desktops](#virtuelle-desktops).
 
 **Öffnet sich das Startmenü an der Mausposition?** Nein, das Startmenü bleibt an der Taskleiste. Windows
 bietet keine Möglichkeit, es an anderer Stelle zu öffnen.

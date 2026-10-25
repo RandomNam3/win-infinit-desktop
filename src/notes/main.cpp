@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName(QStringLiteral("WIN Infinit Desktop"));
     QCoreApplication::setApplicationVersion(QStringLiteral(WID_VERSION_STRING));
     QGuiApplication::setApplicationDisplayName(QStringLiteral("WIN Infinit Desktop"));
-    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/notes/icons/note.svg")));
+    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/notes/icons/note-app.svg")));
     Wid::Localizer::instance().loadForSystemLanguage();
     // Links in the formatted text lie on light paper in light and dark mode alike; the Markdown
     // reader takes their color from the application palette.

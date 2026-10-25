@@ -242,6 +242,22 @@ msgstr ""
 msgid "Excluded applications"
 msgstr "Ausgenommene Anwendungen"
 
+msgid "Separate canvas position for each virtual desktop"
+msgstr "Eigene Position der Arbeitsfläche für jeden virtuellen Desktop"
+
+msgid ""
+"Every virtual desktop of Windows (Win + Tab) has its own canvas on every "
+"screen, with its own camera position, zoom and bookmarks. A window shown on "
+"all desktops keeps its place on the screen when you switch."
+msgstr ""
+"Jeder virtuelle Desktop von Windows (Win + Tab) hat auf jedem Bildschirm seine "
+"eigene Arbeitsfläche mit eigener Kameraposition, eigenem Zoom und eigenen "
+"Lesezeichen. Ein Fenster, das auf allen Desktops angezeigt wird, bleibt beim "
+"Wechseln an seiner Stelle auf dem Bildschirm."
+
+msgid "virtual desktop,workspace,camera"
+msgstr "virtueller desktop,arbeitsbereich,kamera"
+
 msgid "Reopen applications where they were closed"
 msgstr "Anwendungen dort öffnen, wo sie geschlossen wurden"
 

@@ -50,9 +50,10 @@ enum class HookAction {
  *
  * Windows key: Start opens when Win is pressed and released alone, and a Win32 menu bar
  * gets the focus when Alt is. When a filter swallows an event while Win or Alt is held
- * (Win + wheel, Win + drag, a shortcut), the hook sends an unassigned key (VK 0xE8) once,
- * like AutoHotkey's menu mask key. The shell and the application then see a key
- * combination and do nothing on the release.
+ * (Win + wheel, Win + drag, a shortcut), the hook sends an unassigned key (VK 0xE8), like
+ * AutoHotkey's menu mask key: once right away and once more right before the release of Win
+ * or Alt passes on. The shell and the application then see a key combination and do
+ * nothing on the release.
  *
  * Input from this class carries injectedTag in its extra info and is never filtered.
  * Events into elevated windows are not seen unless the process runs elevated or with
@@ -88,6 +89,7 @@ private:
     bool install();
     void uninstall();
     void swallowed();
+    void sendMask();
     void trackModifier(DWORD vk, bool down);
 
     MouseFilter m_mouseFilter;

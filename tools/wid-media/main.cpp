@@ -12,6 +12,8 @@
 #include <objbase.h>
 #include <wincodec.h>
 
+#include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cwchar>
@@ -161,12 +163,20 @@ std::vector<WORD> modifiersFrom(int argc, wchar_t **argv, int first)
 
 void moveTo(int x, int y)
 {
-    SetCursorPos(x, y);
-    // A zero move as input, so that hooks and the window below see the position.
+    // An absolute move as input, like a real mouse: low-level hooks see the new position
+    // (they do not see SetCursorPos, and a move by zero does not reach them).
+    const int left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    const int top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    const int width = std::max(2, GetSystemMetrics(SM_CXVIRTUALSCREEN));
+    const int height = std::max(2, GetSystemMetrics(SM_CYVIRTUALSCREEN));
     INPUT input = {};
     input.type = INPUT_MOUSE;
-    input.mi.dwFlags = MOUSEEVENTF_MOVE;
+    input.mi.dx = static_cast<LONG>(std::lround((x - left) * 65535.0 / (width - 1)));
+    input.mi.dy = static_cast<LONG>(std::lround((y - top) * 65535.0 / (height - 1)));
+    input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK;
     SendInput(1, &input, sizeof(INPUT));
+    // The normalized coordinates can be a pixel off.
+    SetCursorPos(x, y);
 }
 
 DWORD buttonFlag(const std::wstring &button, bool up)
@@ -318,6 +328,53 @@ int shot(const std::wstring &path, int x, int y, int width, int height)
     return ok ? 0 : fail(L"screenshot failed");
 }
 
+/// Saves the big icon of the top-level window at a point, as the canvas service reads it
+/// (WM_GETICON, else the class icon) for its markers.
+int iconAt(int x, int y, const std::wstring &path)
+{
+    const HWND hwnd = GetAncestor(WindowFromPoint(POINT{x, y}), GA_ROOT);
+    if (!hwnd) {
+        return fail(L"icon: no window there");
+    }
+    DWORD_PTR result = 0;
+    HICON icon = nullptr;
+    if (SendMessageTimeoutW(hwnd, WM_GETICON, ICON_BIG, 0, SMTO_ABORTIFHUNG | SMTO_BLOCK, 200, &result)) {
+        icon = reinterpret_cast<HICON>(result);
+    }
+    if (!icon) {
+        icon = reinterpret_cast<HICON>(GetClassLongPtrW(hwnd, GCLP_HICON));
+    }
+    ICONINFO info = {};
+    if (!icon || !GetIconInfo(icon, &info)) {
+        return fail(L"icon: the window has none");
+    }
+    BITMAP bitmap = {};
+    GetObjectW(info.hbmColor ? info.hbmColor : info.hbmMask, sizeof(bitmap), &bitmap);
+    const int width = bitmap.bmWidth;
+    const int height = info.hbmColor ? bitmap.bmHeight : bitmap.bmHeight / 2;
+    std::vector<BYTE> pixels(static_cast<std::size_t>(width) * static_cast<std::size_t>(height) * 4);
+    BITMAPINFO header = {};
+    header.bmiHeader.biSize = sizeof(header.bmiHeader);
+    header.bmiHeader.biWidth = width;
+    header.bmiHeader.biHeight = -height; // top-down
+    header.bmiHeader.biPlanes = 1;
+    header.bmiHeader.biBitCount = 32;
+    header.bmiHeader.biCompression = BI_RGB;
+    HDC screen = GetDC(nullptr);
+    const bool ok = info.hbmColor && GetDIBits(screen, info.hbmColor, 0, static_cast<UINT>(height), pixels.data(), &header, DIB_RGB_COLORS) == height;
+    ReleaseDC(nullptr, screen);
+    if (info.hbmColor) {
+        DeleteObject(info.hbmColor);
+    }
+    if (info.hbmMask) {
+        DeleteObject(info.hbmMask);
+    }
+    if (!ok) {
+        return fail(L"icon: cannot read a monochrome icon");
+    }
+    return writePng(path, width, height, pixels) ? 0 : fail(L"icon: cannot write the file");
+}
+
 // --- Windows -------------------------------------------------------------------------------
 
 struct Search
@@ -430,6 +487,7 @@ void usage()
     std::fwprintf(stdout,
                   L"wid-media - input and screenshots for tests and documentation images\n\n"
                   L"  wid-media shot FILE.png [X Y WIDTH HEIGHT]      screenshot (default: all screens)\n"
+                  L"  wid-media icon X Y FILE.png                     icon of the window at a point\n"
                   L"  wid-media move X Y\n"
                   L"  wid-media click X Y [left|right|middle] [COUNT] [MODIFIERS]\n"
                   L"  wid-media drag X1 Y1 X2 Y2 [STEPS] [left|middle] [MODIFIERS]\n"
@@ -461,6 +519,12 @@ int wmain(int argc, wchar_t **argv)
     if (command == L"shot" && argc >= 3) {
         CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
         const int result = argc >= 7 ? shot(argv[2], number(argv[3]), number(argv[4]), number(argv[5]), number(argv[6])) : shot(argv[2], 0, 0, 0, 0);
+        CoUninitialize();
+        return result;
+    }
+    if (command == L"icon" && argc >= 5) {
+        CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+        const int result = iconAt(number(argv[2]), number(argv[3]), argv[4]);
         CoUninitialize();
         return result;
     }

@@ -69,8 +69,12 @@ Der Dienst nutzt Qt Gui ohne Widgets und ohne QML. Zeichnen (Markierungen) und T
 
 ## 3. Datenmodell
 
-**Canvas:** eine pro Bildschirm, Schlüssel ist die Bildschirm-Identität (`EDID:DEL:41A3`). Haben zwei
-gleiche Monitore dieselbe Identität, kommt der Gerätepfad dazu.
+**Canvas:** eine pro Bildschirm und virtuellem Desktop. Der Schlüssel ist die Bildschirm-Identität
+(`EDID:DEL:41A3`), dahinter `::` und die GUID des Desktops (`EDID:DEL:41A3::{…}`). Haben zwei gleiche
+Monitore dieselbe Identität, kommt der Gerätepfad dazu. Ohne `PerDesktopCanvas`, oder solange der
+Desktop nicht bekannt ist, fehlt der Desktop-Teil, und alle Desktops teilen sich die Canvas des
+Bildschirms. Ein Desktopwechsel lässt alle Canvases, wie sie sind, und zeigt die des neuen Desktops
+(siehe [Virtuelle Desktops](#vollbild-virtuelle-desktops-taskleiste-startmenü)).
 
 ```
 Kamera = (center, zoom)      center: Punkt der Fläche in der Bildschirmmitte
@@ -181,8 +185,14 @@ Programm, wie unter KDE: Tippen geht auch herausgezoomt an das aktive Fenster.
 | Umschalt / Strg + Mausrad auf freiem Desktop | waagerecht / senkrecht verschieben |
 | Tastenkürzel (Tabelle wie KDE, Win statt Meta) | werden mit ihrem Loslassen verschluckt; Wiederholung nur bei Pfeilen und Zoom |
 
-- **Windows-Taste:** Wird bei gedrückter Win- oder Alt-Taste etwas verschluckt, sendet der Hook einmal
-  VK 0xE8. Startmenü und Menüleisten bleiben dann zu.
+- **Windows-Taste:** Wird bei gedrückter Win- oder Alt-Taste etwas verschluckt, sendet der Hook VK 0xE8:
+  einmal sofort und noch einmal unmittelbar bevor er das Loslassen von Win oder Alt weitergibt.
+  Startmenü und Menüleisten bleiben dann zu.
+- **Verlorenes Loslassen:** Den Zustand der linken Taste (`GetAsyncKeyState`) fragt der Router nur, solange
+  ein Drücken auf dem Desktop noch auf die 3 px wartet. Windows kennt ihn nur für ein Drücken, das
+  unverändert durchging: Ein verschlucktes Drücken (Win + Alt, mittlere Taste) zählt nie als gedrückt,
+  und das Drücken des Desktops lässt der Dienst selbst los, sobald der Pan beginnt. Ein Pan, dessen
+  Loslassen verloren ging, endet deshalb mit dem nächsten Drücken.
 - **Fenster ziehen:** Startet der Benutzer ein Verschieben (`EVENT_SYSTEM_MOVESIZESTART`, Zeiger im
   oberen Bereich des Rahmens), gilt Folgendes:
   - Der Router hält den Zeiger an der Grenze zum Nachbarbildschirm fest, solange die Hand langsamer ist
@@ -207,6 +217,9 @@ Für jedes Fenster außerhalb des Bildes zeigt eine kleine Markierung die Richtu
 - Transparente Pixel lassen die Maus durch. Ein Klick fliegt zum Fenster.
 - Programmsymbole werden pro Fenster einmal geholt: `WM_GETICON` mit 50 ms Zeitlimit, dann das
   Klassensymbol, dann das Symbol der Programmdatei.
+- Die Markierung ist immer dunkel. Ein überwiegend dunkles Symbol (mittlere Helligkeit der sichtbaren
+  Pixel unter einem Viertel) liegt auf einer hellen Scheibe (`Markers::image()`). Die Notiz-App setzt
+  ihr eigenes Symbol, einen gelben Zettel.
 
 ## 8. Fensterplatz-Gedächtnis, Anpinnen, Vollbild
 
@@ -291,7 +304,7 @@ Named Pipe `\\.\pipe\win-infinit-desktop-<Sitzungs-ID>`, nur für den eigenen Be
 | Methode | Parameter | Ergebnis |
 |---|---|---|
 | `version` | – | Versionsnummer |
-| `state` | – | Bildschirme mit Kamera und Übersicht, alle Fenster mit Zustand, Flächen- und Bildschirmrechteck |
+| `state` | – | aktueller virtueller Desktop; Bildschirme mit ihrer aktuellen Canvas, Kamera und Übersicht; alle Fenster mit Canvas, Zustand, Flächen- und Bildschirmrechteck |
 | `paused`, `setPaused` | `paused` | Gesten pausiert? |
 | `safeMode`, `leaveSafeMode` | – | abgesicherter Modus? |
 | `reloadSettings` | – | `true` |
@@ -328,8 +341,9 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
   - der gemeinsame Kern (wie unter KDE);
   - Kürzel-Parser und -Tabelle, Einstellungen aus der INI-Datei;
   - die Entscheidungen des `InputRouter`: Klick, Ziehen, Modifikator, mittlere Taste, Anhalten beim
-    Gleiten, Mausrad-Varianten, Touchpad, Pause und Sperre, Kürzel, Fenster ziehen mit Kante und Wurf;
-  - Markierungen, IPC-Zeilen, Absturzschutz;
+    Gleiten, Mausrad-Varianten, Touchpad, Pause und Sperre, Kürzel, Fenster ziehen mit Kante und Wurf,
+    Pan ohne Tastenzustand bei Windows, verlorenes Loslassen;
+  - Markierungen (Lage, helle Scheibe hinter dunklen Symbolen), IPC-Zeilen, Absturzschutz;
   - Canvas-Menü, Startbefehle von Gruppenmitgliedern, Fenster-Handles und Notiz-IDs aus der IPC,
     Esc für Karte und Auswahl, Win + Rechtsklick, ein offenes Menü bekommt alle Eingaben.
 - **AddressSanitizer:** Ein eigener CI-Job baut alles mit MSVC `/fsanitize=address` und führt die
@@ -351,8 +365,10 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
   `wid-testwindow.exe`), so läuft er auch in Windows Sandbox.
 - **Diagnose auf einem Rechner:** `wid-probe` (siehe [Abschnitt 15](#diagnose-wid-probe)).
 - **Echte Eingaben und Bilder:** `wid-media` (`tools/wid-media`, ohne Qt) erzeugt echte Maus- und
-  Tastatureingaben (`SendInput`), nimmt Bildschirmfotos auf (`BitBlt` mit `CAPTUREBLT`, PNG über WIC),
-  schaltet zwischen hellem und dunklem Modus um und legt Fenster an eine Stelle. Damit spielt
+  Tastatureingaben (`SendInput`, Mausbewegungen absolut, damit Low-Level-Hooks sie sehen), nimmt
+  Bildschirmfotos auf (`BitBlt` mit `CAPTUREBLT`, PNG über WIC), speichert das Symbol eines Fensters,
+  schaltet zwischen hellem und dunklem Modus um und legt Fenster an eine Stelle. Die Markierungen sind
+  von Bildschirmfotos ausgenommen; was sie zeigen, prüfen der Unit-Test und `wid-media icon`. Damit spielt
   `scenes.ps1` die Bilder der Dokumentation ab: Die Übersicht, das Verschieben, die Notizen, die
   Menüs und die Karte. `record.ps1` packt einen Build, startet damit eine Windows Sandbox (`wsb`),
   spielt dort die Szenen ab und macht aus den Einzelbildern animiertes WebP. Der Dienst und die Apps
@@ -729,9 +745,11 @@ zoomt beim Klick auf 100 % ([Übersicht der Projekte](#vergleichbare-projekte)).
 - **Startmenü:** Wird Win allein gedrückt und losgelassen, öffnet sich Start. Bei Win + Mausrad (Zoom),
   Win + Ziehen und jedem verschluckten Kürzel würde Start beim Loslassen aufgehen, genau wie unter
   Plasma. Abhilfe ist eine **Maskentaste**: Sobald etwas bei gedrückter Win- oder Alt-Taste verschluckt
-  wird, sendet der Hook einmal die nicht belegte Taste VK 0xE8. Die Shell sieht dann eine
+  wird, sendet der Hook die nicht belegte Taste VK 0xE8. Die Shell sieht dann eine
   Tastenkombination, und Start bleibt zu. Ebenso öffnet sich die Menüleiste nicht beim Loslassen von
-  Alt. AutoHotkey macht es genauso.
+  Alt. Einmal direkt nach dem Verschlucken reicht nicht auf jedem System; deshalb sendet der Hook die
+  Taste noch einmal aus dem Hook heraus, unmittelbar bevor er das Loslassen von Win oder Alt
+  weitergibt. AutoHotkey macht es genauso.
   ([A_MenuMaskKey](https://www.autohotkey.com/docs/v2/lib/A_MenuMaskKey.htm),
   [Virtual-Key Codes: 0xE8 „Unassigned“](https://learn.microsoft.com/windows/win32/inputdev/virtual-key-codes))
   Prüfen: `wid-probe --test-winkey`.
@@ -765,8 +783,27 @@ zoomt beim Klick auf 100 % ([Übersicht der Projekte](#vergleichbare-projekte)).
   - Desktops aufzählen, wechseln und benachrichtigt werden geht nur über undokumentierte Schnittstellen.
     Deren IDs haben sich zuletzt mit 24H2 (26100.2605) geändert [U]
     ([VirtualDesktopAccessor](https://github.com/Ciantic/VirtualDesktopAccessor)).
-  - Die Windows-Version nutzt nur die dokumentierte Schnittstelle. Einen Desktopwechsel erkennt sie an den
-    `EVENT_OBJECT_CLOAKED/UNCLOAKED`-Schüben mit `DWM_CLOAKED_SHELL`.
+  - Die Windows-Version nutzt sie nicht. Den aktuellen Desktop liest sie aus der Registry:
+    `HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VirtualDesktops`, Werte
+    `CurrentVirtualDesktop` (eine GUID) und `VirtualDesktopIDs` (alle, in ihrer Reihenfolge) [U]. Die
+    Werte sind nicht dokumentiert, aber in den bisherigen Windows-11-Versionen gleich (geprüft mit 25H2;
+    `src/platform/virtualdesktops.*`).
+  - Änderungen meldet `RegNotifyChangeKeyValue` asynchron über ein Ereignis, das ein
+    `QWinEventNotifier` im Haupt-Thread abholt; nichts blockiert. Zusätzlich prüft der Dienst 150 ms
+    nach jedem Schub von `EVENT_OBJECT_CLOAKED/UNCLOAKED`.
+  - In einem frischen Profil fehlen beide Werte, bis es einen zweiten Desktop gab. Gibt es nur eine
+    GUID in `VirtualDesktopIDs`, ist sie der aktuelle Desktop; sonst gilt der Desktop, den
+    `IVirtualDesktopManager` für ein sichtbares Fenster meldet. Die Kamera, die bis dahin galt,
+    übernimmt der erkannte Desktop.
+  - Beim Wechsel bleiben alle Canvases, wie sie sind; der Bildschirm zeigt die des neuen Desktops.
+    Fenster des alten Desktops sind verhüllt (`DWM_CLOAKED_SHELL`) und werden nicht bewegt.
+  - Ein Fenster, das wieder erscheint, kommt auf die Canvas des Desktops, den
+    `IVirtualDesktopManager::GetWindowDesktopId` meldet: Mit Win + Tab verschobene Fenster und die
+    Fenster eines geschlossenen Desktops behalten so ihren Platz auf dem Bildschirm. Sichtbare Fenster
+    eines anderen Desktops (auf allen Desktops angezeigt) übernimmt die aktuelle Canvas ebenso.
+  - Bereiche und Gruppen tragen die GUID ihres Desktops (`desktopId` im gemeinsamen Kern). Einträge
+    ohne Desktop (aus 0.1.1, oder angelegt, während `PerDesktopCanvas` aus war) bekommen den aktuellen.
+    `canvas.json` behält nur Canvases von Desktops, die es noch gibt.
 - **Taskleiste:** Den Arbeitsbereich pro Bildschirm liefert `rcWork`, auch mit Leisten anderer Programme.
   Ist die Taskleiste automatisch ausgeblendet, ist `rcWork` der ganze Bildschirm. Zweite Taskleisten
   heißen `Shell_SecondaryTrayWnd`.

@@ -42,6 +42,7 @@ das Skript am Ende nennt.
 
 ```text
 wid-media shot FILE.png [X Y WIDTH HEIGHT]      Bildschirmfoto (ohne Rechteck: alle Bildschirme)
+wid-media icon X Y FILE.png                     Symbol des Fensters an einem Punkt (wie es die Marker zeigen)
 wid-media move X Y
 wid-media click X Y [left|right|middle] [ANZAHL] [MODIFIKATOREN]
 wid-media drag X1 Y1 X2 Y2 [SCHRITTE] [left|middle] [MODIFIKATOREN]
@@ -50,6 +51,7 @@ wid-media key KOMBINATION                        z. B. win+alt+m, escape, ctrl+e
 wid-media type TEXT
 wid-media place PROGRAMM.exe X Y BREITE HÖHE      Hauptfenster eines Programms an eine Stelle
 wid-media close KLASSE                           Fenster einer Fensterklasse schließen
+wid-media rect KLASSE                            X Y BREITE HÖHE eines Fensters (#32768: offenes Menü)
 wid-media theme dark|light                       App- und Systemmodus des Benutzers
 wid-media screen                                 Bildschirm, Arbeitsbereich, DPI
 ```

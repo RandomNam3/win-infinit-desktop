@@ -93,6 +93,9 @@ public:
     ~Organizer() override;
 
     void load();
+    /// Areas and groups without a virtual desktop (from before canvases per desktop, or made
+    /// while they were off) go to the current one.
+    void claimForCurrentDesktop();
     /// Writes what changed (called by the service's save).
     void persist();
     /// After the service started (or left safe mode): running notes announce themselves.
@@ -184,7 +187,10 @@ private:
     // Areas
     QList<InfinitDesktop::Area> areasOf(const Canvas &canvas) const;
     QList<InfinitDesktop::OutputIdentity> monitorIdentities() const;
-    static bool areaBelongsTo(const InfinitDesktop::Area &area, int monitor, const QList<InfinitDesktop::OutputIdentity> &identities);
+    /// Whether something of `stored` desktop is on a canvas of `canvasDesktop`: without
+    /// canvases per desktop there is one canvas with everything.
+    static bool onDesktop(const QString &stored, const QString &canvasDesktop);
+    static bool areaBelongsTo(const InfinitDesktop::Area &area, int monitor, const QString &desktop, const QList<InfinitDesktop::OutputIdentity> &identities);
     void updateAreas(const Canvas &canvas);
     void scheduleAreaUpdate(const QString &canvasKey);
     void createAreaFromRect(const QRectF &canvasRect, int monitor);
