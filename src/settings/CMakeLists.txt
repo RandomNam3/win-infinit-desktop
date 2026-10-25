@@ -84,7 +84,7 @@ if(WIN32)
         shellitem_win.cpp
         shellitem_win.h
     )
-    target_link_libraries(wid-settings PRIVATE ole32 shell32 uuid gdi32)
+    target_link_libraries(wid-settings PRIVATE ole32 shell32 uuid gdi32 dwmapi)
 endif()
 set_target_properties(wid-settings PROPERTIES AUTOMOC ON)
 

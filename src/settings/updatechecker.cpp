@@ -9,6 +9,10 @@
 #include "settingsfile.h"
 
 #include <QCoreApplication>
+#include <QDesktopServices>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QJSEngine>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -18,8 +22,14 @@
 #include <QNetworkRequest>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QStandardPaths>
 #include <QSysInfo>
+#include <QUrl>
 #include <QVersionNumber>
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
 
 #include <algorithm>
 
@@ -64,6 +74,50 @@ bool isGitHubDownload(const QString &url)
 {
     const QUrl parsed(url);
     return parsed.scheme() == QLatin1String("https") && (parsed.host() == QLatin1String("github.com") || parsed.host().endsWith(QLatin1String(".githubusercontent.com")));
+}
+
+/// The installer's result and log, next to the state of the service.
+QString updateFile(const QString &name)
+{
+    QString base = qEnvironmentVariable("LOCALAPPDATA");
+    if (base.isEmpty()) {
+        base = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+    }
+    return QDir(base).filePath(QStringLiteral("WIN Infinit Desktop/") + name);
+}
+
+/// Console programs started from here (tar, PowerShell) run without a window.
+void withoutWindow(QProcess &process)
+{
+#ifdef Q_OS_WIN
+    process.setCreateProcessArgumentsModifier([](QProcess::CreateProcessArguments *arguments) {
+        arguments->flags &= ~DWORD(CREATE_NEW_CONSOLE | DETACHED_PROCESS);
+        arguments->flags |= CREATE_NO_WINDOW;
+    });
+#else
+    Q_UNUSED(process)
+#endif
+}
+
+bool isRunning(const QString &installStatus)
+{
+    return installStatus == QLatin1String("downloading") || installStatus == QLatin1String("unpacking") || installStatus == QLatin1String("installing");
+}
+
+bool processRunning(qint64 pid)
+{
+#ifdef Q_OS_WIN
+    HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, DWORD(pid));
+    if (!process) {
+        return false;
+    }
+    const bool running = WaitForSingleObject(process, 0) == WAIT_TIMEOUT;
+    CloseHandle(process);
+    return running;
+#else
+    Q_UNUSED(pid)
+    return false;
+#endif
 }
 
 } // namespace
@@ -162,15 +216,12 @@ void UpdateChecker::check()
     if (m_demo || m_reply) {
         return;
     }
-    if (!m_network) {
-        m_network = new QNetworkAccessManager(this);
-    }
     QNetworkRequest request(QUrl(QStringLiteral("https://api.github.com/repos/%1/releases?per_page=30").arg(s_repository)));
     request.setRawHeader("Accept", "application/vnd.github+json");
     request.setRawHeader("X-GitHub-Api-Version", "2022-11-28");
     request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("win-infinit-desktop-settings/%1").arg(currentVersion()));
     request.setTransferTimeout(TimeoutMs);
-    QNetworkReply *reply = m_network->get(request);
+    QNetworkReply *reply = network()->get(request);
     m_reply = reply;
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         finished(reply);
@@ -240,6 +291,10 @@ QVariantList UpdateChecker::newerReleases(const QByteArray &json, const QString 
             const QString url = object.value(QStringLiteral("browser_download_url")).toString();
             if (object.value(QStringLiteral("name")).toString().compare(packageName, Qt::CaseInsensitive) == 0 && isGitHubDownload(url)) {
                 entry.insert(QStringLiteral("package"), url);
+                const QString digest = object.value(QStringLiteral("digest")).toString();
+                if (digest.startsWith(QLatin1String("sha256:"))) {
+                    entry.insert(QStringLiteral("packageDigest"), digest.toLower());
+                }
                 break;
             }
         }
@@ -277,30 +332,249 @@ QString UpdateChecker::updateCommand() const
         .arg(version, powerShellQuote(package));
 }
 
-bool UpdateChecker::startUpdate()
+QNetworkAccessManager *UpdateChecker::network()
 {
-    const QString command = updateCommand();
-    if (command.isEmpty()) {
-        return false;
+    if (!m_network) {
+        m_network = new QNetworkAccessManager(this);
     }
-    // A PowerShell window that stays open, so the messages of the installer can be read.
-    // Only single quotes in the script: double quotes do not survive the command line.
-    const QString script = QStringLiteral(
-                               "try { %1; Write-Host ''; Write-Host %2 } "
-                               "catch { Write-Host ''; Write-Host $_; Write-Host %3 }; "
-                               "Read-Host %4 | Out-Null")
-                               .arg(command,
-                                    powerShellQuote(i18n("The update is installed. WIN Infinit Desktop has been started again.")),
-                                    powerShellQuote(i18n("The update failed, see the messages above.")),
-                                    powerShellQuote(i18n("Press Enter to close this window")));
-    return QProcess::startDetached(QStringLiteral("powershell.exe"),
-                                   {QStringLiteral("-NoProfile"), QStringLiteral("-ExecutionPolicy"), QStringLiteral("Bypass"), QStringLiteral("-Command"), script});
+    return m_network;
 }
 
 void UpdateChecker::setStatus(const QString &status)
 {
     m_status = status;
     Q_EMIT changed();
+}
+
+// --- Installing --------------------------------------------------------------------------------
+
+QString UpdateChecker::installStatus() const
+{
+    return m_installStatus;
+}
+
+double UpdateChecker::installProgress() const
+{
+    return m_installProgress;
+}
+
+QString UpdateChecker::installMessage() const
+{
+    return m_installMessage;
+}
+
+bool UpdateChecker::hasInstallLog() const
+{
+    return QFileInfo::exists(updateFile(QStringLiteral("update.log")));
+}
+
+void UpdateChecker::setInstallStatus(const QString &status, const QString &message)
+{
+    m_installStatus = status;
+    m_installMessage = message;
+    Q_EMIT installChanged();
+}
+
+void UpdateChecker::installUpdate()
+{
+    if (m_demo || isRunning(m_installStatus)) {
+        return;
+    }
+    const QVariantMap release = m_releases.isEmpty() ? QVariantMap() : m_releases.constFirst().toMap();
+    const QString version = release.value(QStringLiteral("version")).toString();
+    const QString package = release.value(QStringLiteral("package")).toString();
+    if (version.isEmpty() || !isGitHubDownload(package)) {
+        setInstallStatus(QStringLiteral("failed"), i18n("This release has no package for this computer."));
+        return;
+    }
+    m_updateDirectory = QDir(QDir::tempPath()).filePath(QStringLiteral("win-infinit-desktop-update-%1").arg(version));
+    QDir(m_updateDirectory).removeRecursively();
+    m_package = std::make_unique<QFile>(QDir(m_updateDirectory).filePath(QStringLiteral("package.zip")));
+    if (!QDir().mkpath(m_updateDirectory) || !m_package->open(QIODevice::WriteOnly)) {
+        m_package.reset();
+        setInstallStatus(QStringLiteral("failed"), i18n("The download cannot be saved in the folder for temporary files."));
+        return;
+    }
+    m_packageHash.reset();
+    m_packageDigest = release.value(QStringLiteral("packageDigest")).toString();
+
+    QNetworkRequest request{QUrl(package)};
+    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("win-infinit-desktop-settings/%1").arg(currentVersion()));
+    // GitHub redirects to its storage host; the time limit applies while nothing arrives.
+    request.setTransferTimeout(2 * TimeoutMs);
+    QNetworkReply *reply = network()->get(request);
+    m_download = reply;
+    connect(reply, &QNetworkReply::readyRead, this, [this, reply]() {
+        if (reply != m_download || !m_package) {
+            return;
+        }
+        const QByteArray data = reply->readAll();
+        m_packageHash.addData(data);
+        if (m_package->write(data) != data.size()) {
+            reply->abort();
+        }
+    });
+    connect(reply, &QNetworkReply::downloadProgress, this, [this, reply](qint64 received, qint64 total) {
+        if (reply != m_download) {
+            return;
+        }
+        m_installProgress = total > 0 ? double(received) / double(total) : -1;
+        Q_EMIT installChanged();
+    });
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        downloaded(reply);
+    });
+    m_installProgress = -1;
+    setInstallStatus(QStringLiteral("downloading"));
+}
+
+void UpdateChecker::downloaded(QNetworkReply *reply)
+{
+    reply->deleteLater();
+    if (reply != m_download) {
+        return;
+    }
+    m_download.clear();
+    bool saved = false;
+    if (m_package) {
+        const QByteArray rest = reply->readAll();
+        m_packageHash.addData(rest);
+        saved = m_package->write(rest) == rest.size() && m_package->flush() && m_package->error() == QFileDevice::NoError;
+        m_package->close();
+        m_package.reset();
+    }
+    if (reply->error() != QNetworkReply::NoError || !saved) {
+        const QString reason = saved ? reply->errorString() : i18n("the file could not be saved");
+        setInstallStatus(QStringLiteral("failed"), i18nc("@info %1 is the reason", "The download failed: %1", reason));
+        return;
+    }
+    const QString digest = QStringLiteral("sha256:") + QString::fromLatin1(m_packageHash.result().toHex());
+    if (!m_packageDigest.isEmpty() && digest != m_packageDigest) {
+        setInstallStatus(QStringLiteral("failed"), i18n("The download is damaged: its checksum does not match the one on GitHub. Nothing was installed."));
+        return;
+    }
+    unpack();
+}
+
+void UpdateChecker::unpack()
+{
+    const QString zip = QDir(m_updateDirectory).filePath(QStringLiteral("package.zip"));
+    const QString target = QDir(m_updateDirectory).filePath(QStringLiteral("package"));
+    if (!QDir().mkpath(target)) {
+        setInstallStatus(QStringLiteral("failed"), i18n("The package could not be unpacked."));
+        return;
+    }
+    // tar.exe of Windows (bsdtar) unpacks zip files.
+    auto *process = new QProcess(this);
+    process->setProgram(QDir(qEnvironmentVariable("SystemRoot", QStringLiteral("C:\\Windows"))).filePath(QStringLiteral("System32/tar.exe")));
+    process->setArguments({QStringLiteral("-xf"), QDir::toNativeSeparators(zip), QStringLiteral("-C"), QDir::toNativeSeparators(target)});
+    withoutWindow(*process);
+    connect(process, &QProcess::finished, this, [this, process, target](int code, QProcess::ExitStatus status) {
+        process->deleteLater();
+        if (status != QProcess::NormalExit || code != 0 || !QFileInfo::exists(QDir(target).filePath(QStringLiteral("install.ps1")))) {
+            setInstallStatus(QStringLiteral("failed"), i18n("The package could not be unpacked."));
+            return;
+        }
+        runInstaller();
+    });
+    connect(process, &QProcess::errorOccurred, this, [this, process](QProcess::ProcessError error) {
+        if (error == QProcess::FailedToStart) {
+            process->deleteLater();
+            setInstallStatus(QStringLiteral("failed"), i18n("The package could not be unpacked."));
+        }
+    });
+    m_installProgress = -1;
+    setInstallStatus(QStringLiteral("unpacking"));
+    process->start();
+}
+
+void UpdateChecker::runInstaller()
+{
+    const QString script = QDir(m_updateDirectory).filePath(QStringLiteral("package/install.ps1"));
+    const QString log = updateFile(QStringLiteral("update.log"));
+    const QString result = updateFile(QStringLiteral("update-result.json"));
+    QDir().mkpath(QFileInfo(log).absolutePath());
+    QFile::remove(result);
+    // The installer closes this app, installs, starts the service and opens this app again.
+    QProcess process;
+    process.setProgram(QStringLiteral("powershell.exe"));
+    process.setArguments({QStringLiteral("-NoProfile"), QStringLiteral("-ExecutionPolicy"), QStringLiteral("Bypass"), QStringLiteral("-File"),
+                          QDir::toNativeSeparators(script), QStringLiteral("-Update"), QStringLiteral("-Log"), QDir::toNativeSeparators(log),
+                          QStringLiteral("-ResultFile"), QDir::toNativeSeparators(result), QStringLiteral("-OpenSettings")});
+    process.setWorkingDirectory(QDir::tempPath());
+    withoutWindow(process);
+    if (!process.startDetached(&m_installer)) {
+        setInstallStatus(QStringLiteral("failed"), i18n("PowerShell, which runs the installer, could not be started."));
+        return;
+    }
+    m_installProgress = -1;
+    setInstallStatus(QStringLiteral("installing"));
+    // Normally the installer closes this app. Until then: does it report anything, or end
+    // without a word (it could not start, or failed before it got to this app)?
+    m_installWatch.setInterval(1000);
+    connect(&m_installWatch, &QTimer::timeout, this, &UpdateChecker::watchInstaller, Qt::UniqueConnection);
+    m_installWatch.start();
+}
+
+void UpdateChecker::watchInstaller()
+{
+    if (m_installStatus != QLatin1String("installing")) {
+        m_installWatch.stop();
+        return;
+    }
+    if (QFileInfo::exists(updateFile(QStringLiteral("update-result.json")))) {
+        m_installWatch.stop();
+        readInstallResult();
+        return;
+    }
+    if (!processRunning(m_installer)) {
+        m_installWatch.stop();
+        // It may have written its result just before it ended.
+        readInstallResult();
+        if (m_installStatus == QLatin1String("installing")) {
+            setInstallStatus(QStringLiteral("failed"), i18n("The installer ended without a result."));
+        }
+    }
+}
+
+void UpdateChecker::readInstallResult()
+{
+    // The packages of earlier updates: the installer ran from there and could not remove them.
+    // A little later, when the installer that opened this app has ended.
+    QTimer::singleShot(10000, this, [this]() {
+        if (isRunning(m_installStatus)) {
+            return;
+        }
+        const QDir temp(QDir::tempPath());
+        const QStringList folders = temp.entryList({QStringLiteral("win-infinit-desktop-update-*")}, QDir::Dirs | QDir::NoDotAndDotDot);
+        for (const QString &folder : folders) {
+            QDir(temp.filePath(folder)).removeRecursively();
+        }
+    });
+    QFile file(updateFile(QStringLiteral("update-result.json")));
+    if (!file.open(QIODevice::ReadOnly)) {
+        return;
+    }
+    const QJsonObject result = QJsonDocument::fromJson(file.read(64 * 1024)).object();
+    file.close();
+    file.remove();
+    const QDateTime time = QDateTime::fromString(result.value(QStringLiteral("time")).toString(), Qt::ISODate);
+    if (!time.isValid() || time.secsTo(QDateTime::currentDateTime()) > 24 * 3600) {
+        return;
+    }
+    if (result.value(QStringLiteral("result")).toString() == QLatin1String("ok")) {
+        setInstallStatus(QStringLiteral("done"), result.value(QStringLiteral("version")).toString());
+    } else {
+        setInstallStatus(QStringLiteral("failed"), result.value(QStringLiteral("message")).toString());
+    }
+}
+
+void UpdateChecker::openInstallLog() const
+{
+    const QString log = updateFile(QStringLiteral("update.log"));
+    if (QFileInfo::exists(log)) {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(log));
+    }
 }
 
 } // namespace InfinitDesktop

@@ -1511,9 +1511,6 @@ msgstr "Position von „%1“ vergessen"
 msgid "GitHub sent an unexpected answer."
 msgstr "GitHub hat unerwartet geantwortet."
 
-msgid "The update failed, see the messages above."
-msgstr "Das Update ist fehlgeschlagen, siehe die Meldungen oben."
-
 msgid "Looking for updates…"
 msgstr "Suche nach Updates …"
 
@@ -2462,27 +2459,10 @@ msgid "Asking the canvas service…"
 msgstr "Der Arbeitsflächen-Dienst wird abgefragt …"
 
 msgid ""
-"The update opens a PowerShell window: it downloads the new version from "
-"GitHub, closes WIN Infinit Desktop, installs the new version and starts it "
-"again."
-msgstr ""
-"Das Update öffnet ein PowerShell-Fenster: Es lädt die neue Version von GitHub "
-"herunter, beendet WIN Infinit Desktop, installiert die neue Version und "
-"startet sie wieder."
-
-msgid ""
 "This release has no package for this computer yet. Download it from GitHub."
 msgstr ""
 "Für diesen Computer gibt es in dieser Version noch kein Paket. Laden Sie es "
 "von GitHub herunter."
-
-msgid "The update is running in the PowerShell window."
-msgstr "Das Update läuft im PowerShell-Fenster."
-
-msgid "PowerShell could not be started. Run this command in PowerShell:"
-msgstr ""
-"PowerShell konnte nicht gestartet werden. Führen Sie diesen Befehl in "
-"PowerShell aus:"
 
 msgid "Available while the canvas service is running."
 msgstr "Verfügbar, solange der Arbeitsflächen-Dienst läuft."
@@ -2538,12 +2518,6 @@ msgstr ""
 msgctxt "keyboard key"
 msgid "Win"
 msgstr "Win"
-
-msgid "The update is installed. WIN Infinit Desktop has been started again."
-msgstr "Das Update ist installiert. WIN Infinit Desktop wurde wieder gestartet."
-
-msgid "Press Enter to close this window"
-msgstr "Drücken Sie die Eingabetaste, um dieses Fenster zu schließen"
 
 msgid ""
 "Hold these keys and drag with the left mouse button to pan the canvas, even on"
@@ -2670,3 +2644,66 @@ msgid ""
 msgstr ""
 "Schreibt ausführliche Meldungen in die Datei service.log in "
 "%LOCALAPPDATA%\\WIN Infinit Desktop. Nur für Fehlerberichte nützlich."
+
+msgid "This release has no package for this computer."
+msgstr "Diese Version hat kein Paket für diesen Computer."
+
+msgid "The download cannot be saved in the folder for temporary files."
+msgstr "Der Download kann im Ordner für temporäre Dateien nicht gespeichert werden."
+
+msgid "the file could not be saved"
+msgstr "die Datei konnte nicht gespeichert werden"
+
+msgctxt "@info %1 is the reason"
+msgid "The download failed: %1"
+msgstr "Der Download ist fehlgeschlagen: %1"
+
+msgid "The download is damaged: its checksum does not match the one on GitHub. Nothing was installed."
+msgstr "Der Download ist beschädigt: Seine Prüfsumme stimmt nicht mit der auf GitHub überein. Es wurde nichts installiert."
+
+msgid "The package could not be unpacked."
+msgstr "Das Paket konnte nicht entpackt werden."
+
+msgid "PowerShell, which runs the installer, could not be started."
+msgstr "PowerShell, das den Installer ausführt, konnte nicht gestartet werden."
+
+msgid "The installer ended without a result."
+msgstr "Der Installer wurde ohne Ergebnis beendet."
+
+msgctxt "@info %1 is a version number"
+msgid "Version %1 is installed."
+msgstr "Version %1 ist installiert."
+
+msgid "The update is installed."
+msgstr "Das Update ist installiert."
+
+msgid "The update failed."
+msgstr "Das Update ist fehlgeschlagen."
+
+msgctxt "@action:button"
+msgid "Try Again"
+msgstr "Erneut versuchen"
+
+msgctxt "@action:button"
+msgid "Open Log"
+msgstr "Protokoll öffnen"
+
+msgid "The update downloads the new version from GitHub, closes WIN Infinit Desktop and this window for a moment, installs the new version and starts both again."
+msgstr "Das Update lädt die neue Version von GitHub herunter, schließt WIN Infinit Desktop und dieses Fenster kurz, installiert die neue Version und startet beide wieder."
+
+msgctxt "@info %1 is a version number, %2 a percentage"
+msgid "Downloading version %1 … %2 %"
+msgstr "Version %1 wird heruntergeladen … %2 %"
+
+msgctxt "@info %1 is a version number"
+msgid "Downloading version %1 …"
+msgstr "Version %1 wird heruntergeladen …"
+
+msgid "Unpacking …"
+msgstr "Wird entpackt …"
+
+msgid "Installing … WIN Infinit Desktop and this window close for a moment and open again when the update is done."
+msgstr "Wird installiert … WIN Infinit Desktop und dieses Fenster schließen sich kurz und öffnen sich wieder, sobald das Update fertig ist."
+
+msgid "You can also run the update by hand, in PowerShell:"
+msgstr "Sie können das Update auch von Hand in PowerShell ausführen:"
