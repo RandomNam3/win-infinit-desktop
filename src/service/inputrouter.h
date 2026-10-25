@@ -40,6 +40,7 @@ struct InputSnapshot
     bool overviewOpen = false; ///< Esc returns to 100 %
     bool overlayOpen = false; ///< map or selection: Esc closes it (before the overview)
     bool canvasMenu = false; ///< Win + right click on the empty desktop opens the canvas menu
+    bool menuOpen = false; ///< the canvas menu runs: every key and click is the menu's
     QList<RECT> monitors;
     QList<bool> locked; ///< per monitor: a fullscreen window has the focus
     // While the user drags a canvas window (system move loop).

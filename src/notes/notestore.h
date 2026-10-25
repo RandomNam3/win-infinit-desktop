@@ -27,6 +27,8 @@ class Note : public QObject
     Q_PROPERTY(int width READ width WRITE setWidth NOTIFY sizeChanged)
     Q_PROPERTY(int height READ height WRITE setHeight NOTIFY sizeChanged)
     Q_PROPERTY(bool hidden READ isHidden WRITE setHidden NOTIFY hiddenChanged)
+    /// Shows the formatted text instead of the Markdown source (which is the default).
+    Q_PROPERTY(bool formatted READ isFormatted WRITE setFormatted NOTIFY formattedChanged)
     Q_PROPERTY(bool pinned READ isPinned NOTIFY pinnedChanged)
     Q_PROPERTY(bool keepAbove READ keepAbove NOTIFY pinnedChanged)
 
@@ -68,6 +70,11 @@ public:
         return m_hidden;
     }
     void setHidden(bool hidden);
+    bool isFormatted() const
+    {
+        return m_formatted;
+    }
+    void setFormatted(bool formatted);
     bool isPinned() const
     {
         return m_pinned;
@@ -84,6 +91,7 @@ Q_SIGNALS:
     void colorChanged();
     void sizeChanged();
     void hiddenChanged();
+    void formattedChanged();
     void pinnedChanged();
     /// Something that is saved changed.
     void modified();
@@ -96,6 +104,7 @@ private:
     int m_width = 300;
     int m_height = 260;
     bool m_hidden = false;
+    bool m_formatted = false;
     bool m_pinned = false;
     bool m_keepAbove = false;
 };

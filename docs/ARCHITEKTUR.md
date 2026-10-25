@@ -44,6 +44,7 @@ steht in [Abschnitt 15](#15-windows-schnittstellen), woher der gemeinsame Kern k
 | `tools/wid-ctl/` | Kommandozeilen-Client der IPC-Schnittstelle | Qt Network |
 | `tools/wid-probe/` | Diagnose der Windows-Schnittstellen auf dem Rechner | Windows SDK |
 | `tools/wid-testwindow/` | Testfenster für den Laufzeittest | Windows SDK |
+| `tools/wid-media/` | echte Eingaben und Bildschirmfotos (`wid-media.exe`), die Szenen der Bilder in der Dokumentation (`scenes.ps1`, `record.ps1` mit Windows Sandbox) | Windows SDK, WIC |
 
 Der Dienst nutzt Qt Gui ohne Widgets und ohne QML. Zeichnen (Markierungen) und Text kommen von
 `QPainter`, alle Fenster sind eigene Win32-Fenster.
@@ -131,7 +132,15 @@ App-Schlüssel.
 ## 5. Übersicht (Zoom ≠ 100 %)
 
 - Sobald der Zoom oder das Ziel einer Animation nicht 100 % ist, öffnet sich auf diesem Bildschirm die
-  Übersicht. Sie ist ein Werkzeugfenster über dem Arbeitsbereich, die Taskleiste bleibt sichtbar.
+  Übersicht. Sie ist ein oberstes Werkzeugfenster (`HWND_TOPMOST`) über dem Arbeitsbereich, die
+  Taskleiste bleibt sichtbar.
+  - Oberstes Fenster muss sie sein: Mit `HWND_TOP` legt Windows das Fenster eines Prozesses, der nicht
+    die letzte Eingabe bekommen hat, nicht über das Vordergrundfenster. Die echten Fenster schauten dann
+    durch die Übersicht hindurch.
+  - Markierungen und Overlays sind ebenfalls oberste Fenster. Öffnet sich die Übersicht, kommen sie
+    wieder über sie (`Markers::raise`, `Organizer::raiseOverlays`).
+  - Fenster anderer Programme, die selbst „immer im Vordergrund“ sind, liegen herausgezoomt unter der
+    Übersicht; als verwaltete Fenster haben sie dort ihre Vorschau.
 - Chromium zählt Werkzeugfenster nicht als verdeckend. Die Programme dahinter zeichnen deshalb weiter,
   und ihre Vorschauen bleiben live.
 - Aufbau von unten nach oben:
@@ -322,22 +331,32 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
     Gleiten, Mausrad-Varianten, Touchpad, Pause und Sperre, Kürzel, Fenster ziehen mit Kante und Wurf;
   - Markierungen, IPC-Zeilen, Absturzschutz;
   - Canvas-Menü, Startbefehle von Gruppenmitgliedern, Fenster-Handles und Notiz-IDs aus der IPC,
-    Esc für Karte und Auswahl, Win + Rechtsklick.
+    Esc für Karte und Auswahl, Win + Rechtsklick, ein offenes Menü bekommt alle Eingaben.
 - **AddressSanitizer:** Ein eigener CI-Job baut alles mit MSVC `/fsanitize=address` und führt die
   Unit-Tests aus.
 - **Laufzeittest** (`tests/runtime/smoke.ps1`, in der CI auf Windows Server 2025):
   1. ein Testfenster öffnen, den Dienst starten;
   2. prüfen, dass das Fenster übernommen wird;
   3. per IPC um −200 px verschieben: Das Fenster bewegt sich genau so weit;
-  4. um −6000 px: Das Fenster ist geparkt und auf keinem Bildschirm mehr;
-  5. eine Gruppe mit dem Programm des Testfensters 1500 px weiter rechts öffnen: Das Fenster wandert
+  4. auf 50 % zoomen: Die Übersicht öffnet sich, das echte Fenster bleibt stehen und ist verdeckt
+     (`wid-probe --window-at` an seiner Mitte findet die Übersicht);
+  5. um −6000 px: Das Fenster ist geparkt und auf keinem Bildschirm mehr;
+  6. eine Gruppe mit dem Programm des Testfensters 1500 px weiter rechts öffnen: Das Fenster wandert
      dorthin, die Kamera folgt;
-  6. das Testfenster als Notiz anmelden, per IPC anpinnen und wieder lösen;
-  7. den Dienst beenden: Das Fenster ist wieder auf einem Bildschirm.
+  7. das Testfenster als Notiz anmelden, per IPC anpinnen und wieder lösen;
+  8. den Dienst beenden: Das Fenster ist wieder auf einem Bildschirm.
 
   Der Test hängt von der Desktop-Sitzung des Runners ab. Er wird berichtet, ist aber nicht
-  Voraussetzung.
+  Voraussetzung. `-Build` nimmt auch einen Paketordner (alle Programme nebeneinander, dazu
+  `wid-testwindow.exe`), so läuft er auch in Windows Sandbox.
 - **Diagnose auf einem Rechner:** `wid-probe` (siehe [Abschnitt 15](#diagnose-wid-probe)).
+- **Echte Eingaben und Bilder:** `wid-media` (`tools/wid-media`, ohne Qt) erzeugt echte Maus- und
+  Tastatureingaben (`SendInput`), nimmt Bildschirmfotos auf (`BitBlt` mit `CAPTUREBLT`, PNG über WIC),
+  schaltet zwischen hellem und dunklem Modus um und legt Fenster an eine Stelle. Damit spielt
+  `scenes.ps1` die Bilder der Dokumentation ab: Die Übersicht, das Verschieben, die Notizen, die
+  Menüs und die Karte. `record.ps1` packt einen Build, startet damit eine Windows Sandbox (`wsb`),
+  spielt dort die Szenen ab und macht aus den Einzelbildern animiertes WebP. Der Dienst und die Apps
+  bekommen dabei eigene, leere Datenordner (`APPDATA`/`LOCALAPPDATA`).
 
 ## 13. Notizen, Gruppen, Bereiche und Karte
 
@@ -413,7 +432,16 @@ Dateien und seinen Overlay-Fenstern, wie der gleichnamige Teil des KWin-Effekts.
 - Es ist ein natives Menü (`TrackPopupMenuEx`) des Dienstfensters. Es öffnet sich erst nach dem
   laufenden Ereignis (`QTimer::singleShot(0)`), denn es hat eine eigene Nachrichtenschleife. Danach
   wird alles neu nachgeschlagen.
+- Solange es offen ist, steht `menuOpen` im Snapshot des Hook-Threads: Tasten und Klicks gehen
+  unverändert an das Menü. Esc schließt so das Menü und nicht die Übersicht dahinter.
 - Einträge wie unter KDE, dazu „Beenden“.
+- **Heller und dunkler Modus:** Native Menüs sind von sich aus immer hell. `menutheme.h` (in
+  `src/shared`) stellt den Prozess auf `SetPreferredAppMode(AllowDark)` (uxtheme, Ordinal 135) und
+  erneuert die Menüs nach `WM_SETTINGCHANGE` „ImmersiveColorSet“ (`RefreshImmersiveColorPolicyState`,
+  `FlushMenuThemes`, Ordinale 104 und 136). Das ist undokumentiert [U], aber seit Windows 10 1903
+  unverändert und in vielen Programmen im Einsatz; fehlen die Funktionen, bleiben die Menüs hell. Der
+  Dienst (Canvas- und Tray-Menü) und die Notiz-App (Menüs der Notizen) nutzen es, so sehen alle Menüs
+  gleich aus.
 
 ## 14. Notiz-App und Einstellungs-App
 
@@ -438,7 +466,19 @@ Frameworks. Was dort KDE erledigt, übernehmen kleine Teile in `src/shared` und 
   seinen Platz. Ausgeblendete Notizen haben kein Fenster, alle Fenster teilen die einfache
   Render-Schleife (`QSG_RENDER_LOOP=basic`).
 - Speicherung wie unter KDE: `<id>.md` und `index.json` in `%APPDATA%\WIN Infinit Desktop\notes`,
-  verzögert und atomar (`QSaveFile`).
+  verzögert und atomar (`QSaveFile`). `index.json` hält je Notiz auch `formatted`: Eine Notiz zeigt
+  standardmäßig den Markdown-Text zum Bearbeiten, der Stift in der Kopfzeile (Strg + E) schaltet auf
+  den formatierten Text und zurück.
+- **Menüs:** `Menu` mit `popupType: Popup.Native` (Qt 6.8), also Win32-Menüs wie das Canvas-Menü, im
+  dunklen Modus dunkel (`menutheme.h`, siehe [Abschnitt 13](#13-notizen-gruppen-bereiche-und-karte)).
+  Rechtsklick öffnet überall das Menü der Notiz; im Text kommen die Textbefehle dazu (Qt 6.8 hat für
+  `TextArea` kein eigenes Kontextmenü). Die Farben sind ein eigenes Menü statt eines Untermenüs: Qt 6.8
+  lässt native Untermenüs teils weg, wenn das Menü als erstes eines Fensters aufgeht. Aktionen
+  (`Action`) teilen beide Menüs; ankreuzbare binden ihren Zustand nach dem Klick neu.
+- **Tooltips** der Kopfzeile sind eigene Fenster (`Popup.Window`) unter dem Knopf: Über der Kopfzeile
+  würde die kleine Notiz sie abschneiden, und unter dem Mauszeiger würden sie den Hover beenden.
+- **Links** im formatierten Text liegen auch im dunklen Modus auf hellem Papier. Der Markdown-Leser
+  nimmt ihre Farbe aus der Palette der Anwendung, deshalb setzt `main.cpp` dort `QPalette::Link`.
 - Anfragen auf ihrer Pipe (`newNote`, `toggleNotes`, `setNotesVisible`, `reannounceNotes`, `notes`,
   `quit`) beantwortet sie sofort und erledigt die Fensterarbeit danach, damit der Dienst nie auf
   QML wartet. Ohne laufenden Dienst gehen ihre Aufrufe verloren; startet der Dienst neu, ruft er
@@ -621,7 +661,7 @@ Was die Thumbnails nicht können:
   ([CreateSurfaceFromHwnd](https://learn.microsoft.com/windows/win32/api/dcomp/nf-dcomp-idcompositiondevice-createsurfacefromhwnd)).
 - **Die Übersicht darf Chromium-Fenster nicht verdecken**, sonst hören sie auf zu zeichnen und ihre
   Vorschau friert ein. `WS_EX_TOOLWINDOW`-Fenster zählt Chromium nicht als verdeckend. Die Übersicht ist
-  deshalb ein Werkzeugfenster.
+  deshalb ein Werkzeugfenster, oben fixiert, damit die echten Fenster hinter ihr nicht durchscheinen.
 
 ### Herausgezoomt arbeiten
 
@@ -789,6 +829,7 @@ Rechner tun. Es läuft auch in der CI auf Windows Server 2025 (x64) und Windows 
 | `--watch-input 15` | Mausrad und Zwei-Finger-Scrollen über die Raw-Input-Kontakte, Pinch als Strg + Mausrad |
 | `--test-winkey 20` | Start bei Win + Mausrad mit der Maskentaste und bei Win allein |
 | `--watch-events 30` | die Fenster-Ereignisse, auch beim Wechsel des virtuellen Desktops |
+| `--window-at X Y` | welches Fenster an einem Bildschirmpunkt oben liegt (Klasse, Programm) |
 
 Fenstertitel stehen nur mit `--titles` im Bericht, Pfade im Benutzerprofil werden zu `%USERPROFILE%`.
 
@@ -814,11 +855,11 @@ beide Versionen gleich rechnen.
 
 | Hier | Dort | Stand (Commit im KDE-Repository) |
 |---|---|---|
-| `src/core/` | `src/core/` | `1340a16` |
-| `tests/test_{camera,motion,velocitytracker,parking,navigation,placementmemory,groups,areas}.cpp` | `tests/` | `1340a16` |
+| `src/core/` | `src/core/` | `45ec5d4` (KDE Infinit Desktop 0.5.0 und 0.5.1) |
+| `tests/test_{camera,motion,velocitytracker,parking,navigation,placementmemory,groups,areas}.cpp` | `tests/` | `45ec5d4` |
 
-Prüfen, ob beide noch gleich sind:
+Prüfen, ob beide noch gleich sind (unter Windows mit CRLF im Arbeitsverzeichnis):
 
 ```bash
-diff -r src/core ../kde-infinit-desktop/src/core --exclude=CMakeLists.txt
+diff -r --strip-trailing-cr src/core ../kde-infinit-desktop/src/core --exclude=CMakeLists.txt
 ```

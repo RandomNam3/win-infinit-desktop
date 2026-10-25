@@ -47,6 +47,8 @@ public:
 
     void show(const QList<Marker> &markers);
     void hide();
+    /// Puts the shown markers back on top (after another topmost window, the overview).
+    void raise();
     bool isVisible() const
     {
         return m_visible > 0;

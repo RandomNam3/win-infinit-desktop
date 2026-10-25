@@ -8,6 +8,7 @@
 #include "layered.h"
 #include "logging.h"
 #include "markerlayout.h"
+#include "menutheme.h"
 #include "navigation.h"
 #include "parking.h"
 #include "texts.h"
@@ -32,6 +33,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string_view>
 
 using namespace std::chrono_literals;
 using InfinitDesktop::Camera;
@@ -265,6 +267,9 @@ LRESULT CanvasService::handleServiceMessage(UINT message, WPARAM wParam, LPARAM 
     case WM_SETTINGCHANGE:
         if (wParam == SPI_SETWORKAREA) {
             m_displayTimer.start();
+        } else if (lParam && std::wstring_view(reinterpret_cast<const wchar_t *>(lParam)) == L"ImmersiveColorSet") {
+            // Light or dark mode switched: the menus follow.
+            refreshMenuTheme();
         }
         break;
     case WM_QUERYENDSESSION:
@@ -505,6 +510,7 @@ void CanvasService::publishSnapshot()
     }
     snapshot->overlayOpen = m_organizer && m_organizer->overlayOpen();
     snapshot->canvasMenu = m_started && !m_safeMode;
+    snapshot->menuOpen = m_menuOpen;
     const HWND foreground = m_foreground && IsWindow(m_foreground) && !IsIconic(m_foreground) ? m_foreground : nullptr;
     QRectF foregroundFrame;
     bool lockingForeground = false;
@@ -1391,6 +1397,13 @@ void CanvasService::enterOverview(Canvas &canvas)
         monitor.overview = std::make_unique<Overview>(this, index);
     }
     monitor.overview->show(monitor.info.work);
+    // The overview is topmost now: markers and overlays go back above it.
+    for (MonitorState &other : m_monitors) {
+        if (other.markers) {
+            other.markers->raise();
+        }
+    }
+    m_organizer->raiseOverlays();
     m_stackingDirty = true;
     updateOverview(canvas);
     publishSnapshot();

@@ -870,6 +870,20 @@ int testThumbnail()
     return 0;
 }
 
+/// The top-level window the user sees at a screen point (physical pixels): which one is on top.
+int windowAt(int x, int y)
+{
+    const HWND hwnd = WindowFromPoint(POINT{x, y});
+    const HWND root = hwnd ? GetAncestor(hwnd, GA_ROOT) : nullptr;
+    if (!root) {
+        line(L"none");
+        return 1;
+    }
+    const TopLevel top = describe(root);
+    line(hwndText(root) + L" " + top.className + L" " + baseName(top.exePath));
+    return 0;
+}
+
 void usage()
 {
     line(L"wid-probe " WID_VERSION_STRING L" - checks the Windows interfaces WIN Infinit Desktop uses");
@@ -880,6 +894,7 @@ void usage()
     line(L"  wid-probe --watch-events SECONDS        window events (create, move, minimize, cloak, ...)");
     line(L"  wid-probe --test-move self|HWND         off-screen limits and the cost of moving a window");
     line(L"  wid-probe --test-thumbnail              are DWM thumbnails live for parked/cloaked/minimized windows?");
+    line(L"  wid-probe --window-at X Y               the top-level window on top at a screen point (class, program)");
     line();
     line(L"Titles are left out unless --titles is given; paths in the profile become %USERPROFILE%.");
 }
@@ -927,6 +942,8 @@ int wmain(int argc, wchar_t **argv)
             result = testMove(i + 1 < argc ? argv[i + 1] : L"self");
         } else if (argument == L"--test-thumbnail") {
             result = testThumbnail();
+        } else if (argument == L"--window-at" && i + 2 < argc) {
+            result = windowAt(_wtoi(argv[i + 1]), _wtoi(argv[i + 2]));
         }
     }
     if (result < 0) {

@@ -237,22 +237,21 @@ void captureLayout(Group &group, const QList<QRectF> &memberRects)
 
 void followWindows(Group &group, const QList<QRectF> &memberRects)
 {
-    QList<QRectF> layoutRects;
-    QList<QRectF> currentRects;
-    const int count = std::min<int>(group.members.size(), memberRects.size());
-    for (int i = 0; i < count; ++i) {
-        if (memberRects[i].isEmpty()) {
+    // The mean displacement of the windows from their place in the arrangement: moving the
+    // whole group moves the origin exactly, moving one of three windows a third of the way.
+    QPointF sum;
+    int count = 0;
+    for (int i = 0; i < std::min<int>(group.members.size(), memberRects.size()); ++i) {
+        if (memberRects[i].isEmpty() || !validRect(memberRects[i])) {
             continue;
         }
-        layoutRects.append(group.members[i].geometry);
-        currentRects.append(memberRects[i]);
+        sum += memberRects[i].topLeft() - group.members[i].geometry.topLeft();
+        ++count;
     }
-    const QRectF layout = bounds(layoutRects);
-    const QRectF current = bounds(currentRects);
-    if (layout.isNull() || current.isNull()) {
+    if (count == 0) {
         return;
     }
-    const QPointF origin = current.topLeft() - layout.topLeft();
+    const QPointF origin = sum / count;
     if (finite(origin.x(), MaxCoordinate) && finite(origin.y(), MaxCoordinate)) {
         group.origin = origin;
     }

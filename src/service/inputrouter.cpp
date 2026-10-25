@@ -99,6 +99,10 @@ HookAction InputRouter::mouse(const MouseEvent &event, unsigned modifiers)
 {
     const std::shared_ptr<const InputSnapshot> snapshot = m_snapshot.load();
     const POINT point = event.position;
+    if (snapshot->menuOpen) {
+        // Clicking next to the menu closes it; nothing of that is a gesture.
+        return HookAction::Pass;
+    }
 
     switch (event.message) {
     case WM_MOUSEMOVE: {
@@ -376,7 +380,8 @@ HookAction InputRouter::key(const KeyEvent &event, unsigned modifiers)
         return HookAction::Pass;
     }
     const std::shared_ptr<const InputSnapshot> snapshot = m_snapshot.load();
-    if (!snapshot->shortcutsEnabled) {
+    if (!snapshot->shortcutsEnabled || snapshot->menuOpen) {
+        // An open menu takes the keys: Esc closes it, not the overview.
         return HookAction::Pass;
     }
     if (vk == VK_ESCAPE && modifiers == 0 && snapshot->overlayOpen) {

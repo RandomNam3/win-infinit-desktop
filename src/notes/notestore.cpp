@@ -109,6 +109,15 @@ void Note::setHidden(bool hidden)
     }
 }
 
+void Note::setFormatted(bool formatted)
+{
+    if (formatted != m_formatted) {
+        m_formatted = formatted;
+        Q_EMIT formattedChanged();
+        Q_EMIT modified();
+    }
+}
+
 void Note::setPinned(bool pinned, bool keepAbove)
 {
     keepAbove = pinned && keepAbove;
@@ -171,6 +180,7 @@ void NoteStore::load()
         note->m_width = std::clamp(object.value(QStringLiteral("width")).toInt(300), Note::MinimumWidth, 4000);
         note->m_height = std::clamp(object.value(QStringLiteral("height")).toInt(260), Note::MinimumHeight, 4000);
         note->m_hidden = object.value(QStringLiteral("hidden")).toBool();
+        note->m_formatted = object.value(QStringLiteral("formatted")).toBool();
         QFile text(directory() + QLatin1Char('/') + id + QStringLiteral(".md"));
         if (text.open(QIODevice::ReadOnly) && text.size() <= MaxTextSize) {
             note->m_text = QString::fromUtf8(text.readAll());
@@ -226,6 +236,7 @@ void NoteStore::saveIndex()
             {QStringLiteral("width"), note->width()},
             {QStringLiteral("height"), note->height()},
             {QStringLiteral("hidden"), note->isHidden()},
+            {QStringLiteral("formatted"), note->isFormatted()},
         });
     }
     const QJsonObject root{

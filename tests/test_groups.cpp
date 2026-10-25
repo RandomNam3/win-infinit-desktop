@@ -112,6 +112,11 @@ private Q_SLOTS:
         followWindows(moved, {QRectF(500, 800, 800, 600), QRectF(1320, 800, 700, 600), QRectF()});
         QCOMPARE(moved.origin, QPointF(500, 800));
         QCOMPARE(moved.members[1].geometry, QRectF(820, 0, 700, 600));
+
+        // One of two windows moved by 200 to the right: the origin moves half of that.
+        Group one = mailGroup();
+        followWindows(one, {QRectF(1200, 500, 800, 600), QRectF(1820, 500, 700, 600), QRectF()});
+        QCOMPARE(one.origin, QPointF(1100, 500));
     }
 
     void autoArrangeRows()

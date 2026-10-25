@@ -9,6 +9,14 @@ Fenster in Originalgröße liegen. Du verschiebst die Fläche mit Maus, Touchpad
 Mausrad heraus, um alles zu überblicken, und wieder hinein, um weiterzuarbeiten. Taskleiste und
 Hintergrundbild bleiben dabei fest stehen.
 
+![Übersicht bei 55 %: alle Fenster und Notizen als Live-Vorschau, die Taskleiste bleibt stehen](docs/images/overview.webp)
+
+| Fläche verschieben | Heraus- und hineinzoomen |
+|---|---|
+| ![Die Fläche verschieben: die Fenster wandern mit](docs/images/canvas-pan.webp) | ![Herauszoomen in die Übersicht und zurück](docs/images/zoom-overview.webp) |
+| **Notizen** | **Menü der Arbeitsfläche** |
+| ![Eine Notiz mit formatiertem Markdown](docs/images/notes.png) | ![Das Menü der Arbeitsfläche im dunklen Modus](docs/images/canvas-menu.png) |
+
 ## Funktionen
 
 - **Unendliche Fläche pro Bildschirm** mit eigener Kamera und Lesezeichen.
@@ -30,13 +38,13 @@ Hintergrundbild bleiben dabei fest stehen.
 - **Fenster öffnen sich dort, wo sie zuletzt waren**: Position, Größe und Bildschirm werden gemerkt.
   Monitore werden über ihre EDID-Daten wiedererkannt.
 - **Notizen**: Zettel mit Markdown, die auf der Fläche liegen, automatisch gespeichert werden und sich
-  anheften lassen.
+  anheften lassen. Sie öffnen sich zum Schreiben, der Stift in der Kopfzeile zeigt sie formatiert.
 - **Gruppen**: Programme, die zusammengehören, öffnen sich mit Win+Alt+F1 … F9 gemeinsam an ihrem Ort,
   immer gleich angeordnet; fehlende Programme werden gestartet.
 - **Bereiche und Karte**: benannte Bereiche der Fläche, die mit ihren Fenstern wachsen, und eine Karte der
   ganzen Fläche, auf der du die Kamera mit der Maus bewegst.
 - **Menü der Arbeitsfläche**: Rechtsklick auf die freie Fläche in der Übersicht, Win+Rechtsklick auf den
-  Desktop bei 100 %.
+  Desktop bei 100 %. Alle Menüs folgen dem hellen oder dunklen Modus von Windows.
 - **Frei belegbare Tastenkürzel**: Zoom, Übersicht, Ursprung, Fenster in eine Richtung, Lesezeichen,
   Anpinnen, Notizen, Gruppen. Überschneidungen mit Windows-Kürzeln zeigt die Einstellungs-App.
 - **Einstellungs-App** mit Suche, Erklärung zu jeder Option, sofortiger Übernahme und **Update-Check**.

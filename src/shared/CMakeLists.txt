@@ -15,6 +15,7 @@ add_library(wid_appshared STATIC
     jsonlineserver.h
     localizer.cpp
     localizer.h
+    menutheme.h
     pipenames.h
 )
 set_target_properties(wid_appshared PROPERTIES AUTOMOC ON)

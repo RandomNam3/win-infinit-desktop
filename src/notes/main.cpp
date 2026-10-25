@@ -11,14 +11,17 @@
 #include "i18n.h"
 #include "ipcclient.h"
 #include "localizer.h"
+#include "menutheme.h"
 #include "pipenames.h"
 
 #include <QCommandLineParser>
 #include <QGuiApplication>
 #include <QIcon>
+#include <QPalette>
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QQuickStyle>
+#include <QStyleHints>
 
 using namespace InfinitDesktop;
 using namespace std::chrono_literals;
@@ -39,6 +42,17 @@ int main(int argc, char *argv[])
     QGuiApplication::setApplicationDisplayName(QStringLiteral("WIN Infinit Desktop"));
     QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/notes/icons/note.svg")));
     Wid::Localizer::instance().loadForSystemLanguage();
+    // Links in the formatted text lie on light paper in light and dark mode alike; the Markdown
+    // reader takes their color from the application palette.
+    QPalette palette = QGuiApplication::palette();
+    palette.setColor(QPalette::Link, QColor(0x1d, 0x64, 0xb8));
+    palette.setColor(QPalette::LinkVisited, QColor(0x1d, 0x64, 0xb8));
+    QGuiApplication::setPalette(palette);
+    // The note menus are native menus: dark in dark mode, like the canvas menu.
+    Wid::followSystemMenuTheme();
+    QObject::connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, &app, []() {
+        Wid::refreshMenuTheme();
+    });
 
     QCommandLineParser parser;
     parser.setApplicationDescription(i18n("Notes on the infinite canvas"));

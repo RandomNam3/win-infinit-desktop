@@ -1773,6 +1773,14 @@ msgid "Note"
 msgstr "Notiz"
 
 msgctxt "@info:tooltip"
+msgid "Show formatted (Ctrl+E)"
+msgstr "Formatiert anzeigen (Strg+E)"
+
+msgctxt "@info:tooltip"
+msgid "Edit the Markdown text (Ctrl+E)"
+msgstr "Markdown-Text bearbeiten (Strg+E)"
+
+msgctxt "@info:tooltip"
 msgid "Release from the screen"
 msgstr "Vom Bildschirm lösen"
 
@@ -1802,12 +1810,32 @@ msgid "New Note"
 msgstr "Neue Notiz"
 
 msgctxt "@action note menu"
-msgid "Show Formatted"
-msgstr "Formatiert anzeigen"
-
-msgctxt "@action note menu"
 msgid "Edit"
 msgstr "Bearbeiten"
+
+msgctxt "@action text"
+msgid "Undo"
+msgstr "Rückgängig"
+
+msgctxt "@action text"
+msgid "Redo"
+msgstr "Wiederholen"
+
+msgctxt "@action text"
+msgid "Cut"
+msgstr "Ausschneiden"
+
+msgctxt "@action text"
+msgid "Copy"
+msgstr "Kopieren"
+
+msgctxt "@action text"
+msgid "Paste"
+msgstr "Einfügen"
+
+msgctxt "@action text"
+msgid "Select All"
+msgstr "Alles auswählen"
 
 msgctxt "@action note menu"
 msgid "Release from the Screen"
@@ -1819,11 +1847,11 @@ msgstr "An den Bildschirm anheften"
 
 msgctxt "@action note menu"
 msgid "Pinned and Always on Top"
-msgstr "Angeheftet und immer im Vordergrund"
+msgstr "Immer im Vordergrund"
 
 msgctxt "@action note menu"
-msgid "Color"
-msgstr "Farbe"
+msgid "Color…"
+msgstr "Farbe …"
 
 msgctxt "@action note menu"
 msgid "Hide This Note"

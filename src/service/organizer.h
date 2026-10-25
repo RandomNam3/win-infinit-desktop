@@ -127,6 +127,8 @@ public:
         return m_overlay != Overlay::None;
     }
     void closeOverlay();
+    /// Puts the shown overlays back on top, in their order (after the overview opened).
+    void raiseOverlays();
 
     // ---- Actions (shortcuts, menus, IPC) -------------------------------------------------
     /// The canvas menu at a screen point (runs the native menu; call it from the event loop,
