@@ -45,6 +45,10 @@ public:
     Markers(const Markers &) = delete;
     Markers &operator=(const Markers &) = delete;
 
+    /// The picture of one marker (Extent × Extent): dark circle, arrow, icon; an icon that is
+    /// mostly dark gets a light disc behind it.
+    static QImage image(const QImage &icon, const QPointF &direction);
+
     void show(const QList<Marker> &markers);
     void hide();
     /// Puts the shown markers back on top (after another topmost window, the overview).

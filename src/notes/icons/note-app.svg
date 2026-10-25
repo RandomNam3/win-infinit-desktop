@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<!-- SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+     SPDX-License-Identifier: GPL-3.0-or-later -->
+<path d="M5 4.5h22v15.5l-7.5 7.5H5z" fill="#ffe27a" stroke="#7a5d10" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M19.5 27.5V20H27" fill="#f2c94c" stroke="#7a5d10" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M9.5 11h13M9.5 15.5h8.5" fill="none" stroke="#7a5d10" stroke-width="1.75" stroke-linecap="round"/>
+</svg>

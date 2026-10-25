@@ -39,10 +39,11 @@ qt_add_qml_module(wid-notes
     QML_FILES qml/NoteWindow.qml
     DEPENDENCIES QtQuick
 )
+# The window icon: a yellow note that stays visible on light and dark backgrounds (the
+# markers at the screen edge show it on a dark circle).
 qt_add_resources(wid-notes "wid_notes_icons"
     PREFIX "/notes"
-    BASE "${PROJECT_SOURCE_DIR}/src/settings"
-    FILES "${PROJECT_SOURCE_DIR}/src/settings/icons/note.svg"
+    FILES icons/note-app.svg
 )
 wid_add_catalogs(wid-notes)
 wid_add_windows_resources(wid-notes wid-notes "WIN Infinit Desktop Notes")

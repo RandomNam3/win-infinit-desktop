@@ -5,10 +5,12 @@
 #include "crashguard.h"
 #include "ipcserver.h"
 #include "markerlayout.h"
+#include "markers.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLineF>
+#include <QPainter>
 #include <QTemporaryDir>
 #include <QTest>
 
@@ -44,6 +46,24 @@ private Q_SLOTS:
         }
         QCOMPARE(right.size(), 2);
         QVERIFY(QLineF(right[0], right[1]).length() >= 44);
+    }
+
+    void markerIconsStayVisible()
+    {
+        const auto iconOf = [](const QColor &color) {
+            QImage icon(28, 28, QImage::Format_ARGB32_Premultiplied);
+            icon.fill(Qt::transparent);
+            QPainter painter(&icon);
+            painter.fillRect(QRect(6, 6, 16, 16), color);
+            return icon;
+        };
+        // Right next to the icon, inside the disc a dark icon gets.
+        const QPoint beside(Markers::Extent / 2 + 15, Markers::Extent / 2);
+        const auto lightness = [&](const QImage &image) {
+            return image.pixelColor(beside).lightnessF();
+        };
+        QVERIFY(lightness(Markers::image(iconOf(Qt::black), QPointF(1, 0))) > 0.8);
+        QVERIFY(lightness(Markers::image(iconOf(QColor(0xff, 0xe2, 0x7a)), QPointF(1, 0))) < 0.2);
     }
 
     void ipcLines()

@@ -18,6 +18,23 @@ namespace
 {
 const wchar_t *const s_windowClass = L"WinInfinitDesktopMarker";
 constexpr int MaxBubbles = 64;
+
+/// Whether the visible pixels of an icon are mostly dark (mean luminance below a quarter).
+bool isDark(const QImage &icon)
+{
+    const QImage image = icon.convertToFormat(QImage::Format_ARGB32);
+    qreal luminance = 0;
+    qreal weight = 0;
+    for (int y = 0; y < image.height(); ++y) {
+        const auto *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+        for (int x = 0; x < image.width(); ++x) {
+            const qreal alpha = qAlpha(line[x]) / 255.0;
+            luminance += alpha * (0.2126 * qRed(line[x]) + 0.7152 * qGreen(line[x]) + 0.0722 * qBlue(line[x])) / 255.0;
+            weight += alpha;
+        }
+    }
+    return weight > 0 && luminance / weight < 0.25;
+}
 }
 
 Markers::Markers(ClickHandler handler)
@@ -32,7 +49,7 @@ Markers::~Markers()
     }
 }
 
-bool Markers::render(Bubble &bubble, const Marker &marker)
+QImage Markers::image(const QImage &icon, const QPointF &direction)
 {
     const QPointF center(Extent / 2.0, Extent / 2.0);
     const qreal radius = Size / 2.0;
@@ -40,11 +57,11 @@ bool Markers::render(Bubble &bubble, const Marker &marker)
     image.fill(Qt::transparent);
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
-    const QPointF normal(-marker.direction.y(), marker.direction.x());
+    const QPointF normal(-direction.y(), direction.x());
     QPainterPath arrow;
-    arrow.moveTo(center + marker.direction * (radius + 9));
-    arrow.lineTo(center + marker.direction * (radius - 1) + normal * 7);
-    arrow.lineTo(center + marker.direction * (radius - 1) - normal * 7);
+    arrow.moveTo(center + direction * (radius + 9));
+    arrow.lineTo(center + direction * (radius - 1) + normal * 7);
+    arrow.lineTo(center + direction * (radius - 1) - normal * 7);
     arrow.closeSubpath();
     painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(20, 22, 26, 225));
@@ -53,11 +70,23 @@ bool Markers::render(Bubble &bubble, const Marker &marker)
     painter.setPen(QPen(QColor(255, 255, 255, 100), 1.5));
     painter.setBrush(Qt::NoBrush);
     painter.drawEllipse(center, radius - 1, radius - 1);
-    if (!marker.icon.isNull()) {
-        const QSizeF size = marker.icon.size();
-        painter.drawImage(QRectF(center - QPointF(size.width() / 2, size.height() / 2), size), marker.icon);
+    if (!icon.isNull()) {
+        const QSizeF size = icon.size();
+        if (isDark(icon)) {
+            // Icons made for light backgrounds (black glyphs) would vanish on the dark circle.
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(QColor(236, 238, 242));
+            painter.drawEllipse(center, size.width() / 2 + 3, size.height() / 2 + 3);
+        }
+        painter.drawImage(QRectF(center - QPointF(size.width() / 2, size.height() / 2), size), icon);
     }
     painter.end();
+    return image;
+}
+
+bool Markers::render(Bubble &bubble, const Marker &marker)
+{
+    const QImage image = Markers::image(marker.icon, marker.direction);
     const POINT topLeft = {LONG(std::lround(marker.position.x() - Extent / 2.0)), LONG(std::lround(marker.position.y() - Extent / 2.0))};
     return updateLayeredWindow(bubble.window.get(), image, topLeft);
 }
