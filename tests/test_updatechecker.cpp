@@ -24,7 +24,8 @@ private Q_SLOTS:
              "published_at": "2026-10-25T10:00:00Z", "draft": false, "prerelease": false,
              "assets": [
                 {"name": "win-infinit-desktop-0.3.0-arm64.zip", "browser_download_url": "https:\/\/github.com/o/r/releases/download/v0.3.0/win-infinit-desktop-0.3.0-arm64.zip"},
-                {"name": "win-infinit-desktop-0.3.0-x64.zip", "browser_download_url": "https:\/\/github.com/o/r/releases/download/v0.3.0/win-infinit-desktop-0.3.0-x64.zip"}
+                {"name": "win-infinit-desktop-0.3.0-x64.zip", "browser_download_url": "https:\/\/github.com/o/r/releases/download/v0.3.0/win-infinit-desktop-0.3.0-x64.zip",
+                 "digest": "sha256:9F86D081884C7D659A2FEAA0C55AD015A3BF4F1B2B0B822CD15D6C15B0F00A08"}
              ]},
             {"tag_name": "v0.2.0", "body": "old", "draft": false, "prerelease": false},
             {"tag_name": "v0.1.0", "body": "older", "draft": false, "prerelease": false},
@@ -49,10 +50,14 @@ private Q_SLOTS:
         QCOMPARE(second.value(QStringLiteral("url")).toString(), QStringLiteral("https://example.org/0.3.0"));
         QCOMPARE(second.value(QStringLiteral("package")).toString(), QStringLiteral("https://github.com/o/r/releases/download/v0.3.0/win-infinit-desktop-0.3.0-x64.zip"));
         QVERIFY(second.value(QStringLiteral("date")).toDateTime().isValid());
+        // The SHA-256 GitHub reports for the package, to check the download against.
+        QCOMPARE(second.value(QStringLiteral("packageDigest")).toString(), QStringLiteral("sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"));
 
         const QVariantList arm = UpdateChecker::newerReleases(json, QStringLiteral("0.2.0"), &error, QStringLiteral("arm64"));
         QCOMPARE(arm.at(1).toMap().value(QStringLiteral("package")).toString(),
                  QStringLiteral("https://github.com/o/r/releases/download/v0.3.0/win-infinit-desktop-0.3.0-arm64.zip"));
+        // No digest published: nothing to compare.
+        QVERIFY(!arm.at(1).toMap().contains(QStringLiteral("packageDigest")));
     }
 
     void upToDate()

@@ -42,12 +42,13 @@ hineinzoomen – die Taskleiste und das Hintergrundbild bleiben dabei, wo sie si
 
 ## Installieren und starten
 
-Die ausführliche Anleitung steht in [INSTALL.md](INSTALL.md). Kurzfassung: das ZIP aus dem neuesten
-Release entpacken und im Ordner ausführen:
+Die ausführliche Anleitung steht in [INSTALL.md](INSTALL.md). Kurzfassung: in PowerShell ausführen
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+irm https://raw.githubusercontent.com/RandomNam3/win-infinit-desktop/main/install.ps1 | iex
 ```
+
+oder das ZIP aus dem neuesten Release entpacken und im Ordner `install.ps1` ausführen.
 
 Danach startet WIN Infinit Desktop bei jeder Anmeldung von selbst. Das Symbol im Infobereich der
 Taskleiste zeigt, dass es läuft.
@@ -303,6 +304,12 @@ Gruppen und Bereichen. Das helle Rechteck ist der sichtbare Ausschnitt.
 
 Jeder Bildschirm hat seine eigene, unabhängige Fläche.
 
+**An der Kante zum Nachbarbildschirm** verschwindet ein Fenster beim Verschieben, sobald es auf den
+anderen Bildschirm reichen würde, und erscheint wieder, wenn es ganz auf seinen eigenen passt. Windows
+kann ein fremdes Fenster nicht an einer Bildschirmkante abschneiden; so taucht nichts von einer Fläche auf
+dem anderen Bildschirm auf. Eine Markierung am Rand zeigt das Fenster, ein Klick darauf holt es ins Bild.
+Ein Fenster, das du selbst über die Kante legst oder das ein Programm dort öffnet, bleibt, wo es ist.
+
 **Fenster auf den anderen Bildschirm bringen:** Ziehe das Fenster **schnell** gegen den Rand zum
 Nachbarbildschirm („werfen“). Ziehst du langsam, bleibt das Fenster auf seinem Bildschirm, und die Fläche
 scrollt stattdessen in diese Richtung. Die nötige Geschwindigkeit stellst du unter *„Nötige
@@ -368,8 +375,10 @@ gemerkte Fensterplätze, Gruppen und Bereiche liegen unter `%LOCALAPPDATA%\WIN I
 
 Die Einstellungs-App sieht beim Start auf GitHub nach, ob es eine neue Version gibt (abschaltbar auf der
 Startseite, dort gibt es auch *Jetzt prüfen*). Gibt es eine, zeigt die Startseite die Neuerungen aller
-neueren Versionen. **Update installieren** lädt das Paket herunter und installiert es in einem
-PowerShell-Fenster; WIN Infinit Desktop startet danach in der neuen Version neu.
+neueren Versionen. **Update installieren** lädt das Paket herunter (mit Fortschrittsbalken), prüft es,
+packt es aus und installiert es. Dabei schließen sich WIN Infinit Desktop und die Einstellungs-App kurz;
+danach starten beide in der neuen Version wieder, und die Startseite meldet, ob das Update geklappt hat.
+Ging etwas schief, zeigt sie den Grund und öffnet auf Wunsch das Protokoll.
 
 ## Verträglichkeit mit anderen Programmen
 
@@ -395,6 +404,12 @@ er keine Fenster und reagiert auf keine Gesten. Wieder einschalten über das Sym
 Es liegt auf der Fläche außerhalb des Bilds: Klick in der Taskleiste oder Alt+Tab holt es, Win + Alt + W
 zeigt alle Fenster. *Alle Fenster zurückholen* im Menü des Symbols und das Beenden holen alle Fenster auf
 den Bildschirm zurück.
+
+**Manche Fenster folgen beim Verschieben etwas verzögert.**
+Bei 100 % verschiebt jedes Programm sein Fenster selbst, wenn es dazu kommt. Beschäftigte Programme –
+etwa Firefox oder das Fenster von Windows Sandbox – brauchen dafür länger. WIN Infinit Desktop schickt
+ihnen dann nur die jeweils neueste Position statt jeder Zwischenstation; sie hängen bei schnellem
+Verschieben kurz hinterher und kommen danach genau an ihrem Platz an.
 
 **Ein Programm braucht Win + Mausrad (oder eine andere Geste) selbst.**
 Gesten kurz pausieren (Symbol im Infobereich oder Kürzel *Gesten pausieren/fortsetzen*) oder die

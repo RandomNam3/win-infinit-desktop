@@ -30,6 +30,19 @@ eigene Einstellungs-App.
 
 ## 1. Schnellstart
 
+Ein Befehl in PowerShell (Startmenü → *Terminal* oder *Windows PowerShell*), als normaler Benutzer:
+
+```powershell
+irm https://raw.githubusercontent.com/RandomNam3/win-infinit-desktop/main/install.ps1 | iex
+```
+
+Der Befehl lädt das Paket des neuesten Releases von GitHub, vergleicht seine SHA-256-Prüfsumme mit der,
+die GitHub dazu veröffentlicht, entpackt es nach `%TEMP%` und startet den Installer darin; ist
+WIN Infinit Desktop schon installiert, als Update. Die heruntergeladenen Dateien löscht er danach wieder.
+Das Skript dahinter ist [`install.ps1`](../install.ps1) in diesem Repository.
+
+Ohne den Befehl, von Hand:
+
 1. Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest) die
    Datei `win-infinit-desktop-<Version>-x64.zip` herunterladen.
 2. Das ZIP entpacken (Rechtsklick → *Alle extrahieren*).
@@ -108,11 +121,20 @@ Die Programme sind nicht digital signiert.
 ## 5. Updates
 
 Die Einstellungs-App sieht beim Start auf GitHub nach, ob es eine neue Version gibt. **Update
-installieren** lädt das passende ZIP aus dem Release herunter und führt dessen `install.ps1 -Update` in
-einem PowerShell-Fenster aus. Der Installer beendet dabei den laufenden Dienst sauber und startet danach
-die neue Version.
+installieren**
 
-Von Hand: das neue ZIP herunterladen, entpacken und im Ordner ausführen:
+1. lädt das passende ZIP aus dem Release herunter (mit Fortschrittsanzeige) und vergleicht seine
+   SHA-256-Prüfsumme mit der von GitHub,
+2. entpackt es nach `%TEMP%`,
+3. führt dessen `install.ps1 -Update` ohne Fenster aus. Der Installer beendet den laufenden Dienst
+   sauber, schließt auch die Einstellungs-App, installiert, startet die neue Version und öffnet die
+   Einstellungs-App wieder. Sie zeigt dann, ob das Update geklappt hat.
+
+Was der Installer dabei getan hat, steht in `%LOCALAPPDATA%\WIN Infinit Desktop\update.log`; bei einem
+Fehler öffnet *Protokoll öffnen* diese Datei.
+
+Von Hand geht ein Update mit dem Befehl aus dem [Schnellstart](#1-schnellstart), oder: das neue ZIP
+herunterladen, entpacken und im Ordner ausführen:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Update

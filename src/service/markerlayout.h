@@ -23,8 +23,9 @@ struct MarkerPlace
  * Markers for windows outside `area` (screen rects in `windows`): on the line from the
  * middle of the area to each window, where it leaves the area inset by size/2 + margin;
  * markers in about the same direction are pushed apart along their edge. The same rules as
- * KDE Infinit Desktop's offscreenMarkers().
+ * KDE Infinit Desktop's offscreenMarkers(). Windows flagged in `parked` get a marker even
+ * if they reach into the area (parked at the edge to a neighbouring screen).
  */
-QList<MarkerPlace> layoutMarkers(const QRectF &area, const QList<QRectF> &windows, qreal size, qreal margin);
+QList<MarkerPlace> layoutMarkers(const QRectF &area, const QList<QRectF> &windows, qreal size, qreal margin, const QList<bool> &parked = {});
 
 } // namespace Wid

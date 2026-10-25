@@ -3,8 +3,9 @@
     SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
-    wid-testwindow X Y WIDTH HEIGHT [SECONDS]: shows a plain application window (window rect at
-    X, Y), prints its handle (hex) and runs until it is closed or the time is up.
+    wid-testwindow X Y WIDTH HEIGHT [SECONDS] [LAG]: shows a plain application window (window
+    rect at X, Y), prints its handle (hex) and runs until it is closed or the time is up. With
+    LAG (milliseconds) every move takes that long, like a busy program that falls behind.
     Used by the runtime smoke test (tests/runtime/smoke.ps1).
 */
 #include <windows.h>
@@ -15,8 +16,13 @@
 namespace
 {
 
+DWORD s_lag = 0;
+
 LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    if (message == WM_WINDOWPOSCHANGED && s_lag > 0 && !(reinterpret_cast<const WINDOWPOS *>(lParam)->flags & SWP_NOMOVE)) {
+        Sleep(s_lag);
+    }
     if (message == WM_DESTROY) {
         PostQuitMessage(0);
         return 0;
@@ -41,6 +47,7 @@ int wmain(int argc, wchar_t **argv)
     const int width = argc > 3 ? _wtoi(argv[3]) : 640;
     const int height = argc > 4 ? _wtoi(argv[4]) : 400;
     const int seconds = argc > 5 ? _wtoi(argv[5]) : 300;
+    s_lag = argc > 6 ? static_cast<DWORD>(_wtoi(argv[6])) : 0;
 
     WNDCLASSW windowClass = {};
     windowClass.lpfnWndProc = windowProc;

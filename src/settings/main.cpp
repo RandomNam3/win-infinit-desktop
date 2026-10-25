@@ -35,10 +35,29 @@
 
 #include "pipenames.h"
 
+#ifdef Q_OS_WIN
+#include <dwmapi.h>
+#endif
+
 using namespace InfinitDesktop;
 
 namespace
 {
+
+/// Windows draws the title bar: it follows the light or dark look of the app.
+void applyTitleBarTheme(QWindow *window)
+{
+#ifdef Q_OS_WIN
+    const BOOL dark = ThemeController::instance()->dark() ? TRUE : FALSE;
+    const HWND hwnd = reinterpret_cast<HWND>(window->winId());
+    if (SUCCEEDED(DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark, sizeof(dark))) && window->isVisible()) {
+        // Without a frame change an open window keeps its old title bar until it is activated.
+        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE);
+    }
+#else
+    Q_UNUSED(window)
+#endif
+}
 
 QSize parseSize(const QString &text)
 {
@@ -144,6 +163,12 @@ int main(int argc, char *argv[])
         return 1;
     }
     auto *window = qobject_cast<QQuickWindow *>(engine.rootObjects().constFirst());
+    if (window && !screenshotMode) {
+        applyTitleBarTheme(window);
+        QObject::connect(ThemeController::instance(), &ThemeController::changed, window, [window]() {
+            applyTitleBarTheme(window);
+        });
+    }
 
     if (screenshotMode) {
         if (!window) {
@@ -172,6 +197,7 @@ int main(int argc, char *argv[])
                 }
             });
         }
+        UpdateChecker::instance()->readInstallResult();
         UpdateChecker::instance()->checkOnStartIfEnabled();
     }
 

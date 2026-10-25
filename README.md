@@ -54,7 +54,14 @@ Hintergrundbild bleiben dabei fest stehen.
 
 ## Installation
 
-Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest)
+Ein Befehl in PowerShell, als normaler Benutzer:
+
+```powershell
+irm https://raw.githubusercontent.com/RandomNam3/win-infinit-desktop/main/install.ps1 | iex
+```
+
+Er lädt das neueste Release von GitHub, prüft dessen SHA-256-Prüfsumme und startet den Installer. Von
+Hand geht es auch: aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest)
 `win-infinit-desktop-<Version>-x64.zip` herunterladen, entpacken und im entpackten Ordner ausführen:
 
 ```powershell
