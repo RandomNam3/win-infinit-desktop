@@ -78,7 +78,7 @@ QList<ApplicationIndex::Entry> ApplicationIndex::readStartMenu()
             break;
         }
         const QString name = displayName(item.get(), SIGDN_NORMALDISPLAY);
-        const QString parsing = displayName(item.get(), SIGDN_PARSINGNAME);
+        const QString parsing = displayName(item.get(), SIGDN_PARENTRELATIVEPARSING);
         if (name.isEmpty() || parsing.isEmpty()) {
             continue;
         }
