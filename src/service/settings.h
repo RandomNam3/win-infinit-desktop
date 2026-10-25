@@ -103,6 +103,7 @@ struct Settings
     ShowMode showAreas = ShowMode::Always;
     int areaPadding = 48;
     int mapSize = 70; ///< percent of the work area
+    bool perDesktopCanvas = true; ///< a canvas per monitor and virtual desktop
     bool crashGuard = true;
     bool rememberCanvas = true;
     bool debugLogging = false;

@@ -81,7 +81,8 @@ try {
         $state = & $ctl state | ConvertFrom-Json
         $monitor = 0
         for ($i = 0; $i -lt $state.monitors.Count; $i++) {
-            if ($state.monitors[$i].key -eq $before.canvas) { $monitor = $i }
+            # The canvas the monitor shows now (that of the current virtual desktop).
+            if ($state.monitors[$i].canvas -eq $before.canvas) { $monitor = $i }
         }
 
         & $ctl pan dx=-200 dy=0 monitor=$monitor | Out-Null

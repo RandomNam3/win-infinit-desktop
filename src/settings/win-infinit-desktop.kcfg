@@ -177,6 +177,11 @@
             <whatsthis>Programs whose windows never move with the canvas: the program name (for example notepad), its full path or its app ID, one per entry.</whatsthis>
             <default></default>
         </entry>
+        <entry name="PerDesktopCanvas" type="Bool">
+            <label>Separate canvas position for each virtual desktop</label>
+            <whatsthis>Every virtual desktop of Windows (Win + Tab) has its own canvas on every screen, with its own camera position, zoom and bookmarks. A window shown on all desktops keeps its place on the screen when you switch.</whatsthis>
+            <default>true</default>
+        </entry>
 
         <entry name="RememberWindowPlacement" type="Bool">
             <label>Reopen applications where they were closed</label>

@@ -27,8 +27,11 @@
 #include <QLineF>
 #include <QProcess>
 #include <QSaveFile>
+#include <QSet>
 #include <QSettings>
+#include <QWinEventNotifier>
 
+#include <objbase.h>
 #include <shellapi.h>
 
 #include <algorithm>
@@ -50,6 +53,8 @@ constexpr auto ZoomStepDuration = 150ms;
 constexpr ULONGLONG OwnMoveWindowMs = 1500;
 constexpr ULONGLONG NewWindowMs = 5000;
 constexpr qreal RevealMargin = 24;
+// Between monitor identity and desktop GUID in canvas keys; monitor identities have no "::".
+const QString DesktopSeparator = QStringLiteral("::");
 
 QRectF toRectF(const RECT &rect)
 {
@@ -153,6 +158,9 @@ CanvasService::CanvasService(QObject *parent)
     m_saveTimer.setSingleShot(true);
     m_saveTimer.setInterval(3000);
     connect(&m_saveTimer, &QTimer::timeout, this, &CanvasService::saveState);
+    m_desktopTimer.setSingleShot(true);
+    m_desktopTimer.setInterval(150);
+    connect(&m_desktopTimer, &QTimer::timeout, this, &CanvasService::checkDesktop);
     m_displayTimer.setSingleShot(true);
     m_displayTimer.setInterval(400);
     connect(&m_displayTimer, &QTimer::timeout, this, [this]() {
@@ -167,6 +175,13 @@ CanvasService::CanvasService(QObject *parent)
 CanvasService::~CanvasService()
 {
     shutdown();
+    // Before the event it waits for is closed (with m_desktopWatch).
+    delete m_desktopNotifier;
+    m_desktopNotifier = nullptr;
+    m_virtualDesktops.reset();
+    if (m_comInitialized) {
+        CoUninitialize();
+    }
     detachWindowObject(m_serviceWindow.get());
 }
 
@@ -192,6 +207,13 @@ bool CanvasService::start(bool safeMode)
         qCWarning(lcService) << "cannot create the service window";
         return false;
     }
+    // IVirtualDesktopManager needs COM on this thread (Qt may have initialized it already).
+    const HRESULT com = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    m_comInitialized = SUCCEEDED(com);
+    m_virtualDesktops = std::make_unique<VirtualDesktops>();
+    m_desktop = readCurrentDesktop();
+    qCInfo(lcService) << "virtual desktop" << (m_desktop.isEmpty() ? QStringLiteral("unknown") : m_desktop);
+    startDesktopWatch();
     updateMonitors();
     loadState();
     m_organizer->load();
@@ -219,6 +241,10 @@ bool CanvasService::start(bool safeMode)
             onWindowEvent(event, hwnd);
         });
         adoptExistingWindows();
+        if (m_desktop.isEmpty()) {
+            // Not in the registry yet: the windows tell.
+            checkDesktop();
+        }
         startHooks();
         m_touchpad.start(m_serviceWindow.get());
         applyAll();
@@ -287,10 +313,31 @@ LRESULT CanvasService::handleServiceMessage(UINT message, WPARAM wParam, LPARAM 
 
 void CanvasService::reloadSettings()
 {
+    const QString desktopBefore = currentDesktop();
+    QStringList canvasesBefore;
+    for (const MonitorState &monitor : m_monitors) {
+        canvasesBefore.append(currentCanvasKey(monitor));
+    }
     QSettings file(settingsFilePath(), QSettings::IniFormat);
     m_settings = Settings::load(file);
     m_shortcuts = ShortcutMap::load(file);
     setDebugLogging(m_settings.debugLogging);
+    if (m_started && !m_safeMode && currentDesktop() != desktopBefore) {
+        // Canvases per desktop switched on or off: the windows stay where they are.
+        for (const QString &key : std::as_const(canvasesBefore)) {
+            if (auto it = m_canvases.find(key); it != m_canvases.end()) {
+                it->second.motion.stop();
+                if (it->second.overview) {
+                    leaveOverview(it->second);
+                }
+            }
+        }
+        for (const MonitorState &monitor : m_monitors) {
+            currentCanvas(monitor);
+        }
+        m_organizer->claimForCurrentDesktop();
+        takeOverDesktopStrays();
+    }
     publishSnapshot();
     if (m_started && !m_safeMode) {
         updateMarkers(false);
@@ -330,10 +377,12 @@ void CanvasService::updateMonitors()
     for (MonitorState &old : m_monitors) {
         if (old.overview) {
             old.overview->hide();
-            if (auto it = m_canvases.find(old.key); it != m_canvases.end() && it->second.overview) {
-                it->second.overview = false;
-                it->second.camera.zoom = 1;
-                it->second.committed = it->second.camera;
+            for (auto &[key, entry] : m_canvases) {
+                if (entry.overview && monitorKeyOf(key) == old.key) {
+                    entry.overview = false;
+                    entry.camera.zoom = 1;
+                    entry.committed = entry.camera;
+                }
             }
         }
     }
@@ -342,7 +391,7 @@ void CanvasService::updateMonitors()
         if (m_monitors[std::size_t(i)].overview) {
             m_monitors[std::size_t(i)].overview->setMonitor(i);
         }
-        canvas(m_monitors[std::size_t(i)].key);
+        currentCanvas(m_monitors[std::size_t(i)]);
     }
     // Windows whose monitor is gone belong to the monitor they are on now.
     for (auto &[hwnd, window] : m_windows) {
@@ -354,9 +403,10 @@ void CanvasService::updateMonitors()
             continue;
         }
         const MonitorState &monitor = m_monitors[std::size_t(index)];
-        window.canvasKey = monitor.key;
+        // Its desktop stays.
+        window.canvasKey = canvasKeyFor(monitor.key, desktopOf(window.canvasKey));
         const QRectF frame = frameOf(hwnd);
-        window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+        window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
         window.lastRequest = rounded(frame.topLeft());
     }
     if (m_organizer) {
@@ -367,8 +417,9 @@ void CanvasService::updateMonitors()
 
 int CanvasService::monitorIndexOf(const QString &key) const
 {
+    const QString monitorKey = monitorKeyOf(key);
     for (int i = 0; i < int(m_monitors.size()); ++i) {
-        if (m_monitors[std::size_t(i)].key == key) {
+        if (m_monitors[std::size_t(i)].key == monitorKey) {
             return i;
         }
     }
@@ -423,7 +474,190 @@ Canvas *CanvasService::canvasOfMonitor(int monitor)
     if (monitor < 0 || monitor >= int(m_monitors.size())) {
         return nullptr;
     }
-    return &canvas(m_monitors[std::size_t(monitor)].key);
+    return &currentCanvas(m_monitors[std::size_t(monitor)]);
+}
+
+Canvas &CanvasService::currentCanvas(const MonitorState &monitor)
+{
+    return canvas(currentCanvasKey(monitor));
+}
+
+// --- Virtual desktops --------------------------------------------------------------------------
+
+QString CanvasService::canvasKeyFor(const QString &monitorKey, const QString &desktop)
+{
+    return desktop.isEmpty() ? monitorKey : monitorKey + DesktopSeparator + desktop;
+}
+
+QString CanvasService::monitorKeyOf(const QString &canvasKey)
+{
+    const qsizetype separator = canvasKey.indexOf(DesktopSeparator);
+    return separator < 0 ? canvasKey : canvasKey.left(separator);
+}
+
+QString CanvasService::desktopOf(const QString &canvasKey)
+{
+    const qsizetype separator = canvasKey.indexOf(DesktopSeparator);
+    return separator < 0 ? QString() : canvasKey.mid(separator + DesktopSeparator.size());
+}
+
+QString CanvasService::currentDesktop() const
+{
+    return m_settings.perDesktopCanvas ? m_desktop : QString();
+}
+
+QString CanvasService::currentCanvasKey(const MonitorState &monitor) const
+{
+    return canvasKeyFor(monitor.key, currentDesktop());
+}
+
+QString CanvasService::canvasKeyOn(const ManagedWindow &window, const MonitorState &monitor) const
+{
+    // A hidden window is on another desktop and stays there.
+    return canvasKeyFor(monitor.key, window.hidden ? desktopOf(window.canvasKey) : currentDesktop());
+}
+
+void CanvasService::startDesktopWatch()
+{
+    if (m_desktopNotifier || !m_desktopWatch.arm()) {
+        // Without the key (it appears with the first desktop switch) cloak events check again.
+        return;
+    }
+    m_desktopNotifier = new QWinEventNotifier(m_desktopWatch.event(), this);
+    connect(m_desktopNotifier, &QWinEventNotifier::activated, this, [this]() {
+        m_desktopWatch.arm();
+        m_desktopTimer.start();
+    });
+}
+
+QString CanvasService::readCurrentDesktop() const
+{
+    if (const std::optional<GUID> current = currentDesktopFromRegistry()) {
+        return QString::fromStdWString(guidString(*current));
+    }
+    // Explorer writes the current one with the first switch; with one desktop that is it.
+    if (const std::vector<GUID> all = desktopsFromRegistry(); all.size() == 1) {
+        return QString::fromStdWString(guidString(all.front()));
+    }
+    if (m_virtualDesktops) {
+        for (const auto &[hwnd, window] : m_windows) {
+            if (window.hidden || !IsWindowVisible(hwnd) || m_virtualDesktops->isOnCurrentDesktop(hwnd) != true) {
+                continue;
+            }
+            if (const std::optional<GUID> desktop = m_virtualDesktops->desktopOf(hwnd); desktop && *desktop != GUID{}) {
+                return QString::fromStdWString(guidString(*desktop));
+            }
+        }
+    }
+    return QString();
+}
+
+void CanvasService::checkDesktop()
+{
+    if (m_shuttingDown || m_safeMode) {
+        return;
+    }
+    startDesktopWatch();
+    const QString desktop = readCurrentDesktop();
+    if (!desktop.isEmpty() && desktop != m_desktop) {
+        switchDesktop(desktop);
+    }
+    takeOverDesktopStrays();
+}
+
+void CanvasService::switchDesktop(const QString &desktop)
+{
+    qCDebug(lcService) << "virtual desktop" << m_desktop << "->" << desktop;
+    // What the desktop that is left was doing ends; its canvases stay as they are.
+    for (const MonitorState &monitor : m_monitors) {
+        auto it = m_canvases.find(currentCanvasKey(monitor));
+        if (it == m_canvases.end()) {
+            continue;
+        }
+        it->second.motion.stop();
+        if (it->second.overview) {
+            leaveOverview(it->second);
+        }
+    }
+    if (m_organizer) {
+        m_organizer->closeOverlay();
+    }
+    const bool wasUnknown = m_desktop.isEmpty();
+    m_desktop = desktop;
+    for (const MonitorState &monitor : m_monitors) {
+        const bool known = m_canvases.count(currentCanvasKey(monitor)) != 0;
+        Canvas &target = currentCanvas(monitor);
+        // Windows had not told the desktop yet: its view so far was this desktop's.
+        if (wasUnknown && !known && target.key != monitor.key) {
+            if (auto before = m_canvases.find(monitor.key); before != m_canvases.end()) {
+                target.camera = target.committed = before->second.committed;
+                target.bookmarks = before->second.bookmarks;
+            }
+        }
+    }
+    if (wasUnknown && m_organizer) {
+        m_organizer->claimForCurrentDesktop();
+    }
+    publishSnapshot();
+    updateMarkers(false);
+    saveStateLater();
+}
+
+void CanvasService::takeOverDesktopStrays()
+{
+    const QString desktop = currentDesktop();
+    for (auto &[hwnd, window] : m_windows) {
+        if (window.hidden || desktopOf(window.canvasKey) == desktop || !IsWindow(hwnd) || !IsWindowVisible(hwnd)) {
+            continue;
+        }
+        DWORD cloaked = 0;
+        DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloaked, sizeof(cloaked));
+        if (cloaked) {
+            // Its cloak event is still on the way.
+            window.hidden = true;
+            continue;
+        }
+        moveToCanvas(window, canvasKeyFor(monitorKeyOf(window.canvasKey), desktop));
+        qCDebug(lcService) << "window came to this desktop" << hwndText(hwnd);
+    }
+}
+
+void CanvasService::followDesktop(ManagedWindow &window)
+{
+    if (currentDesktop().isEmpty() || !m_virtualDesktops) {
+        return;
+    }
+    const std::optional<GUID> desktop = m_virtualDesktops->desktopOf(window.hwnd);
+    if (!desktop || *desktop == GUID{}) {
+        return;
+    }
+    const QString id = QString::fromStdWString(guidString(*desktop));
+    if (id != desktopOf(window.canvasKey)) {
+        // Moved to another desktop with Win + Tab while it was hidden.
+        moveToCanvas(window, canvasKeyFor(monitorKeyOf(window.canvasKey), id));
+    }
+}
+
+void CanvasService::moveToCanvas(ManagedWindow &window, const QString &key)
+{
+    const int index = monitorIndexOf(key);
+    if (index < 0 || key == window.canvasKey) {
+        return;
+    }
+    const MonitorState &monitor = m_monitors[std::size_t(index)];
+    m_organizer->windowGone(window, false);
+    Canvas &target = canvas(key);
+    window.canvasKey = key;
+    window.areaId.clear();
+    // Where it is on the screen now; a parked one keeps its canvas coordinates.
+    if (!window.parked && IsWindow(window.hwnd)) {
+        const QRectF frame = frameOf(window.hwnd);
+        window.canvasPos = target.committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+        window.lastRequest = rounded(frame.topLeft());
+    }
+    m_organizer->windowAdopted(window);
+    target.dirty = true;
+    requestFlush();
 }
 
 void CanvasService::startHooks()
@@ -607,9 +841,9 @@ ManagedWindow CanvasService::makeRecord(HWND hwnd, const TopLevel &top, int inde
     window.launch = top.appUserModelId.empty() ? QString::fromStdWString(top.exePath) : QString::fromStdWString(top.appUserModelId);
     window.appKey = window.launch.toLower();
     const MonitorState &monitor = m_monitors[std::size_t(index)];
-    const Canvas &target = canvas(monitor.key);
+    const Canvas &target = currentCanvas(monitor);
     const QRectF frame = toRectF(top.frame);
-    window.canvasKey = monitor.key;
+    window.canvasKey = target.key;
     window.canvasPos = target.committed.screenToCanvas(frame.topLeft(), monitor.viewport);
     window.size = frame.size();
     window.lastRequest = rounded(frame.topLeft());
@@ -668,6 +902,14 @@ void CanvasService::tryAdopt(HWND hwnd, bool isNew)
         return;
     }
     window.hidden = windowClass == WindowClass::OtherDesktop;
+    if (window.hidden && !currentDesktop().isEmpty()) {
+        // On another virtual desktop: on that desktop's canvas, where it is on the screen.
+        if (const std::optional<GUID> desktop = m_virtualDesktops ? m_virtualDesktops->desktopOf(hwnd) : std::nullopt; desktop && *desktop != GUID{}) {
+            const MonitorState &monitor = m_monitors[std::size_t(index)];
+            window.canvasKey = canvasKeyFor(monitor.key, QString::fromStdWString(guidString(*desktop)));
+            window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(toRectF(top.frame).topLeft(), monitor.viewport);
+        }
+    }
     if (m_settings.pinKeepAboveWindows && (top.exStyle & WS_EX_TOPMOST)) {
         window.pinned = true;
     }
@@ -804,8 +1046,8 @@ void CanvasService::restorePlacement(ManagedWindow &window, bool *reveal)
         return;
     }
     const MonitorState &monitor = m_monitors[std::size_t(index)];
-    Canvas &target = canvas(monitor.key);
-    window.canvasKey = monitor.key;
+    Canvas &target = currentCanvas(monitor);
+    window.canvasKey = canvasKeyOn(window, monitor);
     const QPointF screenPos = monitor.viewport.topLeft() + placement->screenOffset;
     window.canvasPos = m_settings.restoreOnCanvas ? placement->canvasPos : target.committed.screenToCanvas(screenPos, monitor.viewport);
     if (m_settings.restoreWindowSize && placement->size.width() >= 50 && placement->size.height() >= 30) {
@@ -925,6 +1167,7 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
             DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloaked, sizeof(cloaked));
             if (!cloaked) {
                 it->second.hidden = false;
+                followDesktop(it->second);
                 it->second.lastRequest = POINT{LONG_MIN, LONG_MIN};
                 canvas(it->second.canvasKey).dirty = true;
                 requestFlush();
@@ -980,6 +1223,8 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
     case EVENT_OBJECT_CLOAKED:
     case EVENT_OBJECT_UNCLOAKED: {
         m_stackingDirty = true;
+        // A desktop switch cloaks the windows of one desktop and uncloaks those of the other.
+        m_desktopTimer.start();
         if (it == m_windows.end()) {
             if (event == EVENT_OBJECT_UNCLOAKED) {
                 tryAdopt(hwnd, false);
@@ -990,9 +1235,10 @@ void CanvasService::onWindowEvent(DWORD event, HWND hwnd)
         DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloaked, sizeof(cloaked));
         const bool hidden = cloaked != 0 || !IsWindowVisible(hwnd);
         if (it->second.hidden && !hidden) {
-            // Back from another virtual desktop: to its place on the canvas.
-            it->second.lastRequest = POINT{LONG_MIN, LONG_MIN};
+            // Back from another virtual desktop: to its place on that desktop's canvas.
             it->second.hidden = false;
+            followDesktop(it->second);
+            it->second.lastRequest = POINT{LONG_MIN, LONG_MIN};
             canvas(it->second.canvasKey).dirty = true;
             requestFlush();
         }
@@ -1056,8 +1302,8 @@ void CanvasService::onLocationChanged(ManagedWindow &window)
     if (covers != window.fullscreen && !own) {
         window.fullscreen = covers;
         if (!covers) {
-            window.canvasKey = monitor.key;
-            window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+            window.canvasKey = canvasKeyOn(window, monitor);
+            window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
             window.lastRequest = position;
             window.parked = false;
         }
@@ -1096,8 +1342,8 @@ void CanvasService::onLocationChanged(ManagedWindow &window)
         return;
     }
     // Moved by the application or by Windows (Win + arrows): take it over.
-    window.canvasKey = monitor.key;
-    window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+    window.canvasKey = canvasKeyOn(window, monitor);
+    window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
     window.lastRequest = position;
 }
 
@@ -1182,8 +1428,8 @@ void CanvasService::onMoveSizeEnd(HWND hwnd)
         return;
     }
     const MonitorState &monitor = m_monitors[std::size_t(index)];
-    window.canvasKey = monitor.key;
-    window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+    window.canvasKey = canvasKeyOn(window, monitor);
+    window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
     m_organizer->windowArranged(window);
     saveStateLater();
 }
@@ -1584,11 +1830,11 @@ void CanvasService::updateMarkersNow()
             }
             continue;
         }
-        const Canvas &home = canvas(monitor.key);
+        const Canvas &home = currentCanvas(monitor);
         QList<QRectF> rects;
         QList<HWND> handles;
         for (const auto &[hwnd, window] : m_windows) {
-            if (window.canvasKey == monitor.key && window.onCanvas()) {
+            if (window.canvasKey == home.key && window.onCanvas()) {
                 rects.append(home.camera.canvasToScreen(canvasRect(window), monitor.viewport));
                 handles.append(hwnd);
             }
@@ -1964,8 +2210,8 @@ void CanvasService::setPinned(ManagedWindow &window, bool pinned, bool above)
         const int index = monitorAt(frame.center());
         if (index >= 0) {
             const MonitorState &monitor = m_monitors[std::size_t(index)];
-            window.canvasKey = monitor.key;
-            window.canvasPos = canvas(monitor.key).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
+            window.canvasKey = canvasKeyOn(window, monitor);
+            window.canvasPos = canvas(window.canvasKey).committed.screenToCanvas(frame.topLeft(), monitor.viewport);
             window.lastRequest = rounded(frame.topLeft());
         }
     } else if (pinned && !window.pinned) {
@@ -2301,7 +2547,15 @@ void CanvasService::loadState()
 {
     QFile canvasFile(QDir(stateDirectory()).filePath(QStringLiteral("canvas.json")));
     if (m_settings.rememberCanvas && canvasFile.open(QIODevice::ReadOnly)) {
-        const QJsonObject canvases = QJsonDocument::fromJson(canvasFile.read(4 * 1024 * 1024)).object().value(QStringLiteral("canvases")).toObject();
+        QJsonObject canvases = QJsonDocument::fromJson(canvasFile.read(4 * 1024 * 1024)).object().value(QStringLiteral("canvases")).toObject();
+        // Saved before canvases per desktop: the canvas of the monitor becomes that of the
+        // current desktop.
+        for (const MonitorState &monitor : m_monitors) {
+            const QString current = currentCanvasKey(monitor);
+            if (current != monitor.key && !canvases.contains(current) && canvases.contains(monitor.key)) {
+                canvases.insert(current, canvases.value(monitor.key));
+            }
+        }
         for (auto it = canvases.begin(); it != canvases.end(); ++it) {
             const QJsonObject entry = it.value().toObject();
             Canvas &loaded = canvas(it.key());
@@ -2334,8 +2588,17 @@ void CanvasService::saveState()
 {
     m_saveTimer.stop();
     m_stateDirty = false;
+    // Canvases of desktops that were closed are not kept.
+    QSet<QString> desktops;
+    for (const GUID &desktop : desktopsFromRegistry()) {
+        desktops.insert(QString::fromStdWString(guidString(desktop)));
+    }
     QJsonObject canvases;
     for (const auto &[key, entry] : m_canvases) {
+        const QString desktop = desktopOf(key);
+        if (!desktop.isEmpty() && !desktops.isEmpty() && !desktops.contains(desktop)) {
+            continue;
+        }
         QJsonArray bookmarks;
         for (const auto &bookmark : entry.bookmarks) {
             bookmarks.append(bookmark ? QJsonValue(cameraJson(*bookmark)) : QJsonValue());
@@ -2360,9 +2623,10 @@ QJsonObject CanvasService::state() const
 {
     QJsonArray monitors;
     for (const MonitorState &monitor : m_monitors) {
-        const auto it = m_canvases.find(monitor.key);
+        const auto it = m_canvases.find(currentCanvasKey(monitor));
         QJsonObject entry{
             {QStringLiteral("key"), monitor.key},
+            {QStringLiteral("canvas"), currentCanvasKey(monitor)},
             {QStringLiteral("name"), QString::fromStdWString(monitor.info.friendlyName)},
             {QStringLiteral("bounds"), rectJson(monitor.viewport)},
             {QStringLiteral("work"), rectJson(monitor.work)},
@@ -2410,6 +2674,7 @@ QJsonObject CanvasService::state() const
         {QStringLiteral("version"), QStringLiteral(WID_VERSION_STRING)},
         {QStringLiteral("paused"), m_paused},
         {QStringLiteral("safeMode"), m_safeMode},
+        {QStringLiteral("desktop"), m_desktop},
         {QStringLiteral("monitors"), monitors},
         {QStringLiteral("windows"), windows},
     };

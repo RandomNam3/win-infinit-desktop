@@ -7,6 +7,8 @@
 
 #include <shobjidl.h>
 
+#include <cstring>
+
 namespace Wid
 {
 
@@ -57,6 +59,68 @@ std::wstring guidString(const GUID &guid)
     wchar_t buffer[40] = {};
     StringFromGUID2(guid, buffer, static_cast<int>(std::size(buffer)));
     return buffer;
+}
+
+namespace
+{
+
+const wchar_t *const s_desktopsKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VirtualDesktops";
+
+std::vector<GUID> readGuids(const wchar_t *value)
+{
+    BYTE data[16 * 64] = {};
+    DWORD size = sizeof(data);
+    DWORD type = 0;
+    if (RegGetValueW(HKEY_CURRENT_USER, s_desktopsKey, value, RRF_RT_REG_BINARY, &type, data, &size) != ERROR_SUCCESS) {
+        return {};
+    }
+    std::vector<GUID> guids(size / sizeof(GUID));
+    std::memcpy(guids.data(), data, guids.size() * sizeof(GUID));
+    return guids;
+}
+
+} // namespace
+
+std::optional<GUID> currentDesktopFromRegistry()
+{
+    const std::vector<GUID> current = readGuids(L"CurrentVirtualDesktop");
+    if (current.size() != 1 || current.front() == GUID{}) {
+        return std::nullopt;
+    }
+    return current.front();
+}
+
+std::vector<GUID> desktopsFromRegistry()
+{
+    return readGuids(L"VirtualDesktopIDs");
+}
+
+DesktopRegistryWatch::DesktopRegistryWatch()
+    : m_event(CreateEventW(nullptr, FALSE, FALSE, nullptr))
+{
+}
+
+DesktopRegistryWatch::~DesktopRegistryWatch()
+{
+    if (m_key) {
+        RegCloseKey(m_key); // also ends a pending notification
+    }
+    if (m_event) {
+        CloseHandle(m_event);
+    }
+}
+
+bool DesktopRegistryWatch::arm()
+{
+    if (!m_event) {
+        return false;
+    }
+    if (!m_key && RegOpenKeyExW(HKEY_CURRENT_USER, s_desktopsKey, 0, KEY_NOTIFY | KEY_QUERY_VALUE, &m_key) != ERROR_SUCCESS) {
+        m_key = nullptr;
+        return false;
+    }
+    // Asynchronous: the call returns at once and the event is set on the next change.
+    return RegNotifyChangeKeyValue(m_key, FALSE, REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_THREAD_AGNOSTIC, m_event, TRUE) == ERROR_SUCCESS;
 }
 
 } // namespace Wid

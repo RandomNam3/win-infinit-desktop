@@ -211,6 +211,7 @@ Settings Settings::load(QSettings &settings)
     s.showAreas = parseShowMode(settings.value(QStringLiteral("ShowAreas")).toString(), s.showAreas);
     s.areaPadding = readInt(settings, "AreaPadding", 48, 0, 400);
     s.mapSize = readInt(settings, "MapSize", 70, 30, 95);
+    s.perDesktopCanvas = readBool(settings, "PerDesktopCanvas", s.perDesktopCanvas);
     s.crashGuard = readBool(settings, "CrashGuard", s.crashGuard);
     s.rememberCanvas = readBool(settings, "RememberCanvas", s.rememberCanvas);
     s.debugLogging = readBool(settings, "DebugLogging", s.debugLogging);

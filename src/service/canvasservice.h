@@ -19,6 +19,7 @@
 #include "toplevel.h"
 #include "touchpad.h"
 #include "velocitytracker.h"
+#include "virtualdesktops.h"
 #include "win32util.h"
 #include "windowevents.h"
 
@@ -38,6 +39,7 @@
 #include <vector>
 
 class QFileSystemWatcher;
+class QWinEventNotifier;
 
 namespace Wid
 {
@@ -45,7 +47,8 @@ namespace Wid
 class Tray;
 
 /**
- * The canvas: one per monitor, keyed by the monitor's identity.
+ * The canvas: one per monitor and virtual desktop, keyed "<monitor identity>::<desktop GUID>"
+ * (just the monitor identity without separate canvases per desktop).
  *
  * `camera` is what is shown; `committed` is the camera the physical window positions belong
  * to (both at 100 % unless the overview is open: then windows stay where they were and
@@ -198,12 +201,38 @@ private:
     static LRESULT CALLBACK serviceWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     LRESULT handleServiceMessage(UINT message, WPARAM wParam, LPARAM lParam);
     void updateMonitors();
+    /// Index of the monitor of a monitor key or canvas key, -1 if it is gone.
     int monitorIndexOf(const QString &key) const;
     int monitorAt(const QPointF &point) const;
     int monitorOfWindow(HWND hwnd) const;
     Canvas &canvas(const QString &key);
     Canvas *canvasAt(const QPointF &point, int *monitor = nullptr);
+    /// The canvas the monitor shows now (that of the current virtual desktop).
     Canvas *canvasOfMonitor(int monitor);
+    Canvas &currentCanvas(const MonitorState &monitor);
+
+    // Virtual desktops: the current one comes from Explorer's registry key (watched); a switch
+    // keeps every canvas as it is and shows the other one.
+    static QString canvasKeyFor(const QString &monitorKey, const QString &desktop);
+    static QString monitorKeyOf(const QString &canvasKey);
+    static QString desktopOf(const QString &canvasKey);
+    /// The desktop part of current canvas keys: empty without canvases per desktop.
+    QString currentDesktop() const;
+    QString currentCanvasKey(const MonitorState &monitor) const;
+    /// The canvas key for a window on this monitor: on the current desktop if it is visible.
+    QString canvasKeyOn(const ManagedWindow &window, const MonitorState &monitor) const;
+    void startDesktopWatch();
+    /// The current desktop from the registry, else from a window shown on it; empty if unknown.
+    QString readCurrentDesktop() const;
+    void checkDesktop();
+    void switchDesktop(const QString &desktop);
+    /// Windows visible on this desktop that belong to another one (shown on all desktops,
+    /// moved here): they keep their place on the screen, on the current canvas.
+    void takeOverDesktopStrays();
+    /// A window that shows up again: onto the canvas of the desktop Windows has it on.
+    void followDesktop(ManagedWindow &window);
+    /// Puts the window on another canvas where it is on the screen now.
+    void moveToCanvas(ManagedWindow &window, const QString &key);
     void startHooks();
     void stopHooks();
     void publishSnapshot();
@@ -333,6 +362,14 @@ private:
     QTimer m_displayTimer; ///< settles monitor changes
     QFileSystemWatcher *m_settingsWatcher = nullptr;
     bool m_stateDirty = false;
+
+    // Virtual desktops
+    QString m_desktop; ///< GUID of the current virtual desktop, empty if unknown
+    std::unique_ptr<VirtualDesktops> m_virtualDesktops; ///< which desktop a window is on
+    DesktopRegistryWatch m_desktopWatch;
+    QWinEventNotifier *m_desktopNotifier = nullptr;
+    QTimer m_desktopTimer; ///< settles a desktop switch (registry change, cloak events)
+    bool m_comInitialized = false;
 
     /// Last member: destroyed first, while everything it looks at still exists.
     std::unique_ptr<Organizer> m_organizer;

@@ -58,6 +58,7 @@ const QList<SettingsEntryMeta> &settingsEntries()
         {"NewWindowsExitZoom", "windows", nullptr, kli18n("open,launch,new,zoom"), nullptr},
         {"PinKeepAboveWindows", "windows", nullptr, kli18n("pin,always on top,keep above,fixed,sticky"), nullptr},
         {"ExcludedWindowClasses", "windows", nullptr, kli18n("exclude,ignore,blacklist,application,class"), nullptr},
+        {"PerDesktopCanvas", "windows", nullptr, kli18n("virtual desktop,workspace,camera"), nullptr},
         {"RememberWindowPlacement", "windows", nullptr, kli18n("remember,restore,session,position,size,reopen,monitor"), nullptr},
         {"RestorePlacementMode", "windows", nullptr, kli18n("remember,restore,canvas,screen,position"), "RememberWindowPlacement"},
         {"RestoreWindowSize", "windows", nullptr, kli18n("remember,restore,size,maximized"), "RememberWindowPlacement"},
