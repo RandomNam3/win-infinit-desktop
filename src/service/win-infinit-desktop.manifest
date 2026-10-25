@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
      SPDX-License-Identifier: GPL-3.0-or-later -->
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
-  <assemblyIdentity type="win32" name="WinInfinitDesktop.Service" version="0.1.2.0"/>
+  <assemblyIdentity type="win32" name="WinInfinitDesktop.Service" version="0.2.0.0"/>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>

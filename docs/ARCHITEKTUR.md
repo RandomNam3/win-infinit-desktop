@@ -120,13 +120,31 @@ App-Schlüssel.
   `computeParkingSpot` aus dem gemeinsamen Kern liefert. Sie liegt außerhalb aller Bildschirme, aber
   nahe dem eigenen, innerhalb von ±30000. Geparkte Chromium-Fenster hören auf zu zeichnen und sparen
   so Strom.
+- **Kante zum Nachbarbildschirm:** Windows kann ein fremdes Fenster nicht an einer Bildschirmkante
+  abschneiden; ein Fenster, das über die Kante ragt, ist auf dem Nachbarn zu sehen (unter KDE zeichnet
+  der Effekt es dort nicht). Würde eine Platzierung ein Fenster in einen anderen Bildschirm schieben
+  (`reachesOtherScreen`, `src/service/placementrules.*`), wird es deshalb geparkt. Ausnahmen: Es liegt
+  schon dort (der Benutzer oder das Programm hat es so hingelegt, neue Fenster bleiben, wo sie
+  erscheinen), oder es ist größer als sein Bildschirm. Solche geparkten Fenster bekommen eine Markierung,
+  obwohl ihre Flächenposition in den Bildschirm reicht.
 - Verschoben wird mit `SetWindowPos(…, SWP_ASYNCWINDOWPOS | SWP_NOACTIVATE | SWP_NOZORDER)`. Ein
   hängendes Programm hält den Dienst so nicht auf.
 - **Eigene oder fremde Bewegung?** `EVENT_OBJECT_LOCATIONCHANGE` meldet auch die eigenen,
-  asynchronen Bewegungen, oft verspätet.
-  - Eine Position, die in den letzten 1,5 s angefordert wurde (±1 px), zählt als eigene.
+  asynchronen Bewegungen, oft verspätet; ein beschäftigtes Programm (Firefox, das Fenster von Windows
+  Sandbox) arbeitet sie erst nach vielen neueren Aufträgen ab. `MoveRequests` merkt sich die letzten 32
+  Aufträge je Fenster:
+  - Eine gemeldete Position, die in den letzten 5 s angefordert wurde (±1 px, sichtbarer Rahmen oder
+    Fensterrechteck), zählt als eigene. Sie und alle älteren Aufträge gelten als beantwortet.
+  - Unbeantwortete Aufträge, die jünger als 0,5 s sind, sind unterwegs. Sind es drei, hält der Dienst
+    weitere zurück und schickt die jeweils neueste Position, sobald das Programm antwortet (oder 100 ms
+    später erneut). So stauen sich bei einem langsamen Programm keine Bewegungen auf, die es nach dem
+    Verschieben noch abspielen würde; es folgt mit der neuesten Position.
   - Alles andere hat das Programm oder Windows bewegt (Win + Pfeiltasten, ein anderer Bildschirm). Die
-    neue Position wird als Flächenposition übernommen.
+    neue Position wird als Flächenposition übernommen. Zur Fläche eines anderen Bildschirms wechselt das
+    Fenster dabei nur, wenn es seinen eigenen ganz verlassen hat (`screenAfterForeignMove`): Ein
+    Programm, das sich an die Skalierung des Nachbarbildschirms anpasst, verschiebt sich selbst ein wenig.
+  - Beim Beenden gehen zurückgehaltene Positionen noch hinaus, und ein Fenster, dessen Parken noch
+    unterwegs ist, wird ebenfalls auf einen Bildschirm geholt.
 - **Geparkte Fenster,** die jemand anderes bewegt, werden wieder geparkt, wie unter KDE. Widersetzt sich
   ein Fenster mehr als dreimal in 3 s, bleibt es, wo es ist, und gilt als nicht verschiebbar.
 - Nach `WM_DISPLAYCHANGE` oder einem geänderten Arbeitsbereich wartet der Dienst 400 ms. Dann liest er
@@ -343,7 +361,10 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
   - die Entscheidungen des `InputRouter`: Klick, Ziehen, Modifikator, mittlere Taste, Anhalten beim
     Gleiten, Mausrad-Varianten, Touchpad, Pause und Sperre, Kürzel, Fenster ziehen mit Kante und Wurf,
     Pan ohne Tastenzustand bei Windows, verlorenes Loslassen;
-  - Markierungen (Lage, helle Scheibe hinter dunklen Symbolen), IPC-Zeilen, Absturzschutz;
+  - Markierungen (Lage, an der Kante geparkte Fenster, helle Scheibe hinter dunklen Symbolen),
+    IPC-Zeilen, Absturzschutz;
+  - eigene Bewegungen eines beschäftigten Programms (späte Antworten, höchstens drei unterwegs), die
+    Kante zum Nachbarbildschirm, der Bildschirm nach einer fremden Bewegung;
   - Canvas-Menü, Startbefehle von Gruppenmitgliedern, Fenster-Handles und Notiz-IDs aus der IPC,
     Esc für Karte und Auswahl, Win + Rechtsklick, ein offenes Menü bekommt alle Eingaben.
 - **AddressSanitizer:** Ein eigener CI-Job baut alles mit MSVC `/fsanitize=address` und führt die
@@ -363,6 +384,9 @@ Animation, wie die D-Bus-Methoden der KDE-Version. Beispiel:
   Der Test hängt von der Desktop-Sitzung des Runners ab. Er wird berichtet, ist aber nicht
   Voraussetzung. `-Build` nimmt auch einen Paketordner (alle Programme nebeneinander, dazu
   `wid-testwindow.exe`), so läuft er auch in Windows Sandbox.
+- **Langsame Programme:** `wid-testwindow X Y BREITE HÖHE SEKUNDEN VERZÖGERUNG` braucht für jede
+  Bewegung die angegebenen Millisekunden, wie ein beschäftigtes Programm. Damit lässt sich prüfen, dass
+  ein Fenster beim Verschieben seinen Platz auf der Fläche behält.
 - **Diagnose auf einem Rechner:** `wid-probe` (siehe [Abschnitt 15](#diagnose-wid-probe)).
 - **Echte Eingaben und Bilder:** `wid-media` (`tools/wid-media`, ohne Qt) erzeugt echte Maus- und
   Tastatureingaben (`SendInput`, Mausbewegungen absolut, damit Low-Level-Hooks sie sehen), nimmt
@@ -508,10 +532,20 @@ Frameworks. Was dort KDE erledigt, übernehmen kleine Teile in `src/shared` und 
 - Gruppen und Bereiche bearbeitet sie als ganze JSON-Dokumente (`groups`/`setGroups`,
   `areas`/`setAreas`), die Zahl der Notizen fragt sie die Notiz-App, ohne sie zu starten.
 - Während ein Kürzel aufgenommen wird, bittet sie den Dienst mit `blockShortcuts` um Ruhe.
+- Die Titelleiste zeichnet Windows; sie folgt dem hellen oder dunklen Aussehen der App über
+  `DWMWA_USE_IMMERSIVE_DARK_MODE`, auch wenn der Modus wechselt.
 - Update-Check: Releases dieses Repositorys; ein Release enthält
-  `win-infinit-desktop-<Version>-<x64|arm64>.zip`. „Update installieren“ lädt das passende Paket in
-  einem PowerShell-Fenster herunter und startet dessen `install.ps1 -Update`. Nur Downloads von
-  GitHub werden verwendet.
+  `win-infinit-desktop-<Version>-<x64|arm64>.zip`, GitHub nennt dazu dessen SHA-256 (`digest`). Nur
+  Downloads von GitHub werden verwendet. „Update installieren“ (`UpdateChecker`):
+  1. lädt das Paket mit `QNetworkAccessManager` nach `%TEMP%` (Fortschrittsbalken) und vergleicht
+     die Prüfsumme;
+  2. entpackt es mit `tar.exe` von Windows;
+  3. startet dessen `install.ps1 -Update -Log … -ResultFile … -OpenSettings` ohne Fenster
+     (`CREATE_NO_WINDOW`). Der Installer beendet den Dienst und die App, installiert, startet
+     den Dienst, schreibt sein Ergebnis nach `%LOCALAPPDATA%\WIN Infinit Desktop\update-result.json`
+     und öffnet die App wieder; sie zeigt das Ergebnis beim Start. Läuft die App noch, weil der
+     Installer vorher scheiterte, sieht sie jede Sekunde nach dem Ergebnis und danach, ob der
+     Installer noch läuft. Das Protokoll ist `update.log` daneben.
 - `--screenshot <Ordner>` rendert alle Seiten mit Beispieldaten, ohne Pipes und mit einer
   temporären Einstellungsdatei; die CI prüft damit, dass alle QML-Seiten fehlerfrei laden.
 
@@ -558,7 +592,8 @@ Daraus folgt das Modell der Windows-Version:
   Programm sind sie eine Plattform. x64 und ARM64 werden beide unterstützt.
 - 24H2 Home/Pro bekommt seit dem 13. Okt. 2026 keine Updates mehr.
 - **Regel im Programm** (`src/platform/osversion.cpp`): Build < 26100 → Start verweigert, 26200 und
-  26300 → unterstützt, alles andere ab 26100 (24H2, 26H1, neuere) → läuft, mit Hinweis „nicht getestet“.
+  26300 → unterstützt, alles andere ab 26100 (24H2, 26H1, neuere) → läuft ebenso, nur ungetestet
+  (`wid-probe` zeigt das an, der Dienst meldet nichts).
   Die Version kommt von `RtlGetVersion`, die Anzeige („25H2“) aus `DisplayVersion` in der Registry.
 
 Relevante Änderungen in 25H2/26H2:
