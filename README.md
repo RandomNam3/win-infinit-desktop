@@ -19,7 +19,7 @@ Hintergrundbild bleiben dabei fest stehen.
 
 ## Funktionen
 
-- **Unendliche Fläche pro Bildschirm** mit eigener Kamera und Lesezeichen.
+- **Unendliche Fläche pro Bildschirm und virtuellem Desktop** mit eigener Kamera und Lesezeichen.
 - **Pannen**: Ziehen auf freiem Desktop, Win+Alt+Ziehen über Fenstern, mittlere Maustaste,
   Zwei-Finger-Scrollen, Umschalt/Strg + Mausrad; mit **Nachgleiten**.
 - **Zoomen**: Mausrad auf freiem Desktop, Win+Mausrad überall, Pinch; rastet bei 100 % ein.
