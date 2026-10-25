@@ -94,6 +94,13 @@ void OverlayWindow::hide()
     m_image = QImage();
 }
 
+void OverlayWindow::raise()
+{
+    if (m_window && m_visible) {
+        SetWindowPos(m_window.get(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    }
+}
+
 void OverlayWindow::setColor(COLORREF fill, COLORREF border, BYTE alpha)
 {
     const bool changed = fill != m_fill || border != m_border;

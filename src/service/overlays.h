@@ -48,6 +48,8 @@ public:
     /// Shows the window over `rect` (screen pixels), above all other windows.
     void show(const QRect &rect);
     void hide();
+    /// Puts a shown window back on top (after another topmost window, the overview).
+    void raise();
     bool isVisible() const
     {
         return m_visible;

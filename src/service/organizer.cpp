@@ -1225,6 +1225,15 @@ void Organizer::closeOverlay()
     m_service.publishSnapshot();
 }
 
+void Organizer::raiseOverlays()
+{
+    for (OverlayWindow *window : {m_veil.get(), m_tint.get(), m_panel.get(), m_label.get()}) {
+        if (window) {
+            window->raise();
+        }
+    }
+}
+
 void Organizer::monitorsChanged()
 {
     if (m_overlay != Overlay::None) {

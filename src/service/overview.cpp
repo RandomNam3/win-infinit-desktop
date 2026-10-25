@@ -63,8 +63,8 @@ void Overview::show(const RECT &area)
         // Double clicks are needed for the title bars.
         registerWindowClass(s_windowClass, &Overview::windowProc, CS_DBLCLKS);
         // Never activated: the keyboard stays with the active application, as on KDE.
-        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE, s_windowClass, L"WIN Infinit Desktop", WS_POPUP, area.left, area.top, area.right - area.left,
-                                       area.bottom - area.top, nullptr, nullptr, GetModuleHandleW(nullptr), this));
+        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_TOPMOST, s_windowClass, L"WIN Infinit Desktop", WS_POPUP, area.left, area.top,
+                                       area.right - area.left, area.bottom - area.top, nullptr, nullptr, GetModuleHandleW(nullptr), this));
         if (!m_window) {
             return;
         }
@@ -72,7 +72,10 @@ void Overview::show(const RECT &area)
     const bool moved = !sameRect(area, m_area);
     m_area = area;
     if (!m_visible || moved) {
-        SetWindowPos(m_window.get(), HWND_TOP, area.left, area.top, area.right - area.left, area.bottom - area.top, SWP_SHOWWINDOW | SWP_NOACTIVATE);
+        // Topmost: the real windows stay where they are behind the overview and must never
+        // show through. HWND_TOP is not enough, Windows keeps the window of a process
+        // without the last input below the foreground window.
+        SetWindowPos(m_window.get(), HWND_TOPMOST, area.left, area.top, area.right - area.left, area.bottom - area.top, SWP_SHOWWINDOW | SWP_NOACTIVATE);
         m_visible = true;
         updateBackground();
     }

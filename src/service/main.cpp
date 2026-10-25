@@ -10,6 +10,7 @@
 #include "crashguard.h"
 #include "ipcserver.h"
 #include "logging.h"
+#include "menutheme.h"
 #include "osversion.h"
 #include "settings.h"
 #include "texts.h"
@@ -64,6 +65,8 @@ int main(int argc, char **argv)
     if (!mutex || GetLastError() == ERROR_ALREADY_EXISTS) {
         return 0;
     }
+    // Canvas menu and tray menu dark like the rest of Windows in dark mode.
+    followSystemMenuTheme();
 
     QGuiApplication app(argc, argv);
     QGuiApplication::setApplicationName(QStringLiteral("WIN Infinit Desktop"));

@@ -4,20 +4,27 @@
 # Runtime smoke test of the canvas service on a real desktop (CI runner or a test machine):
 #  1. a test window appears and the service adopts it as a canvas window,
 #  2. panning by IPC really moves it, also off every monitor (parked),
-#  3. zooming out opens the overview without moving the real window,
+#  3. zooming out opens the overview without moving the real window, and covers it,
 #  4. a reopened window gets the place its predecessor had,
 #  5. opening a group moves its window to the group's place and the camera follows,
 #  6. a window announced as a note can be pinned and released over IPC,
 #  7. quitting the service brings everything back onto a screen.
 # Exit code 0 = passed. Usage: pwsh tests/runtime/smoke.ps1 [-Build build]
+# -Build is a build folder or a package folder with all programs side by side (plus
+# wid-testwindow.exe), as on a test machine without a build.
 
 param([string]$Build = "build")
 
 $ErrorActionPreference = "Stop"
-$service = Join-Path $Build "src/service/win-infinit-desktop.exe"
-$ctl = Join-Path $Build "tools/wid-ctl/wid-ctl.exe"
-$testWindow = Join-Path $Build "tools/wid-testwindow/wid-testwindow.exe"
-$probe = Join-Path $Build "tools/wid-probe/wid-probe.exe"
+function Program($path) {
+    $flat = Join-Path $Build (Split-Path $path -Leaf)
+    if (Test-Path $flat) { return $flat }
+    return Join-Path $Build $path
+}
+$service = Program "src/service/win-infinit-desktop.exe"
+$ctl = Program "tools/wid-ctl/wid-ctl.exe"
+$testWindow = Program "tools/wid-testwindow/wid-testwindow.exe"
+$probe = Program "tools/wid-probe/wid-probe.exe"
 $failures = @()
 
 $results = Join-Path (Get-Location) "smoke-result.txt"
@@ -92,6 +99,10 @@ try {
         Note "zoom 0.5: overview $($state.monitors[$monitor].overview), frame $($zoomed.frame.x),$($zoomed.frame.y)"
         if (-not $state.monitors[$monitor].overview) { Fail "no overview at 50 %" }
         if (-not (Near $zoomed.frame.x $moved.frame.x)) { Fail "the window moved when zooming out" }
+        # The overview covers the real window: only its thumbnail is to be seen.
+        $onTop = & $probe --window-at ([int]($zoomed.frame.x + $zoomed.frame.width / 2)) ([int]($zoomed.frame.y + $zoomed.frame.height / 2))
+        Note "on top of the real window: $onTop"
+        if ("$onTop" -notmatch 'WinInfinitDesktopOverview') { Fail "the real window is not covered by the overview" }
         & $ctl resetZoom monitor=$monitor | Out-Null
         Start-Sleep -Milliseconds 700
         $state = & $ctl state | ConvertFrom-Json

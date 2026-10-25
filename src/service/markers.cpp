@@ -108,6 +108,15 @@ void Markers::hide()
     m_visible = 0;
 }
 
+void Markers::raise()
+{
+    for (const auto &bubble : m_bubbles) {
+        if (bubble->shown) {
+            SetWindowPos(bubble->window.get(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        }
+    }
+}
+
 LRESULT CALLBACK Markers::windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     Bubble *bubble = windowObject<Bubble>(hwnd, message, lParam);
