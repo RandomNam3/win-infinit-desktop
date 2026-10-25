@@ -763,6 +763,7 @@ void CanvasService::settleNewWindow(HWND hwnd, int delayMs, int attempts)
         const MonitorState &monitor = m_monitors[std::size_t(index)];
         const QPointF target = home.committed.canvasToScreen(window.canvasPos, monitor.viewport);
         const QRectF frame = frameOf(hwnd);
+        qCDebug(lcService) << "settle" << hwndText(hwnd) << "frame" << frame.topLeft() << "target" << target << "attempts" << attempts;
         if (window.parked || (QLineF(frame.topLeft(), target).length() > 2 && frame.intersects(monitor.viewport))) {
             window.lastRequest = POINT{LONG_MIN, LONG_MIN};
         }
@@ -1484,6 +1485,7 @@ void CanvasService::reveal(HWND hwnd, InfinitDesktop::RevealMode mode)
     if (it == m_windows.end() || !it->second.onCanvas()) {
         return;
     }
+    qCDebug(lcService) << "reveal" << hwndText(hwnd) << int(mode);
     const int index = monitorIndexOf(it->second.canvasKey);
     if (index < 0) {
         return;

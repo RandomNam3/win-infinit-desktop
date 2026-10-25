@@ -113,7 +113,7 @@ try {
         & $ctl pan dx=6200 dy=0 monitor=$monitor | Out-Null
         Start-Sleep -Milliseconds 700
         $back = WindowState $hwnd
-        Note "after pan +6200: frame $($back.frame.x),$($back.frame.y)"
+        Note "after pan +6200: frame $($back.frame.x),$($back.frame.y), canvas $($back.canvasRect.x),$($back.canvasRect.y)"
         if (-not (Near $back.frame.x $before.frame.x) -or -not (Near $back.frame.y $before.frame.y)) { Fail "the window did not come back to its place" }
 
         # Closing and opening the program again: the new window gets the old place.
