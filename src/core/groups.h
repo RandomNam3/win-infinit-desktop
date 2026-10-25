@@ -108,8 +108,8 @@ GroupPlan planGroup(const Group &group, const QList<GroupCandidate> &windows);
 /// empty rect keeps that member's stored geometry).
 void captureLayout(Group &group, const QList<QRectF> &memberRects);
 
-/// Moves the origin so that the arrangement's bounding box starts where the bounding box of
-/// the members' current windows starts. Used when the group was moved as a whole.
+/// Moves the origin by the mean displacement of the members' current windows from their place
+/// in the arrangement (empty rects: no window). The arrangement itself stays.
 void followWindows(Group &group, const QList<QRectF> &memberRects);
 
 /**
