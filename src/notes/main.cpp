@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
     wid-notes.exe: notes on the canvas. Started by the canvas service when it needs it.
@@ -8,7 +8,9 @@
 #include "companion.h"
 #include "notestore.h"
 
+#include "apppaths.h"
 #include "i18n.h"
+#include "legacy.h"
 #include "ipcclient.h"
 #include "localizer.h"
 #include "menutheme.h"
@@ -23,7 +25,7 @@
 #include <QQuickStyle>
 #include <QStyleHints>
 
-using namespace InfinitDesktop;
+using namespace InfiniteDesktop;
 using namespace std::chrono_literals;
 
 int main(int argc, char *argv[])
@@ -37,9 +39,11 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QGuiApplication::setQuitOnLastWindowClosed(false);
     QCoreApplication::setApplicationName(QStringLiteral("wid-notes"));
-    QCoreApplication::setOrganizationName(QStringLiteral("WIN Infinit Desktop"));
+    QCoreApplication::setOrganizationName(QStringLiteral("WIN Infinite Desktop"));
     QCoreApplication::setApplicationVersion(QStringLiteral(WID_VERSION_STRING));
-    QGuiApplication::setApplicationDisplayName(QStringLiteral("WIN Infinit Desktop"));
+    // Before the notes are read: the folder of WIN Infinit Desktop 0.2 and older.
+    Wid::migrateLegacyData(QString::fromLatin1(Wid::AppSettingsGroup));
+    QGuiApplication::setApplicationDisplayName(QStringLiteral("WIN Infinite Desktop"));
     QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/notes/icons/note-app.svg")));
     Wid::Localizer::instance().loadForSystemLanguage();
     // Links in the formatted text lie on light paper in light and dark mode alike; the Markdown

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Search field: Ctrl+F focuses it (see Main.qml), Esc clears it.

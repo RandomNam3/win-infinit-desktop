@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "organizer.h"
@@ -32,9 +32,9 @@
 #include <thread>
 
 using namespace std::chrono_literals;
-using InfinitDesktop::Area;
-using InfinitDesktop::Camera;
-using InfinitDesktop::Group;
+using InfiniteDesktop::Area;
+using InfiniteDesktop::Camera;
+using InfiniteDesktop::Group;
 
 namespace Wid
 {
@@ -52,8 +52,8 @@ constexpr int MinimumSelection = 12;
 constexpr int MaxExpectedNotes = 64;
 constexpr qint64 MaxStateFile = 16 * 1024 * 1024;
 
-// Area colors as in KDE Infinit Desktop, readable on light and dark wallpapers alike.
-const QColor AreaColors[InfinitDesktop::AreaStore::Colors] = {
+// Area colors as in KDE Infinite Desktop, readable on light and dark wallpapers alike.
+const QColor AreaColors[InfiniteDesktop::AreaStore::Colors] = {
     QColor(0x3d, 0xae, 0xe9), // blue
     QColor(0x27, 0xae, 0x60), // green
     QColor(0xf6, 0x74, 0x00), // orange
@@ -74,7 +74,7 @@ QString localized(const wchar_t *english, const wchar_t *german)
 
 QColor areaColor(int index)
 {
-    return AreaColors[std::clamp(index, 0, InfinitDesktop::AreaStore::Colors - 1)];
+    return AreaColors[std::clamp(index, 0, InfiniteDesktop::AreaStore::Colors - 1)];
 }
 
 COLORREF colorRef(const QColor &color)
@@ -144,9 +144,9 @@ QString menuText(CanvasMenuItem item)
     case CanvasMenuItem::ZoomReset:
         return localized(L"Zoom to 100 %", L"Auf 100 % zoomen");
     case CanvasMenuItem::Settings:
-        return localized(L"WIN Infinit Desktop Settings…", L"Einstellungen von WIN Infinit Desktop …");
+        return localized(L"WIN Infinite Desktop Settings…", L"Einstellungen von WIN Infinite Desktop …");
     case CanvasMenuItem::Quit:
-        return localized(L"Quit WIN Infinit Desktop", L"WIN Infinit Desktop beenden");
+        return localized(L"Quit WIN Infinite Desktop", L"WIN Infinite Desktop beenden");
     }
     return {};
 }
@@ -368,8 +368,8 @@ bool Organizer::placeNote(ManagedWindow &window)
 {
     prunePending();
     const auto &monitors = m_service.m_monitors;
-    if (const std::optional<InfinitDesktop::NotePlacement> placement = m_notes.find(window.noteId)) {
-        int index = InfinitDesktop::bestOutputMatch(placement->output, monitorIdentities());
+    if (const std::optional<InfiniteDesktop::NotePlacement> placement = m_notes.find(window.noteId)) {
+        int index = InfiniteDesktop::bestOutputMatch(placement->output, monitorIdentities());
         if (index < 0) {
             index = m_service.monitorIndexOf(window.canvasKey);
         }
@@ -441,7 +441,7 @@ void Organizer::windowAdopted(ManagedWindow &window)
         return;
     }
     const QList<Area> areas = areasOf(it->second);
-    const int index = InfinitDesktop::areaForWindow(areas, m_service.canvasRect(window));
+    const int index = InfiniteDesktop::areaForWindow(areas, m_service.canvasRect(window));
     if (index >= 0) {
         window.areaId = areas[index].id;
         scheduleAreaUpdate(window.canvasKey);
@@ -463,7 +463,7 @@ void Organizer::windowArranged(ManagedWindow &window)
     const Canvas &canvas = canvasIt->second;
     // Areas: the window belongs to the area its centre was dropped in.
     const QList<Area> areas = areasOf(canvas);
-    const int index = InfinitDesktop::areaForWindow(areas, m_service.canvasRect(window));
+    const int index = InfiniteDesktop::areaForWindow(areas, m_service.canvasRect(window));
     const QString areaId = index >= 0 ? areas[index].id : QString();
     if (areaId != window.areaId || !areaId.isEmpty()) {
         window.areaId = areaId;
@@ -482,10 +482,10 @@ void Organizer::windowArranged(ManagedWindow &window)
     }
     Group group = *stored;
     const QList<QRectF> rects = memberRects(group);
-    if (group.layoutMode == InfinitDesktop::GroupLayoutMode::Automatic) {
-        InfinitDesktop::captureLayout(group, rects);
+    if (group.layoutMode == InfiniteDesktop::GroupLayoutMode::Automatic) {
+        InfiniteDesktop::captureLayout(group, rects);
     } else {
-        InfinitDesktop::followWindows(group, rects);
+        InfiniteDesktop::followWindows(group, rects);
     }
     const int monitor = m_service.monitorIndexOf(canvas.key);
     if (monitor >= 0) {
@@ -566,9 +566,9 @@ QList<QRectF> Organizer::memberRects(const Group &group) const
 
 // ---- Areas ----------------------------------------------------------------------------------
 
-QList<InfinitDesktop::OutputIdentity> Organizer::monitorIdentities() const
+QList<InfiniteDesktop::OutputIdentity> Organizer::monitorIdentities() const
 {
-    QList<InfinitDesktop::OutputIdentity> identities;
+    QList<InfiniteDesktop::OutputIdentity> identities;
     for (const auto &monitor : m_service.m_monitors) {
         identities.append(outputIdentity(monitor.info));
     }
@@ -580,16 +580,16 @@ bool Organizer::onDesktop(const QString &stored, const QString &canvasDesktop)
     return canvasDesktop.isEmpty() || stored == canvasDesktop;
 }
 
-bool Organizer::areaBelongsTo(const Area &area, int monitor, const QString &desktop, const QList<InfinitDesktop::OutputIdentity> &identities)
+bool Organizer::areaBelongsTo(const Area &area, int monitor, const QString &desktop, const QList<InfiniteDesktop::OutputIdentity> &identities)
 {
     if (monitor < 0 || monitor >= identities.size() || !onDesktop(area.desktopId, desktop)) {
         return false;
     }
     if (identities.size() == 1) {
-        return InfinitDesktop::outputMatchScore(area.output, identities.front()) > 0;
+        return InfiniteDesktop::outputMatchScore(area.output, identities.front()) > 0;
     }
     // Two monitors of the same model match equally well: the best one wins, the first of them.
-    return InfinitDesktop::bestOutputMatch(area.output, identities) == monitor;
+    return InfiniteDesktop::bestOutputMatch(area.output, identities) == monitor;
 }
 
 QList<Area> Organizer::areasOf(const Canvas &canvas) const
@@ -600,7 +600,7 @@ QList<Area> Organizer::areasOf(const Canvas &canvas) const
     }
     const int monitor = m_service.monitorIndexOf(canvas.key);
     const QString desktop = CanvasService::desktopOf(canvas.key);
-    const QList<InfinitDesktop::OutputIdentity> identities = monitorIdentities();
+    const QList<InfiniteDesktop::OutputIdentity> identities = monitorIdentities();
     for (const Area &area : m_areas.areas()) {
         if (areaBelongsTo(area, monitor, desktop, identities)) {
             result.append(area);
@@ -615,9 +615,9 @@ void Organizer::updateAreas(const Canvas &canvas)
     if (monitor < 0) {
         return;
     }
-    const InfinitDesktop::AreaMetrics metrics{qreal(m_service.m_settings.areaPadding), QSizeF(320, 200)};
+    const InfiniteDesktop::AreaMetrics metrics{qreal(m_service.m_settings.areaPadding), QSizeF(320, 200)};
     const QString desktop = CanvasService::desktopOf(canvas.key);
-    const QList<InfinitDesktop::OutputIdentity> identities = monitorIdentities();
+    const QList<InfiniteDesktop::OutputIdentity> identities = monitorIdentities();
     bool changed = false;
     for (Area &area : m_areas.areas()) {
         if (!areaBelongsTo(area, monitor, desktop, identities)) {
@@ -629,7 +629,7 @@ void Organizer::updateAreas(const Canvas &canvas)
                 members.append(m_service.canvasRect(window));
             }
         }
-        const QRectF rect = InfinitDesktop::dynamicAreaRect(area, members, metrics);
+        const QRectF rect = InfiniteDesktop::dynamicAreaRect(area, members, metrics);
         if (rect != area.rect) {
             area.rect = rect;
             changed = true;
@@ -784,7 +784,7 @@ QList<std::pair<QString, QString>> Organizer::groupEntries() const
 int Organizer::monitorForGroup(const Group &group) const
 {
     if (!group.output.name.isEmpty() || group.output.hasEdid()) {
-        const int index = InfinitDesktop::bestOutputMatch(group.output, monitorIdentities());
+        const int index = InfiniteDesktop::bestOutputMatch(group.output, monitorIdentities());
         if (index >= 0) {
             return index;
         }
@@ -818,7 +818,7 @@ void Organizer::fillMissingGeometry(Group &group, int monitor)
         }
         sizes.append(size);
     }
-    const QList<QRectF> arranged = InfinitDesktop::autoArrange(sizes, 3, 24);
+    const QList<QRectF> arranged = InfiniteDesktop::autoArrange(sizes, 3, 24);
     const QRectF existing = group.layoutBounds();
     const QPointF offset = existing.isNull() ? QPointF() : QPointF(existing.right() + 24, existing.top());
     for (int k = 0; k < missing.size() && k < arranged.size(); ++k) {
@@ -867,12 +867,12 @@ void Organizer::openGroup(const QString &id)
         markGroupsDirty();
     }
 
-    QList<InfinitDesktop::GroupCandidate> candidates;
+    QList<InfiniteDesktop::GroupCandidate> candidates;
     for (const auto &[hwnd, window] : m_service.m_windows) {
         if (!window.noteId.isEmpty() || window.hidden || window.moving || !IsWindow(hwnd)) {
             continue;
         }
-        InfinitDesktop::GroupCandidate candidate;
+        InfiniteDesktop::GroupCandidate candidate;
         candidate.handle = quint64(reinterpret_cast<quintptr>(hwnd));
         candidate.appKey = window.appKey;
         candidate.canvasRect = m_service.canvasRect(window);
@@ -881,11 +881,11 @@ void Organizer::openGroup(const QString &id)
         candidate.movable = !window.pinned && !window.fullscreen && !window.unmovable;
         candidates.append(candidate);
     }
-    const InfinitDesktop::GroupPlan plan = InfinitDesktop::planGroup(group, candidates);
+    const InfiniteDesktop::GroupPlan plan = InfiniteDesktop::planGroup(group, candidates);
 
     HWND first = nullptr;
     int firstMember = -1;
-    for (const InfinitDesktop::GroupPlan::Move &move : plan.moves) {
+    for (const InfiniteDesktop::GroupPlan::Move &move : plan.moves) {
         const HWND hwnd = reinterpret_cast<HWND>(quintptr(move.handle));
         auto it = m_service.m_windows.find(hwnd);
         if (it == m_service.m_windows.end() || !IsWindow(hwnd)) {
@@ -926,7 +926,7 @@ void Organizer::openGroup(const QString &id)
     if (m_service.m_settings.groupStartsApplications) {
         prunePending();
         for (int member : plan.launches) {
-            const InfinitDesktop::GroupMember &m = group.members[member];
+            const InfiniteDesktop::GroupMember &m = group.members[member];
             if (m.launch.isEmpty() || m_launches.size() >= 64) {
                 continue;
             }
@@ -982,9 +982,9 @@ void Organizer::revealGroup(const Group &group, int monitor)
     const bool fits = bounds.width() <= area.width() - 2 * GroupMargin && bounds.height() <= area.height() - 2 * GroupMargin;
     Camera target;
     if (fits || !m_service.m_settings.groupZoomToFit) {
-        target = InfinitDesktop::revealCamera(base, bounds, state.viewport, area, InfinitDesktop::RevealMode::Center, GroupMargin, 1.0);
+        target = InfiniteDesktop::revealCamera(base, bounds, state.viewport, area, InfiniteDesktop::RevealMode::Center, GroupMargin, 1.0);
     } else {
-        target = InfinitDesktop::fitCamera(bounds, state.viewport, area, GroupMargin, m_service.m_settings.minZoom, 1.0);
+        target = InfiniteDesktop::fitCamera(bounds, state.viewport, area, GroupMargin, m_service.m_settings.minZoom, 1.0);
     }
     m_service.animateTo(canvas, target);
 }
@@ -1033,7 +1033,7 @@ void Organizer::createGroupFromRect(const QRectF &canvasRect, int monitor)
             rects.append(m_service.canvasRect(window));
         }
     }
-    const QList<int> inside = InfinitDesktop::windowsInside(canvasRect, rects);
+    const QList<int> inside = InfiniteDesktop::windowsInside(canvasRect, rects);
     if (inside.isEmpty()) {
         flash(localized(L"No windows in the selection", L"Keine Fenster in der Auswahl"), monitor);
         return;
@@ -1042,19 +1042,19 @@ void Organizer::createGroupFromRect(const QRectF &canvasRect, int monitor)
     group.name = m_groups.nextName(localized(L"Group %1", L"Gruppe %1"));
     group.output = outputIdentity(state.info);
     group.desktopId = CanvasService::desktopOf(key);
-    group.layoutMode = m_service.m_settings.groupLayoutAutomatic ? InfinitDesktop::GroupLayoutMode::Automatic : InfinitDesktop::GroupLayoutMode::Manual;
+    group.layoutMode = m_service.m_settings.groupLayoutAutomatic ? InfiniteDesktop::GroupLayoutMode::Automatic : InfiniteDesktop::GroupLayoutMode::Manual;
     QList<QRectF> memberRects;
     QList<HWND> members;
     for (int index : inside) {
-        if (group.members.size() >= InfinitDesktop::GroupStore::MaxMembers) {
+        if (group.members.size() >= InfiniteDesktop::GroupStore::MaxMembers) {
             break;
         }
         const ManagedWindow &window = m_service.m_windows.at(windows[index]);
-        group.members.append(InfinitDesktop::GroupMember{window.appKey, window.launch, QRectF()});
+        group.members.append(InfiniteDesktop::GroupMember{window.appKey, window.launch, QRectF()});
         memberRects.append(rects[index]);
         members.append(windows[index]);
     }
-    InfinitDesktop::captureLayout(group, memberRects);
+    InfiniteDesktop::captureLayout(group, memberRects);
     Group *added = m_groups.add(group);
     if (!added) {
         flash(localized(L"No more groups can be created.", L"Es können keine weiteren Gruppen angelegt werden."), monitor);
@@ -1091,7 +1091,7 @@ void Organizer::saveGroupLayout(const QString &id)
         return;
     }
     Group group = *stored;
-    InfinitDesktop::captureLayout(group, memberRects(group));
+    InfiniteDesktop::captureLayout(group, memberRects(group));
     m_groups.update(group);
     markGroupsDirty();
     flash(localized(L"Arrangement of group “%1” saved", L"Anordnung der Gruppe „%1“ gespeichert").arg(group.name));
@@ -1175,7 +1175,7 @@ void Organizer::storeNotePlacement(const ManagedWindow &window)
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
-    InfinitDesktop::NotePlacement placement;
+    InfiniteDesktop::NotePlacement placement;
     placement.id = window.noteId;
     placement.output = outputIdentity(state.info);
     placement.desktopId = CanvasService::desktopOf(window.canvasKey);
@@ -1200,7 +1200,7 @@ QJsonObject Organizer::noteState(const QString &id) const
             };
         }
     }
-    const std::optional<InfinitDesktop::NotePlacement> placement = m_notes.find(id);
+    const std::optional<InfiniteDesktop::NotePlacement> placement = m_notes.find(id);
     return QJsonObject{
         {QStringLiteral("id"), id},
         {QStringLiteral("open"), false},
@@ -1217,7 +1217,7 @@ void Organizer::setNotePinned(const QString &id, bool pinned, bool keepAbove)
             return;
         }
     }
-    if (std::optional<InfinitDesktop::NotePlacement> placement = m_notes.find(id)) {
+    if (std::optional<InfiniteDesktop::NotePlacement> placement = m_notes.find(id)) {
         placement->pinned = pinned;
         placement->keepAbove = pinned && keepAbove;
         m_notes.store(*placement);
@@ -1265,7 +1265,7 @@ void Organizer::closeOverlay()
         m_label->hide();
         m_labelPersistent = false;
     }
-    m_map = InfinitDesktop::MapView{};
+    m_map = InfiniteDesktop::MapView{};
     m_service.publishSnapshot();
 }
 
@@ -1349,7 +1349,7 @@ bool Organizer::veilEvent(UINT message, WPARAM wParam, LPARAM lParam)
         if (!m_tint) {
             m_tint = std::make_unique<OverlayWindow>(OverlayWindow::Style::Tint);
         }
-        const QColor color = m_selectGroup ? AccentColor : areaColor(int(m_areas.areas().size() % InfinitDesktop::AreaStore::Colors));
+        const QColor color = m_selectGroup ? AccentColor : areaColor(int(m_areas.areas().size() % InfiniteDesktop::AreaStore::Colors));
         m_tint->setColor(colorRef(color), colorRef(color.lighter(150)), 110);
         m_tint->show(QRect(m_selectStart, QSize(1, 1)));
         return true;
@@ -1436,7 +1436,7 @@ void Organizer::updateMapView()
 {
     const int monitor = overlayMonitor();
     if (monitor < 0) {
-        m_map = InfinitDesktop::MapView{};
+        m_map = InfiniteDesktop::MapView{};
         return;
     }
     const auto &state = m_service.m_monitors[std::size_t(monitor)];
@@ -1463,7 +1463,7 @@ void Organizer::updateMapView()
         return;
     }
     const qreal scale = state.info.dpi / 96.0;
-    m_map = InfinitDesktop::mapView(content, visible, QRectF(QPointF(0, 0), QSizeF(m_mapPanel.size())), 16 * scale, 0.5, state.viewport.size() * 2);
+    m_map = InfiniteDesktop::mapView(content, visible, QRectF(QPointF(0, 0), QSizeF(m_mapPanel.size())), 16 * scale, 0.5, state.viewport.size() * 2);
 }
 
 void Organizer::renderMap()
@@ -1595,7 +1595,7 @@ bool Organizer::panelEvent(UINT message, WPARAM wParam, LPARAM lParam)
             m_mapMoved = true;
         }
         if (m_mapMoved) {
-            const QPointF center = InfinitDesktop::mapDragCenter(m_map, m_mapStartCenter, QPointF(local - m_mapPressPos));
+            const QPointF center = InfiniteDesktop::mapDragCenter(m_map, m_mapStartCenter, QPointF(local - m_mapPressPos));
             canvas.motion.stop();
             m_service.setCamera(canvas, Camera{center, canvas.camera.zoom});
             m_service.requestFlush();
@@ -1629,7 +1629,7 @@ bool Organizer::panelEvent(UINT message, WPARAM wParam, LPARAM lParam)
             if (m_service.canvasRect(found->second).contains(canvasPos)) {
                 closeOverlay();
                 m_service.activate(hwnd);
-                m_service.reveal(hwnd, InfinitDesktop::RevealMode::Center);
+                m_service.reveal(hwnd, InfiniteDesktop::RevealMode::Center);
                 return true;
             }
         }
@@ -1724,7 +1724,7 @@ void Organizer::showCanvasMenu(const QPointF &screenPos)
     const QString key = canvasPtr->key;
     const QRectF viewport = m_service.m_monitors[std::size_t(monitor)].viewport;
     const QPointF canvasPos = canvasPtr->camera.screenToCanvas(screenPos, viewport);
-    const bool overArea = InfinitDesktop::areaAt(areasOf(*canvasPtr), canvasPos) >= 0;
+    const bool overArea = InfiniteDesktop::areaAt(areasOf(*canvasPtr), canvasPos) >= 0;
     const bool zoomedOut = !m_service.targetCamera(*canvasPtr).isUnitZoom();
     const QList<CanvasMenuItem> items = canvasMenuItems(m_service.m_settings.notesEnabled, overArea, zoomedOut);
 
@@ -1784,7 +1784,7 @@ void Organizer::showCanvasMenu(const QPointF &screenPos)
             break;
         }
         const QList<Area> areas = areasOf(*canvas);
-        const int area = InfinitDesktop::areaAt(areas, canvasPos);
+        const int area = InfiniteDesktop::areaAt(areas, canvasPos);
         if (area < 0) {
             break;
         }

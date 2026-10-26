@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -29,10 +29,10 @@ inline unsigned long currentSessionId()
     return 0;
 }
 
-/// Pipe of the canvas service (win-infinit-desktop.exe), see IpcServer.
+/// Pipe of the canvas service (win-infinite-desktop.exe), see IpcServer.
 inline QString ipcServerName()
 {
-    return QStringLiteral("win-infinit-desktop-%1").arg(currentSessionId());
+    return QStringLiteral("win-infinite-desktop-%1").arg(currentSessionId());
 }
 
 /// Pipe of the notes app (wid-notes.exe): same framing as the service's pipe.

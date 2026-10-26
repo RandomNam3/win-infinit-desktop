@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -9,12 +9,12 @@
 
 #include <QList>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
- * UI metadata for the settings defined in win-infinit-desktop.kcfg (the same table as in
- * KDE Infinit Desktop, without the entries Windows has no use for).
+ * UI metadata for the settings defined in win-infinite-desktop.kcfg (the same table as in
+ * KDE Infinite Desktop, without the entries Windows has no use for).
  *
  * Labels, explanations, defaults and ranges live in the kcfg file; this table
  * only adds what the kcfg format cannot express: the category an entry is
@@ -31,7 +31,7 @@ struct SettingsCategory
 
 struct SettingsEntryMeta
 {
-    /// Entry name in win-infinit-desktop.kcfg.
+    /// Entry name in win-infinite-desktop.kcfg.
     const char *key;
     const char *category;
     /// Unit shown next to numbers: "px", "px/s", "%", "ms" or nullptr.
@@ -50,4 +50,4 @@ const QList<SettingsCategory> &settingsCategories();
 const QList<SettingsEntryMeta> &settingsEntries();
 const SettingsEntryMeta *findSettingsEntry(const char *key);
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

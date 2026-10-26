@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
-// One shortcut of WIN Infinit Desktop or of Windows (GlobalShortcutsFilter delegate).
+// One shortcut of WIN Infinite Desktop or of Windows (GlobalShortcutsFilter delegate).
 // Rows of one component are drawn as one continuous card. Only our own can be changed.
 import QtQuick
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Item {
     id: row
@@ -137,7 +137,7 @@ Item {
                             UiText {
                                 id: badgeText
                                 anchors.centerIn: parent
-                                text: i18nc("@label badge for actions of this plugin", "Infinit Desktop")
+                                text: i18nc("@label badge for actions of this plugin", "Infinite Desktop")
                                 color: Theme.accentText
                                 font.pointSize: Theme.fontCaption
                                 font.weight: Font.DemiBold

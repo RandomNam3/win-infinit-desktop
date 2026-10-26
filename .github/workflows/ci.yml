@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Builds everything with MSVC on x64 and ARM64 and runs the unit tests. The ARM64 runner
@@ -94,18 +94,69 @@ jobs:
         if: matrix.with_qt == 'ON'
         shell: pwsh
         run: |
-          $zip = Get-ChildItem -Filter "win-infinit-desktop-*-${{ matrix.arch }}.zip" | Select-Object -First 1
+          $zip = Get-ChildItem -Filter "win-infinite-desktop-*-${{ matrix.arch }}.zip" | Select-Object -First 1
           $dir = Join-Path $env:RUNNER_TEMP "package"
           Expand-Archive -Path $zip.FullName -DestinationPath $dir -Force
           powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -NoStart
           if ($LASTEXITCODE -ne 0) { throw "install.ps1 failed" }
-          $installed = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinit Desktop"
-          foreach ($exe in "win-infinit-desktop.exe", "wid-notes.exe", "wid-settings.exe") {
+          $installed = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinite Desktop"
+          foreach ($exe in "win-infinite-desktop.exe", "wid-notes.exe", "wid-settings.exe") {
             if (-not (Test-Path (Join-Path $installed $exe))) { throw "$exe was not installed" }
           }
-          if (-not (Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "WIN Infinit Desktop" -ErrorAction SilentlyContinue)) { throw "no autostart entry" }
+          if (-not (Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "WIN Infinite Desktop" -ErrorAction SilentlyContinue)) { throw "no autostart entry" }
           powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -Uninstall
           if ($LASTEXITCODE -ne 0 -or (Test-Path $installed)) { throw "uninstall failed" }
+
+      - name: Update an installation of 0.2 (then "WIN Infinit Desktop")
+        if: matrix.with_qt == 'ON'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The released 0.2.0, running, with settings and a note; the new package takes it over.
+          $old = Join-Path $env:RUNNER_TEMP "old"
+          gh release download v0.2.0 --repo $env:GITHUB_REPOSITORY --pattern "win-infinit-desktop-0.2.0-x64.zip" --dir $old
+          if ($LASTEXITCODE -ne 0) { throw "no 0.2.0 package" }
+          Expand-Archive -Path "$old\win-infinit-desktop-0.2.0-x64.zip" -DestinationPath "$old\package" -Force
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$old\package\install.ps1" -NoStart
+          if ($LASTEXITCODE -ne 0) { throw "installing 0.2.0 failed" }
+          $oldData = Join-Path $env:APPDATA "WIN Infinit Desktop"
+          New-Item -ItemType Directory -Force "$oldData\notes" | Out-Null
+          Set-Content -Path "$oldData\settings.ini" -Value "[Effect-infinitdesktop]`r`nZoomStep=1.37"
+          Set-Content -Path "$oldData\notes\ci-note.md" -Value "from 0.2"
+          $oldTarget = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinit Desktop"
+          $oldService = Start-Process -FilePath "$oldTarget\win-infinit-desktop.exe" -ArgumentList "--no-tray" -PassThru
+          $session = (Get-Process -Id $PID).SessionId
+          function OldPipe { [IO.Directory]::GetFiles("\\.\pipe\") -contains "\\.\pipe\win-infinit-desktop-$session" }
+          for ($i = 0; $i -lt 60 -and -not (OldPipe); $i++) { Start-Sleep -Milliseconds 250 }
+          if (-not (OldPipe)) { throw "the 0.2.0 service does not answer" }
+
+          $zip = Get-ChildItem -Filter "win-infinite-desktop-*-${{ matrix.arch }}.zip" | Select-Object -First 1
+          $dir = Join-Path $env:RUNNER_TEMP "package-update"
+          Expand-Archive -Path $zip.FullName -DestinationPath $dir -Force
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -Update -NoStart
+          if ($LASTEXITCODE -ne 0) { throw "the update failed" }
+          if (-not $oldService.HasExited) { throw "the 0.2.0 service still runs" }
+          $run = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+          if (Test-Path $oldTarget) { throw "the old programs are still there" }
+          if (Get-ItemProperty $run -Name "WIN Infinit Desktop" -ErrorAction SilentlyContinue) { throw "the old autostart entry is still there" }
+          if (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\WinInfinitDesktop") { throw "the old Apps entry is still there" }
+          if (Test-Path $oldData) { throw "the old data folder is still there" }
+          $newData = Join-Path $env:APPDATA "WIN Infinite Desktop"
+          if ((Get-Content "$newData\notes\ci-note.md") -ne "from 0.2") { throw "the note was not taken over" }
+
+          # The new service renames the settings group of 0.2 when it starts.
+          $installed = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinite Desktop"
+          $service = Start-Process -FilePath "$installed\win-infinite-desktop.exe" -ArgumentList "--no-tray" -PassThru
+          & "$installed\wid-ctl.exe" --wait 20 version
+          & "$installed\wid-ctl.exe" quit | Out-Null
+          [void]$service.WaitForExit(20000)
+          $ini = Get-Content "$newData\settings.ini" -Raw
+          Write-Host $ini
+          if ($ini -match "Effect-infinitdesktop" -or $ini -notmatch "(?s)\[Effect-infinitedesktop\].*ZoomStep=1.37") { throw "the settings group was not renamed" }
+
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -Uninstall -RemoveData
+          if ($LASTEXITCODE -ne 0 -or (Test-Path $installed) -or (Test-Path $newData)) { throw "uninstall failed" }
 
       - name: Settings app and notes app start
         if: matrix.with_qt == 'ON'
@@ -124,7 +175,7 @@ jobs:
           $env:APPDATA = Join-Path $env:RUNNER_TEMP "notes-appdata"
           New-Item -ItemType Directory -Force $env:APPDATA | Out-Null
           $notes = Start-Process dist/wid-notes.exe -ArgumentList "--new-note" -PassThru -RedirectStandardError notes-log.txt
-          $index = Join-Path $env:APPDATA "WIN Infinit Desktop\notes\index.json"
+          $index = Join-Path $env:APPDATA "WIN Infinite Desktop\notes\index.json"
           # The note is saved shortly after it appears; a busy runner may need a while to start Qt Quick.
           for ($i = 0; $i -lt 30 -and -not (Test-Path $index) -and -not $notes.HasExited; $i++) { Start-Sleep -Milliseconds 500 }
           $alive = -not $notes.HasExited
@@ -145,7 +196,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: matrix.with_qt == 'ON'
         with:
-          name: win-infinit-desktop-${{ matrix.arch }}
+          name: win-infinite-desktop-${{ matrix.arch }}
           path: dist/
 
       - name: Runtime smoke test
@@ -189,7 +240,7 @@ jobs:
         run: ctest --test-dir build --output-on-failure
 
   core-linux:
-    # The canvas core is shared with KDE Infinit Desktop; keep it building on Linux too,
+    # The canvas core is shared with KDE Infinite Desktop; keep it building on Linux too,
     # together with the parts of the apps that need no Windows (Qt 6.4: without the QML apps).
     name: Core on Linux
     runs-on: ubuntu-24.04
@@ -205,5 +256,5 @@ jobs:
           QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure
       - name: German catalog
         run: |
-          msgfmt --check -o /dev/null po/de/win-infinit-desktop.po
+          msgfmt --check -o /dev/null po/de/win-infinite-desktop.po
           python3 tools/i18n/check_catalog.py --strict

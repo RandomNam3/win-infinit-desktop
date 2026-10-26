@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "areas.h"
@@ -13,7 +13,7 @@
 #include <cmath>
 #include <limits>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -227,4 +227,4 @@ void AreaStore::fromJson(const QJsonObject &object)
     }
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

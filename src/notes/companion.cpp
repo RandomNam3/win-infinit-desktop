@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "companion.h"
@@ -29,7 +29,7 @@
 
 using namespace std::chrono_literals;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -246,9 +246,9 @@ void Companion::showWindow(Note *note)
     }
     QQmlComponent component(m_engine);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-    component.loadFromModule("InfinitDesktop.Notes", "NoteWindow");
+    component.loadFromModule("InfiniteDesktop.Notes", "NoteWindow");
 #else
-    component.loadUrl(QUrl(QStringLiteral("qrc:/InfinitDesktop/Notes/qml/NoteWindow.qml")));
+    component.loadUrl(QUrl(QStringLiteral("qrc:/InfiniteDesktop/Notes/qml/NoteWindow.qml")));
 #endif
     QObject *object = component.createWithInitialProperties({
         {QStringLiteral("note"), QVariant::fromValue(note)},
@@ -463,4 +463,4 @@ void Companion::refreshPinStates()
     }
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

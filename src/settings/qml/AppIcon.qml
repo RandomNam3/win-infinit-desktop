@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Icon of an application from the system icon theme, with a neutral fallback.

@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Main window: sidebar navigation, search and the page stack.
 import QtQuick
 import QtQuick.Controls.Basic as Basic
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Basic.ApplicationWindow {
     id: window
@@ -80,7 +80,7 @@ Basic.ApplicationWindow {
 
     function confirmResetShortcuts() {
         confirmDialog.ask(i18nc("@title:window", "Reset all shortcuts?"),
-                          i18n("All Infinit Desktop shortcuts go back to their default key combinations. Shortcuts of other applications are not changed."),
+                          i18n("All Infinite Desktop shortcuts go back to their default key combinations. Shortcuts of other applications are not changed."),
                           i18nc("@action:button", "Reset All"),
                           () => {
                               Shortcuts.resetAll();
@@ -150,7 +150,7 @@ Basic.ApplicationWindow {
     minimumWidth: 480
     minimumHeight: 420
     visible: true
-    title: i18nc("@title:window", "WIN Infinit Desktop")
+    title: i18nc("@title:window", "WIN Infinite Desktop")
     color: Theme.background
     font.pointSize: Theme.fontBody
 

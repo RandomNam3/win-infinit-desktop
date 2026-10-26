@@ -1,5 +1,5 @@
-# German translation of WIN Infinit Desktop (based on the catalog of KDE Infinit Desktop).
-# SPDX-FileCopyrightText: 2026 KDE Infinit Desktop and WIN Infinit Desktop contributors
+# German translation of WIN Infinite Desktop (based on the catalog of KDE Infinite Desktop).
+# SPDX-FileCopyrightText: 2026 KDE Infinite Desktop and WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Terminology: canvas = Arbeitsfläche, desktop = Desktop, screen = Bildschirm,
@@ -7,11 +7,11 @@
 # notification area = Infobereich, Snap = Andocken. Formal address ("Sie").
 msgid ""
 msgstr ""
-"Project-Id-Version: win-infinit-desktop\n"
-"Report-Msgid-Bugs-To: https://github.com/RandomNam3/win-infinit-desktop/issues\n"
+"Project-Id-Version: win-infinite-desktop\n"
+"Report-Msgid-Bugs-To: https://github.com/RandomNam3/win-infinite-desktop/issues\n"
 "POT-Creation-Date: 2026-10-24 11:35+0000\n"
 "PO-Revision-Date: 2026-10-25 02:00+0200\n"
-"Last-Translator: WIN Infinit Desktop contributors\n"
+"Last-Translator: WIN Infinite Desktop contributors\n"
 "Language-Team: German\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # ---------------------------------------------------------------------------
-# Settings (src/settings/win-infinit-desktop.kcfg)
+# Settings (src/settings/win-infinite-desktop.kcfg)
 # ---------------------------------------------------------------------------
 msgid "Drag the empty desktop to pan"
 msgstr "Leeren Desktop ziehen zum Verschieben"
@@ -589,26 +589,26 @@ msgstr "protokoll,journal,debug,fehlerbericht"
 # ---------------------------------------------------------------------------
 # Global shortcuts (shortcutdefs.cpp)
 # ---------------------------------------------------------------------------
-msgid "Infinit Desktop: Zoom In"
-msgstr "Infinit Desktop: Hineinzoomen"
+msgid "Infinite Desktop: Zoom In"
+msgstr "Infinite Desktop: Hineinzoomen"
 
 msgid "Zoom into the canvas around the mouse pointer."
 msgstr "Rund um den Mauszeiger in die Arbeitsfläche hineinzoomen."
 
-msgid "Infinit Desktop: Zoom Out"
-msgstr "Infinit Desktop: Herauszoomen"
+msgid "Infinite Desktop: Zoom Out"
+msgstr "Infinite Desktop: Herauszoomen"
 
 msgid "Zoom out of the canvas around the mouse pointer."
 msgstr "Rund um den Mauszeiger aus der Arbeitsfläche herauszoomen."
 
-msgid "Infinit Desktop: Zoom to 100 %"
-msgstr "Infinit Desktop: Zoom auf 100 %"
+msgid "Infinite Desktop: Zoom to 100 %"
+msgstr "Infinite Desktop: Zoom auf 100 %"
 
 msgid "Return to 100 % zoom so that windows can be used directly again."
 msgstr "Zurück zu 100 % Zoom, damit Fenster wieder direkt bedienbar sind."
 
-msgid "Infinit Desktop: Show All Windows"
-msgstr "Infinit Desktop: Alle Fenster zeigen"
+msgid "Infinite Desktop: Show All Windows"
+msgstr "Infinite Desktop: Alle Fenster zeigen"
 
 msgid ""
 "Zoom out until every window of this screen is visible. Press again to go back."
@@ -616,8 +616,8 @@ msgstr ""
 "So weit herauszoomen, bis alle Fenster dieses Bildschirms sichtbar sind. "
 "Erneut drücken, um zurückzukehren."
 
-msgid "Infinit Desktop: Go Home"
-msgstr "Infinit Desktop: Zum Ursprung"
+msgid "Infinite Desktop: Go Home"
+msgstr "Infinite Desktop: Zum Ursprung"
 
 msgid ""
 "Jump to the origin of the canvas. Press again to return to where you were."
@@ -625,8 +625,8 @@ msgstr ""
 "Zum Ursprung der Arbeitsfläche springen. Erneut drücken, um an die vorherige "
 "Stelle zurückzukehren."
 
-msgid "Infinit Desktop: Center Active Window"
-msgstr "Infinit Desktop: Aktives Fenster zentrieren"
+msgid "Infinite Desktop: Center Active Window"
+msgstr "Infinite Desktop: Aktives Fenster zentrieren"
 
 msgid ""
 "Move the canvas so that the active window is in the middle of the screen."
@@ -634,32 +634,32 @@ msgstr ""
 "Die Arbeitsfläche so verschieben, dass das aktive Fenster in der "
 "Bildschirmmitte liegt."
 
-msgid "Infinit Desktop: Pan Left"
-msgstr "Infinit Desktop: Nach links verschieben"
+msgid "Infinite Desktop: Pan Left"
+msgstr "Infinite Desktop: Nach links verschieben"
 
 msgid "Move the view to the left."
 msgstr "Die Ansicht nach links verschieben."
 
-msgid "Infinit Desktop: Pan Right"
-msgstr "Infinit Desktop: Nach rechts verschieben"
+msgid "Infinite Desktop: Pan Right"
+msgstr "Infinite Desktop: Nach rechts verschieben"
 
 msgid "Move the view to the right."
 msgstr "Die Ansicht nach rechts verschieben."
 
-msgid "Infinit Desktop: Pan Up"
-msgstr "Infinit Desktop: Nach oben verschieben"
+msgid "Infinite Desktop: Pan Up"
+msgstr "Infinite Desktop: Nach oben verschieben"
 
 msgid "Move the view up."
 msgstr "Die Ansicht nach oben verschieben."
 
-msgid "Infinit Desktop: Pan Down"
-msgstr "Infinit Desktop: Nach unten verschieben"
+msgid "Infinite Desktop: Pan Down"
+msgstr "Infinite Desktop: Nach unten verschieben"
 
 msgid "Move the view down."
 msgstr "Die Ansicht nach unten verschieben."
 
-msgid "Infinit Desktop: Focus Window to the Left"
-msgstr "Infinit Desktop: Fenster links aktivieren"
+msgid "Infinite Desktop: Focus Window to the Left"
+msgstr "Infinite Desktop: Fenster links aktivieren"
 
 msgid ""
 "Activate the nearest window to the left on the canvas and bring it into view."
@@ -667,8 +667,8 @@ msgstr ""
 "Das nächstgelegene Fenster links auf der Arbeitsfläche aktivieren und ins Bild"
 " holen."
 
-msgid "Infinit Desktop: Focus Window to the Right"
-msgstr "Infinit Desktop: Fenster rechts aktivieren"
+msgid "Infinite Desktop: Focus Window to the Right"
+msgstr "Infinite Desktop: Fenster rechts aktivieren"
 
 msgid ""
 "Activate the nearest window to the right on the canvas and bring it into view."
@@ -676,72 +676,72 @@ msgstr ""
 "Das nächstgelegene Fenster rechts auf der Arbeitsfläche aktivieren und ins "
 "Bild holen."
 
-msgid "Infinit Desktop: Focus Window Above"
-msgstr "Infinit Desktop: Fenster oberhalb aktivieren"
+msgid "Infinite Desktop: Focus Window Above"
+msgstr "Infinite Desktop: Fenster oberhalb aktivieren"
 
 msgid "Activate the nearest window above on the canvas and bring it into view."
 msgstr ""
 "Das nächstgelegene Fenster oberhalb auf der Arbeitsfläche aktivieren und ins "
 "Bild holen."
 
-msgid "Infinit Desktop: Focus Window Below"
-msgstr "Infinit Desktop: Fenster unterhalb aktivieren"
+msgid "Infinite Desktop: Focus Window Below"
+msgstr "Infinite Desktop: Fenster unterhalb aktivieren"
 
 msgid "Activate the nearest window below on the canvas and bring it into view."
 msgstr ""
 "Das nächstgelegene Fenster unterhalb auf der Arbeitsfläche aktivieren und ins "
 "Bild holen."
 
-msgid "Infinit Desktop: Go to Bookmark 1"
-msgstr "Infinit Desktop: Zu Lesezeichen 1"
+msgid "Infinite Desktop: Go to Bookmark 1"
+msgstr "Infinite Desktop: Zu Lesezeichen 1"
 
 msgid "Jump to the canvas position saved as bookmark 1."
 msgstr "Zur als Lesezeichen 1 gespeicherten Position springen."
 
-msgid "Infinit Desktop: Go to Bookmark 2"
-msgstr "Infinit Desktop: Zu Lesezeichen 2"
+msgid "Infinite Desktop: Go to Bookmark 2"
+msgstr "Infinite Desktop: Zu Lesezeichen 2"
 
 msgid "Jump to the canvas position saved as bookmark 2."
 msgstr "Zur als Lesezeichen 2 gespeicherten Position springen."
 
-msgid "Infinit Desktop: Go to Bookmark 3"
-msgstr "Infinit Desktop: Zu Lesezeichen 3"
+msgid "Infinite Desktop: Go to Bookmark 3"
+msgstr "Infinite Desktop: Zu Lesezeichen 3"
 
 msgid "Jump to the canvas position saved as bookmark 3."
 msgstr "Zur als Lesezeichen 3 gespeicherten Position springen."
 
-msgid "Infinit Desktop: Go to Bookmark 4"
-msgstr "Infinit Desktop: Zu Lesezeichen 4"
+msgid "Infinite Desktop: Go to Bookmark 4"
+msgstr "Infinite Desktop: Zu Lesezeichen 4"
 
 msgid "Jump to the canvas position saved as bookmark 4."
 msgstr "Zur als Lesezeichen 4 gespeicherten Position springen."
 
-msgid "Infinit Desktop: Save Bookmark 1"
-msgstr "Infinit Desktop: Lesezeichen 1 speichern"
+msgid "Infinite Desktop: Save Bookmark 1"
+msgstr "Infinite Desktop: Lesezeichen 1 speichern"
 
 msgid "Remember the current position and zoom as bookmark 1."
 msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 1 merken."
 
-msgid "Infinit Desktop: Save Bookmark 2"
-msgstr "Infinit Desktop: Lesezeichen 2 speichern"
+msgid "Infinite Desktop: Save Bookmark 2"
+msgstr "Infinite Desktop: Lesezeichen 2 speichern"
 
 msgid "Remember the current position and zoom as bookmark 2."
 msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 2 merken."
 
-msgid "Infinit Desktop: Save Bookmark 3"
-msgstr "Infinit Desktop: Lesezeichen 3 speichern"
+msgid "Infinite Desktop: Save Bookmark 3"
+msgstr "Infinite Desktop: Lesezeichen 3 speichern"
 
 msgid "Remember the current position and zoom as bookmark 3."
 msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 3 merken."
 
-msgid "Infinit Desktop: Save Bookmark 4"
-msgstr "Infinit Desktop: Lesezeichen 4 speichern"
+msgid "Infinite Desktop: Save Bookmark 4"
+msgstr "Infinite Desktop: Lesezeichen 4 speichern"
 
 msgid "Remember the current position and zoom as bookmark 4."
 msgstr "Aktuelle Position und Zoomstufe als Lesezeichen 4 merken."
 
-msgid "Infinit Desktop: Pin Window to Screen"
-msgstr "Infinit Desktop: Fenster an Bildschirm anheften"
+msgid "Infinite Desktop: Pin Window to Screen"
+msgstr "Infinite Desktop: Fenster an Bildschirm anheften"
 
 msgid ""
 "Pin the active window to the screen so it does not move with the canvas, or "
@@ -750,8 +750,8 @@ msgstr ""
 "Das aktive Fenster am Bildschirm anheften, damit es sich nicht mit der "
 "Arbeitsfläche bewegt, oder es wieder lösen."
 
-msgid "Infinit Desktop: Pin Window to Screen, Always on Top"
-msgstr "Infinit Desktop: Fenster anheften und im Vordergrund halten"
+msgid "Infinite Desktop: Pin Window to Screen, Always on Top"
+msgstr "Infinite Desktop: Fenster anheften und im Vordergrund halten"
 
 msgid ""
 "Pin the active window to the screen and keep it above all other windows, or "
@@ -760,8 +760,8 @@ msgstr ""
 "Das aktive Fenster am Bildschirm anheften und vor allen anderen Fenstern "
 "halten, oder es wieder lösen."
 
-msgid "Infinit Desktop: Pause / Resume"
-msgstr "Infinit Desktop: Pausieren / Fortsetzen"
+msgid "Infinite Desktop: Pause / Resume"
+msgstr "Infinite Desktop: Pausieren / Fortsetzen"
 
 msgid ""
 "Temporarily turn off the mouse and touchpad gestures of the canvas, so "
@@ -928,8 +928,8 @@ msgid "shortcut,keyboard,key,hotkey"
 msgstr "kurzbefehl,tastenkürzel,tastatur,taste,hotkey"
 
 msgctxt "@label name of this plugin"
-msgid "Infinit Desktop"
-msgstr "Infinit Desktop"
+msgid "Infinite Desktop"
+msgstr "Infinite Desktop"
 
 msgctxt "@label unknown screen"
 msgid "Unknown screen"
@@ -971,8 +971,8 @@ msgstr ""
 "System reserviert."
 
 msgctxt "@label badge for actions of this plugin"
-msgid "Infinit Desktop"
-msgstr "Infinit Desktop"
+msgid "Infinite Desktop"
+msgstr "Infinite Desktop"
 
 msgctxt "@action:button %1 is a key combination"
 msgid "Reset to default (%1)"
@@ -1139,10 +1139,10 @@ msgid "Reset all shortcuts?"
 msgstr "Alle Kurzbefehle zurücksetzen?"
 
 msgid ""
-"All Infinit Desktop shortcuts go back to their default key combinations. "
+"All Infinite Desktop shortcuts go back to their default key combinations. "
 "Shortcuts of other applications are not changed."
 msgstr ""
-"Alle Kurzbefehle von Infinit Desktop erhalten wieder ihre Standard-"
+"Alle Kurzbefehle von Infinite Desktop erhalten wieder ihre Standard-"
 "Tastenkombinationen. Kurzbefehle anderer Anwendungen bleiben unverändert."
 
 msgid "All shortcuts were reset"
@@ -1322,8 +1322,8 @@ msgid "Reset to default (%1)"
 msgstr "Auf Standard zurücksetzen (%1)"
 
 msgctxt "@title:tab shortcuts of this plugin"
-msgid "Infinit Desktop"
-msgstr "Infinit Desktop"
+msgid "Infinite Desktop"
+msgstr "Infinite Desktop"
 
 msgctxt "@label"
 msgid "Shortcut list"
@@ -1337,8 +1337,8 @@ msgstr ""
 "Die Rücktaste entfernt ihn, Esc bricht ab. Änderungen gelten sofort."
 
 msgctxt "@title short product name"
-msgid "Infinit Desktop"
-msgstr "Infinit Desktop"
+msgid "Infinite Desktop"
+msgstr "Infinite Desktop"
 
 msgctxt "@label accessible name of the page list"
 msgid "Pages"
@@ -1562,20 +1562,20 @@ msgstr "Beim Start dieser App nach Updates suchen"
 # ---------------------------------------------------------------------------
 # Notes, groups, areas and the map
 # ---------------------------------------------------------------------------
-msgid "Infinit Desktop: New Note"
-msgstr "Infinit Desktop: Neue Notiz"
+msgid "Infinite Desktop: New Note"
+msgstr "Infinite Desktop: Neue Notiz"
 
 msgid "Put a new note on the canvas at the mouse pointer."
 msgstr "Eine neue Notiz an der Mausposition auf die Arbeitsfläche legen."
 
-msgid "Infinit Desktop: Show / Hide Notes"
-msgstr "Infinit Desktop: Notizen ein-/ausblenden"
+msgid "Infinite Desktop: Show / Hide Notes"
+msgstr "Infinite Desktop: Notizen ein-/ausblenden"
 
 msgid "Hide all notes, or show them again."
 msgstr "Alle Notizen ausblenden oder wieder einblenden."
 
-msgid "Infinit Desktop: Show Map"
-msgstr "Infinit Desktop: Karte zeigen"
+msgid "Infinite Desktop: Show Map"
+msgstr "Infinite Desktop: Karte zeigen"
 
 msgid ""
 "Show a map of this screen's canvas with its windows, groups and areas; click "
@@ -1584,16 +1584,16 @@ msgstr ""
 "Eine Karte der Arbeitsfläche dieses Bildschirms mit Fenstern, Gruppen und "
 "Bereichen zeigen; Klicken oder Ziehen darauf verschiebt die Ansicht."
 
-msgid "Infinit Desktop: New Group from Selection"
-msgstr "Infinit Desktop: Neue Gruppe aus Auswahl"
+msgid "Infinite Desktop: New Group from Selection"
+msgstr "Infinite Desktop: Neue Gruppe aus Auswahl"
 
 msgid "Draw a rectangle with the mouse: the windows inside become a new group."
 msgstr ""
 "Mit der Maus ein Rechteck aufziehen: Die Fenster darin werden zu einer neuen "
 "Gruppe."
 
-msgid "Infinit Desktop: New Area from Selection"
-msgstr "Infinit Desktop: Neuer Bereich aus Auswahl"
+msgid "Infinite Desktop: New Area from Selection"
+msgstr "Infinite Desktop: Neuer Bereich aus Auswahl"
 
 msgid ""
 "Draw a rectangle with the mouse: it becomes an area of the canvas that grows "
@@ -1602,15 +1602,15 @@ msgstr ""
 "Mit der Maus ein Rechteck aufziehen: Es wird zu einem Bereich der "
 "Arbeitsfläche, der mit seinen Fenstern wächst und schrumpft."
 
-msgid "Infinit Desktop: Save Group Arrangement"
-msgstr "Infinit Desktop: Anordnung der Gruppe speichern"
+msgid "Infinite Desktop: Save Group Arrangement"
+msgstr "Infinite Desktop: Anordnung der Gruppe speichern"
 
 msgid "Remember how the windows of the active window's group are arranged now."
 msgstr ""
 "Die jetzige Anordnung der Fenster in der Gruppe des aktiven Fensters merken."
 
-msgid "Infinit Desktop: Open Group 1"
-msgstr "Infinit Desktop: Gruppe 1 öffnen"
+msgid "Infinite Desktop: Open Group 1"
+msgstr "Infinite Desktop: Gruppe 1 öffnen"
 
 msgid ""
 "Bring the windows of group 1 together at its place, start the missing ones, "
@@ -1619,8 +1619,8 @@ msgstr ""
 "Die Fenster von Gruppe 1 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 2"
-msgstr "Infinit Desktop: Gruppe 2 öffnen"
+msgid "Infinite Desktop: Open Group 2"
+msgstr "Infinite Desktop: Gruppe 2 öffnen"
 
 msgid ""
 "Bring the windows of group 2 together at its place, start the missing ones, "
@@ -1629,8 +1629,8 @@ msgstr ""
 "Die Fenster von Gruppe 2 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 3"
-msgstr "Infinit Desktop: Gruppe 3 öffnen"
+msgid "Infinite Desktop: Open Group 3"
+msgstr "Infinite Desktop: Gruppe 3 öffnen"
 
 msgid ""
 "Bring the windows of group 3 together at its place, start the missing ones, "
@@ -1639,8 +1639,8 @@ msgstr ""
 "Die Fenster von Gruppe 3 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 4"
-msgstr "Infinit Desktop: Gruppe 4 öffnen"
+msgid "Infinite Desktop: Open Group 4"
+msgstr "Infinite Desktop: Gruppe 4 öffnen"
 
 msgid ""
 "Bring the windows of group 4 together at its place, start the missing ones, "
@@ -1649,8 +1649,8 @@ msgstr ""
 "Die Fenster von Gruppe 4 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 5"
-msgstr "Infinit Desktop: Gruppe 5 öffnen"
+msgid "Infinite Desktop: Open Group 5"
+msgstr "Infinite Desktop: Gruppe 5 öffnen"
 
 msgid ""
 "Bring the windows of group 5 together at its place, start the missing ones, "
@@ -1659,8 +1659,8 @@ msgstr ""
 "Die Fenster von Gruppe 5 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 6"
-msgstr "Infinit Desktop: Gruppe 6 öffnen"
+msgid "Infinite Desktop: Open Group 6"
+msgstr "Infinite Desktop: Gruppe 6 öffnen"
 
 msgid ""
 "Bring the windows of group 6 together at its place, start the missing ones, "
@@ -1669,8 +1669,8 @@ msgstr ""
 "Die Fenster von Gruppe 6 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 7"
-msgstr "Infinit Desktop: Gruppe 7 öffnen"
+msgid "Infinite Desktop: Open Group 7"
+msgstr "Infinite Desktop: Gruppe 7 öffnen"
 
 msgid ""
 "Bring the windows of group 7 together at its place, start the missing ones, "
@@ -1679,8 +1679,8 @@ msgstr ""
 "Die Fenster von Gruppe 7 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 8"
-msgstr "Infinit Desktop: Gruppe 8 öffnen"
+msgid "Infinite Desktop: Open Group 8"
+msgstr "Infinite Desktop: Gruppe 8 öffnen"
 
 msgid ""
 "Bring the windows of group 8 together at its place, start the missing ones, "
@@ -1689,8 +1689,8 @@ msgstr ""
 "Die Fenster von Gruppe 8 an ihrem Ort zusammenholen, fehlende starten und "
 "dorthin springen."
 
-msgid "Infinit Desktop: Open Group 9"
-msgstr "Infinit Desktop: Gruppe 9 öffnen"
+msgid "Infinite Desktop: Open Group 9"
+msgstr "Infinite Desktop: Gruppe 9 öffnen"
 
 msgid ""
 "Bring the windows of group 9 together at its place, start the missing ones, "
@@ -2094,11 +2094,11 @@ msgid "Safe mode could not be left: %1"
 msgstr "Der abgesicherte Modus konnte nicht verlassen werden: %1"
 
 msgid ""
-"Shortcuts of Windows cannot be changed here. Give the Infinit Desktop action "
+"Shortcuts of Windows cannot be changed here. Give the Infinite Desktop action "
 "another shortcut instead."
 msgstr ""
 "Kurzbefehle von Windows lassen sich hier nicht ändern. Geben Sie stattdessen "
-"der Aktion von Infinit Desktop einen anderen Kurzbefehl."
+"der Aktion von Infinite Desktop einen anderen Kurzbefehl."
 
 msgctxt "@title shortcut component"
 msgid "Windows"
@@ -2353,31 +2353,31 @@ msgid "Open the jump list of app %1 on the taskbar"
 msgstr "Sprungliste von App %1 auf der Taskleiste öffnen"
 
 msgctxt "@title application name"
-msgid "WIN Infinit Desktop"
-msgstr "WIN Infinit Desktop"
+msgid "WIN Infinite Desktop"
+msgstr "WIN Infinite Desktop"
 
 msgctxt "@title:window"
-msgid "WIN Infinit Desktop"
-msgstr "WIN Infinit Desktop"
+msgid "WIN Infinite Desktop"
+msgstr "WIN Infinite Desktop"
 
 msgid "Settings for the infinite canvas of Windows"
 msgstr "Einstellungen für die unendliche Arbeitsfläche von Windows"
 
-msgctxt "@info:status %1 shortcuts of Infinit Desktop and Windows"
+msgctxt "@info:status %1 shortcuts of Infinite Desktop and Windows"
 msgid ""
-"%1 shortcut of Infinit Desktop and Windows. Windows' own shortcuts cannot be "
-"changed; while the canvas service runs, a shortcut of Infinit Desktop wins."
+"%1 shortcut of Infinite Desktop and Windows. Windows' own shortcuts cannot be "
+"changed; while the canvas service runs, a shortcut of Infinite Desktop wins."
 msgid_plural ""
-"%1 shortcuts of Infinit Desktop and Windows. Windows' own shortcuts cannot be "
-"changed; while the canvas service runs, a shortcut of Infinit Desktop wins."
+"%1 shortcuts of Infinite Desktop and Windows. Windows' own shortcuts cannot be "
+"changed; while the canvas service runs, a shortcut of Infinite Desktop wins."
 msgstr[0] ""
-"%1 Kurzbefehl von Infinit Desktop und Windows. Die Kurzbefehle von Windows "
+"%1 Kurzbefehl von Infinite Desktop und Windows. Die Kurzbefehle von Windows "
 "lassen sich nicht ändern; solange der Arbeitsflächen-Dienst läuft, gewinnt ein"
-" Kurzbefehl von Infinit Desktop."
+" Kurzbefehl von Infinite Desktop."
 msgstr[1] ""
-"%1 Kurzbefehle von Infinit Desktop und Windows. Die Kurzbefehle von Windows "
+"%1 Kurzbefehle von Infinite Desktop und Windows. Die Kurzbefehle von Windows "
 "lassen sich nicht ändern; solange der Arbeitsflächen-Dienst läuft, gewinnt ein"
-" Kurzbefehl von Infinit Desktop."
+" Kurzbefehl von Infinite Desktop."
 
 msgid "The list of shortcuts could not be loaded."
 msgstr "Die Liste der Kurzbefehle konnte nicht geladen werden."
@@ -2393,11 +2393,11 @@ msgstr ""
 
 msgid ""
 "Version %1 of the canvas service is running, these settings belong to version "
-"%2. Quit WIN Infinit Desktop from its icon in the notification area and start "
+"%2. Quit WIN Infinite Desktop from its icon in the notification area and start "
 "it again."
 msgstr ""
 "Version %1 des Arbeitsflächen-Dienstes läuft, diese Einstellungen gehören zu "
-"Version %2. Beenden Sie WIN Infinit Desktop über sein Symbol im Infobereich "
+"Version %2. Beenden Sie WIN Infinite Desktop über sein Symbol im Infobereich "
 "und starten Sie es erneut."
 
 msgid "The list is shown while the canvas service is running."
@@ -2441,19 +2441,19 @@ msgstr ""
 "dann auch bei der Anmeldung."
 
 msgid ""
-"WIN Infinit Desktop crashed several times in a row, so it was started in safe "
+"WIN Infinite Desktop crashed several times in a row, so it was started in safe "
 "mode and leaves the windows alone. Leave safe mode to use the canvas again."
 msgstr ""
-"WIN Infinit Desktop ist mehrmals hintereinander abgestürzt und wurde deshalb "
+"WIN Infinite Desktop ist mehrmals hintereinander abgestürzt und wurde deshalb "
 "im abgesicherten Modus gestartet; die Fenster bleiben unberührt. Verlassen Sie"
 " den abgesicherten Modus, um die Arbeitsfläche wieder zu nutzen."
 
 msgid ""
-"The canvas service win-infinit-desktop.exe is not next to this app. Install "
-"WIN Infinit Desktop again."
+"The canvas service win-infinite-desktop.exe is not next to this app. Install "
+"WIN Infinite Desktop again."
 msgstr ""
-"Der Arbeitsflächen-Dienst win-infinit-desktop.exe liegt nicht neben dieser "
-"App. Installieren Sie WIN Infinit Desktop erneut."
+"Der Arbeitsflächen-Dienst win-infinite-desktop.exe liegt nicht neben dieser "
+"App. Installieren Sie WIN Infinite Desktop erneut."
 
 msgid "Asking the canvas service…"
 msgstr "Der Arbeitsflächen-Dienst wird abgefragt …"
@@ -2593,14 +2593,14 @@ msgid ""
 "Notes are small windows with Markdown text that lie on the canvas like other "
 "windows and are saved automatically. Create one with Win+Alt+N, from the "
 "canvas menu (right click on the empty canvas in the overview, Win + right "
-"click on the desktop at 100 %) or from the WIN Infinit Desktop icon in the "
+"click on the desktop at 100 %) or from the WIN Infinite Desktop icon in the "
 "notification area. Pin a note to keep it on the screen while the canvas moves."
 msgstr ""
 "Notizen sind kleine Fenster mit Markdown-Text, die wie andere Fenster auf der "
 "Arbeitsfläche liegen und automatisch gespeichert werden. Legen Sie eine mit "
 "Win+Alt+N an, über das Menü der Arbeitsfläche (Rechtsklick auf die freie "
 "Arbeitsfläche in der Übersicht, bei 100 % Win + Rechtsklick auf den Desktop) "
-"oder über das Symbol von WIN Infinit Desktop im Infobereich. Heften Sie eine "
+"oder über das Symbol von WIN Infinite Desktop im Infobereich. Heften Sie eine "
 "Notiz an, damit sie auf dem Bildschirm bleibt, während sich die Arbeitsfläche "
 "bewegt."
 
@@ -2630,20 +2630,20 @@ msgid "How much of the screen the map (Win+Alt+M) covers, in percent."
 msgstr "Wie viel des Bildschirms die Karte (Win+Alt+M) bedeckt, in Prozent."
 
 msgid ""
-"If WIN Infinit Desktop crashes several times in a row, it starts in safe mode "
+"If WIN Infinite Desktop crashes several times in a row, it starts in safe mode "
 "and leaves the windows alone until you turn it on again. This keeps your "
 "desktop usable."
 msgstr ""
-"Stürzt WIN Infinit Desktop mehrmals hintereinander ab, startet es im "
+"Stürzt WIN Infinite Desktop mehrmals hintereinander ab, startet es im "
 "abgesicherten Modus und lässt die Fenster unberührt, bis Sie es wieder "
 "einschalten. So bleibt Ihr Desktop benutzbar."
 
 msgid ""
 "Writes detailed messages to the file service.log in %LOCALAPPDATA%\\WIN "
-"Infinit Desktop. Only useful for bug reports."
+"Infinite Desktop. Only useful for bug reports."
 msgstr ""
 "Schreibt ausführliche Meldungen in die Datei service.log in "
-"%LOCALAPPDATA%\\WIN Infinit Desktop. Nur für Fehlerberichte nützlich."
+"%LOCALAPPDATA%\\WIN Infinite Desktop. Nur für Fehlerberichte nützlich."
 
 msgid "This release has no package for this computer."
 msgstr "Diese Version hat kein Paket für diesen Computer."
@@ -2688,8 +2688,8 @@ msgctxt "@action:button"
 msgid "Open Log"
 msgstr "Protokoll öffnen"
 
-msgid "The update downloads the new version from GitHub, closes WIN Infinit Desktop and this window for a moment, installs the new version and starts both again."
-msgstr "Das Update lädt die neue Version von GitHub herunter, schließt WIN Infinit Desktop und dieses Fenster kurz, installiert die neue Version und startet beide wieder."
+msgid "The update downloads the new version from GitHub, closes WIN Infinite Desktop and this window for a moment, installs the new version and starts both again."
+msgstr "Das Update lädt die neue Version von GitHub herunter, schließt WIN Infinite Desktop und dieses Fenster kurz, installiert die neue Version und startet beide wieder."
 
 msgctxt "@info %1 is a version number, %2 a percentage"
 msgid "Downloading version %1 … %2 %"
@@ -2702,8 +2702,8 @@ msgstr "Version %1 wird heruntergeladen …"
 msgid "Unpacking …"
 msgstr "Wird entpackt …"
 
-msgid "Installing … WIN Infinit Desktop and this window close for a moment and open again when the update is done."
-msgstr "Wird installiert … WIN Infinit Desktop und dieses Fenster schließen sich kurz und öffnen sich wieder, sobald das Update fertig ist."
+msgid "Installing … WIN Infinite Desktop and this window close for a moment and open again when the update is done."
+msgstr "Wird installiert … WIN Infinite Desktop und dieses Fenster schließen sich kurz und öffnen sich wieder, sobald das Update fertig ist."
 
 msgid "You can also run the update by hand, in PowerShell:"
 msgstr "Sie können das Update auch von Hand in PowerShell ausführen:"

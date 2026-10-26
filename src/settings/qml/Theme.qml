@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Design tokens of the settings app: colors, spacing, radii, typography, motion.
 pragma Singleton
 
 import QtQuick
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 QtObject {
     id: theme

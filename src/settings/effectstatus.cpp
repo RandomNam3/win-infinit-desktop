@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "effectstatus.h"
@@ -21,7 +21,7 @@
 
 using namespace std::chrono_literals;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -30,7 +30,7 @@ EffectStatus *s_instance = nullptr;
 
 #ifdef Q_OS_WIN
 const QString s_runKey = QStringLiteral("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-const QString s_runValue = QStringLiteral("WIN Infinit Desktop");
+const QString s_runValue = QStringLiteral("WIN Infinite Desktop");
 #endif
 
 QString servicePath()
@@ -240,4 +240,4 @@ void EffectStatus::setPaused(bool paused)
     });
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

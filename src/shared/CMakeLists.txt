@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Shared by the notes app and the settings app: the pipe protocol (client and server),
@@ -13,6 +13,7 @@ add_library(wid_appshared STATIC
     ipcclient.h
     jsonlineserver.cpp
     jsonlineserver.h
+    legacy.h
     localizer.cpp
     localizer.h
     menutheme.h
@@ -24,7 +25,7 @@ target_link_libraries(wid_appshared PUBLIC Qt6::Core Qt6::Network Qt6::Qml)
 
 # Compiles the catalogs into `target` as :/i18n/<language>.po.
 function(wid_add_catalogs target)
-    set(catalog "${PROJECT_SOURCE_DIR}/po/de/win-infinit-desktop.po")
+    set(catalog "${PROJECT_SOURCE_DIR}/po/de/win-infinite-desktop.po")
     set_source_files_properties("${catalog}" PROPERTIES QT_RESOURCE_ALIAS "de.po")
     qt_add_resources(${target} "${target}_catalogs"
         PREFIX "/i18n"
@@ -40,7 +41,7 @@ function(wid_add_windows_resources target name description)
     set(WID_RC_NAME "${name}")
     set(WID_RC_DESCRIPTION "${description}")
     set(WID_VERSION_RC "${PROJECT_VERSION_MAJOR},${PROJECT_VERSION_MINOR},${PROJECT_VERSION_PATCH},0")
-    set(WID_ICON_FILE "${PROJECT_SOURCE_DIR}/data/win-infinit-desktop.ico")
+    set(WID_ICON_FILE "${PROJECT_SOURCE_DIR}/data/win-infinite-desktop.ico")
     configure_file("${PROJECT_SOURCE_DIR}/src/shared/app.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/${name}.rc" @ONLY)
     target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${name}.rc")
 endfunction()

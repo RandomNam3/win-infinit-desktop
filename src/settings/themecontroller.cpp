@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "themecontroller.h"
@@ -11,7 +11,7 @@
 #include <QPalette>
 #include <QStyleHints>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -139,4 +139,4 @@ void ThemeController::update()
     }
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -10,12 +10,12 @@
 #include <QKeySequence>
 #include <QList>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /// Component name of the plugin's own shortcuts in the list of all shortcuts.
-inline constexpr const char *ShortcutComponent = "win-infinit-desktop";
-inline constexpr const char *ShortcutComponentDisplayName = "WIN Infinit Desktop";
+inline constexpr const char *ShortcutComponent = "win-infinite-desktop";
+inline constexpr const char *ShortcutComponentDisplayName = "WIN Infinite Desktop";
 
 enum class ShortcutAction {
     ZoomIn,
@@ -81,4 +81,4 @@ const QList<ShortcutDefinition> &shortcutDefinitions();
 
 const ShortcutDefinition *findShortcut(ShortcutAction action);
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

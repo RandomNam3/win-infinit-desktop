@@ -1,5 +1,5 @@
 /*
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "organizer.h"
@@ -16,7 +16,7 @@ class TestOrganizer : public QObject
 private Q_SLOTS:
     void menuItems()
     {
-        // As in KDE Infinit Desktop: notes first, then selections, the map, the view.
+        // As in KDE Infinite Desktop: notes first, then selections, the map, the view.
         QCOMPARE(canvasMenuItems(true, false, false),
                  (QList<Item>{Item::NewNote, Item::ToggleNotes, Item::Separator, Item::NewGroup, Item::NewArea, Item::Map, Item::Separator, Item::ShowAll,
                               Item::Settings, Item::Quit}));

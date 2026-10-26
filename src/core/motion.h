@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -9,7 +9,7 @@
 
 #include <chrono>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 using Clock = std::chrono::steady_clock;
@@ -85,4 +85,4 @@ qreal easeOutCubic(qreal t);
 /// Ease-in-out cubic.
 qreal easeInOutCubic(qreal t);
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

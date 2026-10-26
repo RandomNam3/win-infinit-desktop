@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // "Notes & Groups" page: quick actions, the groups with their applications and the areas of
@@ -7,7 +7,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 ColumnLayout {
     id: root
@@ -134,7 +134,7 @@ ColumnLayout {
                     Keycaps {
                         visible: groupCard.modelData.slot > 0 && keys.length > 0
                         small: true
-                        keys: Shortcuts.currentKeys("InfinitDesktop OpenGroup" + groupCard.modelData.slot)
+                        keys: Shortcuts.currentKeys("InfiniteDesktop OpenGroup" + groupCard.modelData.slot)
                     }
                     IconButton {
                         iconName: "chevron-down"

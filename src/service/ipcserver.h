@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -23,7 +23,7 @@ namespace Wid
 
 /**
  * The service's control interface, the Windows counterpart of the D-Bus interface
- * org.kde.InfinitDesktop: newline delimited JSON over a named pipe that only the current
+ * org.kde.InfiniteDesktop: newline delimited JSON over a named pipe that only the current
  * user can open.
  *
  * Request:  {"id": 1, "method": "pan", "params": {"dx": 100, "dy": 0}}

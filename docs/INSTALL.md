@@ -1,8 +1,8 @@
-# WIN Infinit Desktop installieren
+# WIN Infinite Desktop installieren
 
-> „Wenn es Windows 11 ausführt, läuft auch WIN Infinit Desktop.“
+> „Wenn es Windows 11 ausführt, läuft auch WIN Infinite Desktop.“
 
-WIN Infinit Desktop ist ein Hintergrundprogramm für **Windows 11**. Es macht jeden Monitor zu einer
+WIN Infinite Desktop ist ein Hintergrundprogramm für **Windows 11**. Es macht jeden Monitor zu einer
 unendlichen Arbeitsfläche, die man verschieben und zoomen kann. Dazu gehören eine Notiz-App und eine
 eigene Einstellungs-App.
 
@@ -33,18 +33,18 @@ eigene Einstellungs-App.
 Ein Befehl in PowerShell (Startmenü → *Terminal* oder *Windows PowerShell*), als normaler Benutzer:
 
 ```powershell
-irm https://raw.githubusercontent.com/RandomNam3/win-infinit-desktop/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/RandomNam3/win-infinite-desktop/main/install.ps1 | iex
 ```
 
 Der Befehl lädt das Paket des neuesten Releases von GitHub, vergleicht seine SHA-256-Prüfsumme mit der,
 die GitHub dazu veröffentlicht, entpackt es nach `%TEMP%` und startet den Installer darin; ist
-WIN Infinit Desktop schon installiert, als Update. Die heruntergeladenen Dateien löscht er danach wieder.
+WIN Infinite Desktop schon installiert, als Update. Die heruntergeladenen Dateien löscht er danach wieder.
 Das Skript dahinter ist [`install.ps1`](../install.ps1) in diesem Repository.
 
 Ohne den Befehl, von Hand:
 
-1. Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest) die
-   Datei `win-infinit-desktop-<Version>-x64.zip` herunterladen.
+1. Aus dem [neuesten Release](https://github.com/RandomNam3/win-infinite-desktop/releases/latest) die
+   Datei `win-infinite-desktop-<Version>-x64.zip` herunterladen.
 2. Das ZIP entpacken (Rechtsklick → *Alle extrahieren*).
 3. Im entpackten Ordner ein PowerShell-Fenster öffnen (Rechtsklick in den Ordner → *Im Terminal öffnen*)
    und ausführen:
@@ -57,9 +57,9 @@ Der Installer
 
 1. prüft die Windows-Version (mindestens Build 26100),
 2. beendet eine laufende ältere Version sauber, sodass alle Fenster auf den Bildschirm zurückkommen,
-3. kopiert die Programme nach `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`,
+3. kopiert die Programme nach `%LOCALAPPDATA%\Programs\WIN Infinite Desktop`,
 4. legt die Einträge im Startmenü, im Autostart und unter *Einstellungen → Apps* an,
-5. startet WIN Infinit Desktop. Das Symbol erscheint im Infobereich der Taskleiste.
+5. startet WIN Infinite Desktop. Das Symbol erscheint im Infobereich der Taskleiste.
 
 Vorher ansehen, was passieren würde (ändert nichts):
 
@@ -75,10 +75,10 @@ Mit `-NoStart` wird nur installiert, nicht gestartet.
 
 | Was | Wo |
 |---|---|
-| Programme | `%LOCALAPPDATA%\Programs\WIN Infinit Desktop` (Dienst `win-infinit-desktop.exe`, Notiz-App `wid-notes.exe`, Einstellungs-App `wid-settings.exe`, `wid-ctl.exe`, `wid-probe.exe`, Qt, `install.ps1`) |
-| Startmenü | Ordner *WIN Infinit Desktop* mit „WIN Infinit Desktop“ und „WIN Infinit Desktop Settings“ |
-| Autostart | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, Wert *WIN Infinit Desktop* |
-| Eintrag unter *Einstellungen → Apps* | `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\WinInfinitDesktop` |
+| Programme | `%LOCALAPPDATA%\Programs\WIN Infinite Desktop` (Dienst `win-infinite-desktop.exe`, Notiz-App `wid-notes.exe`, Einstellungs-App `wid-settings.exe`, `wid-ctl.exe`, `wid-probe.exe`, Qt, `install.ps1`) |
+| Startmenü | Ordner *WIN Infinite Desktop* mit „WIN Infinite Desktop“ und „WIN Infinite Desktop Settings“ |
+| Autostart | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, Wert *WIN Infinite Desktop* |
+| Eintrag unter *Einstellungen → Apps* | `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\WinInfiniteDesktop` |
 
 Alles liegt im eigenen Benutzerprofil. Andere Benutzer des Rechners sind nicht betroffen, Dienste oder
 Treiber werden nicht installiert.
@@ -87,9 +87,9 @@ Deine Daten legen die Programme selbst an; der Installer fasst sie nicht an:
 
 | Daten | Ort |
 |---|---|
-| Einstellungen und Tastenkürzel | `%APPDATA%\WIN Infinit Desktop\settings.ini` |
-| Notizen | `%APPDATA%\WIN Infinit Desktop\notes\` (eine Markdown-Datei je Notiz) |
-| Kameras, Lesezeichen, gemerkte Fensterplätze, Gruppen, Bereiche, Protokoll | `%LOCALAPPDATA%\WIN Infinit Desktop\` |
+| Einstellungen und Tastenkürzel | `%APPDATA%\WIN Infinite Desktop\settings.ini` |
+| Notizen | `%APPDATA%\WIN Infinite Desktop\notes\` (eine Markdown-Datei je Notiz) |
+| Kameras, Lesezeichen, gemerkte Fensterplätze, Gruppen, Bereiche, Protokoll | `%LOCALAPPDATA%\WIN Infinite Desktop\` |
 
 ---
 
@@ -100,19 +100,19 @@ Die Programme sind nicht digital signiert.
 - **SmartScreen** warnt beim ersten Start von Programmen aus dem Internet. Der Installer entfernt die
   Download-Markierung von den kopierten Dateien, die Warnung erscheint deshalb in der Regel nicht.
 - **Smart App Control** blockiert nicht signierte Programme ganz. Ist es eingeschaltet, startet
-  WIN Infinit Desktop nicht, und der Installer meldet *„The service did not start“*. Abhilfe: *Windows-
+  WIN Infinite Desktop nicht, und der Installer meldet *„The service did not start“*. Abhilfe: *Windows-
   Sicherheit → App- und Browsersteuerung → Smart App Control* ausschalten.
 
 ---
 
 ## 4. Starten, beenden, Autostart
 
-- **Starten:** Startmenü → *WIN Infinit Desktop*. Nach der Anmeldung startet es automatisch.
+- **Starten:** Startmenü → *WIN Infinite Desktop*. Nach der Anmeldung startet es automatisch.
 - **Beenden:** Symbol im Infobereich → *Beenden*. Alle Fenster außerhalb der Bildschirme kommen dabei
   zurück, Snap und „immer im Vordergrund“ werden wiederhergestellt. Dasselbe passiert beim Abmelden und
   Herunterfahren.
 - **Pausieren:** Symbol im Infobereich → *Gesten pausieren*. Die Fläche bleibt, Maus und Tastatur
-  verhalten sich wie ohne WIN Infinit Desktop.
+  verhalten sich wie ohne WIN Infinite Desktop.
 - **Autostart ein- und ausschalten:** in der Einstellungs-App (*Einschalten* / *Ausschalten* auf der
   Startseite) oder unter *Einstellungen → Apps → Autostart*.
 
@@ -130,7 +130,7 @@ installieren**
    sauber, schließt auch die Einstellungs-App, installiert, startet die neue Version und öffnet die
    Einstellungs-App wieder. Sie zeigt dann, ob das Update geklappt hat.
 
-Was der Installer dabei getan hat, steht in `%LOCALAPPDATA%\WIN Infinit Desktop\update.log`; bei einem
+Was der Installer dabei getan hat, steht in `%LOCALAPPDATA%\WIN Infinite Desktop\update.log`; bei einem
 Fehler öffnet *Protokoll öffnen* diese Datei.
 
 Von Hand geht ein Update mit dem Befehl aus dem [Schnellstart](#1-schnellstart), oder: das neue ZIP
@@ -142,21 +142,32 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Update
 
 Einstellungen, Notizen und gemerkte Plätze bleiben erhalten.
 
+**Von „WIN Infinit Desktop“ (bis 0.2):** So hieß das Projekt bis Version 0.2. Das Update aus der
+Einstellungs-App und der Befehl aus dem Schnellstart funktionieren dort wie gewohnt. Der Installer
+
+- beendet den alten Dienst über dessen Pipe, sodass alle Fenster auf den Bildschirm zurückkommen,
+- entfernt `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`, den alten Startmenü-Ordner, den Autostart-Wert
+  *WIN Infinit Desktop* und den Eintrag `…\Uninstall\WinInfinitDesktop`,
+- verschiebt `%APPDATA%\WIN Infinit Desktop` und `%LOCALAPPDATA%\WIN Infinit Desktop` in die neuen Ordner.
+
+Startet man die neue Version ohne Installer (aus dem ZIP), übernehmen Dienst und Apps die alten Ordner
+beim ersten Start selbst.
+
 ---
 
 ## 6. Deinstallieren
 
-*Einstellungen → Apps → Installierte Apps → WIN Infinit Desktop → Deinstallieren*, oder:
+*Einstellungen → Apps → Installierte Apps → WIN Infinite Desktop → Deinstallieren*, oder:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\install.ps1" -Uninstall
+powershell -NoProfile -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\Programs\WIN Infinite Desktop\install.ps1" -Uninstall
 # zusätzlich Einstellungen, Notizen und gespeicherte Arbeitsflächen löschen:
-powershell -NoProfile -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\install.ps1" -Uninstall -RemoveData
+powershell -NoProfile -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\Programs\WIN Infinite Desktop\install.ps1" -Uninstall -RemoveData
 ```
 
-Das beendet alle Programme von WIN Infinit Desktop (die Notiz-App speichert vorher), entfernt den
+Das beendet alle Programme von WIN Infinite Desktop (die Notiz-App speichert vorher), entfernt den
 Autostart, den Startmenü-Ordner, den Eintrag unter *Apps* und den Programmordner. Ohne `-RemoveData`
-bleiben `%APPDATA%\WIN Infinit Desktop` und `%LOCALAPPDATA%\WIN Infinit Desktop` erhalten.
+bleiben `%APPDATA%\WIN Infinite Desktop` und `%LOCALAPPDATA%\WIN Infinite Desktop` erhalten.
 
 ---
 
@@ -172,8 +183,8 @@ Voraussetzungen:
 In der *Developer PowerShell for VS*:
 
 ```powershell
-git clone https://github.com/RandomNam3/win-infinit-desktop.git
-cd win-infinit-desktop
+git clone https://github.com/RandomNam3/win-infinite-desktop.git
+cd win-infinite-desktop
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:\Qt\6.8.3\msvc2022_64
 cmake --build build
 ctest --test-dir build --output-on-failure
@@ -204,8 +215,8 @@ CMake-Optionen:
 **Das Programm startet nicht, kein Symbol im Infobereich**
 
 - Smart App Control prüfen ([Abschnitt 3](#3-smart-app-control-und-smartscreen)).
-- Die Windows-Version prüfen: `winver`. Unter Build 26100 startet WIN Infinit Desktop nicht.
-- Das Protokoll ansehen: `%LOCALAPPDATA%\WIN Infinit Desktop\service.log`.
+- Die Windows-Version prüfen: `winver`. Unter Build 26100 startet WIN Infinite Desktop nicht.
+- Das Protokoll ansehen: `%LOCALAPPDATA%\WIN Infinite Desktop\service.log`.
 
 **Der Installer meldet „The service did not quit“**
 
@@ -225,20 +236,20 @@ Fensterverwaltung, nur das Symbol im Infobereich. Verlassen über das Symbol (*A
 verlassen*) oder die Einstellungs-App. Von Hand:
 
 ```powershell
-& "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\wid-ctl.exe" leaveSafeMode
+& "$env:LOCALAPPDATA\Programs\WIN Infinite Desktop\wid-ctl.exe" leaveSafeMode
 # Absturzzähler zurücksetzen (bei beendetem Dienst)
-Remove-Item "$env:LOCALAPPDATA\WIN Infinit Desktop\crashguard"
+Remove-Item "$env:LOCALAPPDATA\WIN Infinite Desktop\crashguard"
 ```
 
 **Ausführliches Protokoll**
 
 In der Einstellungs-App unter *Erweitert* das *Debug-Protokoll* einschalten. Die Meldungen stehen in
-`%LOCALAPPDATA%\WIN Infinit Desktop\service.log`.
+`%LOCALAPPDATA%\WIN Infinite Desktop\service.log`.
 
 **Bericht über das System**
 
 ```powershell
-& "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\wid-probe.exe" > bericht.txt
+& "$env:LOCALAPPDATA\Programs\WIN Infinite Desktop\wid-probe.exe" > bericht.txt
 ```
 
 Der Bericht enthält Windows-Version, Bildschirme und alle Fenster mit ihrer Einordnung. Fenstertitel

@@ -1,9 +1,9 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Installs or updates WIN Infinit Desktop with one command, in PowerShell, as a normal user:
+# Installs or updates WIN Infinite Desktop with one command, in PowerShell, as a normal user:
 #
-#   irm https://raw.githubusercontent.com/RandomNam3/win-infinit-desktop/main/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/RandomNam3/win-infinite-desktop/main/install.ps1 | iex
 #
 # Takes the newest release from GitHub (the package for this computer, else the x64 one, which
 # Windows on ARM runs too), checks its SHA-256 against the one GitHub publishes, unpacks it to
@@ -16,9 +16,9 @@
     $ProgressPreference = "SilentlyContinue"
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-    $repository = "RandomNam3/win-infinit-desktop"
-    $product = "WIN Infinit Desktop"
-    $headers = @{ "User-Agent" = "win-infinit-desktop-install"; "Accept" = "application/vnd.github+json" }
+    $repository = "RandomNam3/win-infinite-desktop"
+    $product = "WIN Infinite Desktop"
+    $headers = @{ "User-Agent" = "win-infinite-desktop-install"; "Accept" = "application/vnd.github+json" }
 
     Write-Host "==> Looking for the newest release of $product"
     $release = Invoke-RestMethod -UseBasicParsing -Uri "https://api.github.com/repos/$repository/releases/latest" -Headers $headers
@@ -26,14 +26,14 @@
     $architecture = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "arm64" } else { "x64" }
     $asset = $null
     foreach ($candidate in @($architecture, "x64")) {
-        $asset = $release.assets | Where-Object { $_.name -eq "win-infinit-desktop-$version-$candidate.zip" } | Select-Object -First 1
+        $asset = $release.assets | Where-Object { $_.name -eq "win-infinite-desktop-$version-$candidate.zip" } | Select-Object -First 1
         if ($asset) { break }
     }
     if (-not $asset) {
         throw "Release $version has no package for this computer. See https://github.com/$repository/releases"
     }
 
-    $directory = Join-Path $env:TEMP "win-infinit-desktop-install-$version"
+    $directory = Join-Path $env:TEMP "win-infinite-desktop-install-$version"
     if (Test-Path $directory) { Remove-Item -Recurse -Force $directory }
     New-Item -ItemType Directory -Force -Path $directory | Out-Null
     try {
@@ -54,7 +54,10 @@
         $package = Join-Path $directory "package"
         Expand-Archive -Path $zip -DestinationPath $package -Force
 
-        $installed = Test-Path (Join-Path $env:LOCALAPPDATA "Programs\$product\win-infinit-desktop.exe")
+        # Also an installation of 0.2 and older, then called "WIN Infinit Desktop": the installer
+        # takes it over.
+        $installed = (Test-Path (Join-Path $env:LOCALAPPDATA "Programs\$product\win-infinite-desktop.exe")) -or
+            (Test-Path (Join-Path $env:LOCALAPPDATA "Programs\WIN Infinit Desktop\win-infinit-desktop.exe"))
         $arguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", (Join-Path $package "install.ps1"))
         if ($installed) { $arguments += "-Update" }
         & powershell.exe @arguments

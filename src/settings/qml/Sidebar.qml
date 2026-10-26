@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Navigation: brand, search slot, page list and a compact status line.
 // Collapses to an icon rail in narrow windows.
 import QtQuick
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Rectangle {
     id: sidebar
@@ -47,7 +47,7 @@ Rectangle {
                 Layout.alignment: sidebar.compact ? Qt.AlignHCenter : Qt.AlignLeft
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: 32
-                source: "qrc:/infinitdesktop/icons/app-icon.svg"
+                source: "qrc:/infinitedesktop/icons/app-icon.svg"
                 sourceSize: Qt.size(32, 32)
                 smooth: true
                 Accessible.ignored: true
@@ -59,7 +59,7 @@ Rectangle {
 
                 UiText {
                     Layout.fillWidth: true
-                    text: i18nc("@title short product name", "Infinit Desktop")
+                    text: i18nc("@title short product name", "Infinite Desktop")
                     font.pointSize: Theme.fontTitle
                     font.weight: Font.DemiBold
                     elide: Text.ElideRight

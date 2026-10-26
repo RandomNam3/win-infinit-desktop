@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -21,21 +21,21 @@ class QNetworkAccessManager;
 class QNetworkReply;
 class QQmlEngine;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
  * Looks for newer releases on GitHub and installs them.
  *
- * Every version is a GitHub release of win-infinit-desktop (tag vX.Y.Z, notes in
- * Markdown) with a package win-infinit-desktop-X.Y.Z-<x64|arm64>.zip. @c releases holds
+ * Every version is a GitHub release of win-infinite-desktop (tag vX.Y.Z, notes in
+ * Markdown) with a package win-infinite-desktop-X.Y.Z-<x64|arm64>.zip. @c releases holds
  * the ones newer than this app, newest first (with "package", the download for this
  * computer, if there is one, and "packageDigest", its SHA-256 as GitHub reports it).
  *
  * The update downloads that package (with progress), checks its SHA-256, unpacks it to
  * %TEMP% with tar.exe and runs its install.ps1 without a window. The installer closes this
  * app, installs, starts the service and opens this app again; what it did is in
- * %LOCALAPPDATA%\WIN Infinit Desktop\update-result.json (read at the next start) and
+ * %LOCALAPPDATA%\WIN Infinite Desktop\update-result.json (read at the next start) and
  * update.log.
  *
  * @c status is one of "idle", "checking", "uptodate", "available" and "error";
@@ -140,4 +140,4 @@ private:
     QTimer m_installWatch;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

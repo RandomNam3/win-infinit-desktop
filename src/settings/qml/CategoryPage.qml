@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // All settings of one category, generated from the kcfg items.
 import QtQuick
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 PageScaffold {
     id: page

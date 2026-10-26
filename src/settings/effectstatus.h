@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -11,12 +11,12 @@
 class QJSEngine;
 class QQmlEngine;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
- * State of the canvas service (win-infinit-desktop.exe), for the start page and the
- * sidebar. The QML name stays "Effect", as in KDE Infinit Desktop.
+ * State of the canvas service (win-infinite-desktop.exe), for the start page and the
+ * sidebar. The QML name stays "Effect", as in KDE Infinite Desktop.
  *
  * @c state is one of "active", "paused", "safemode", "disabled" (installed, not running),
  * "notinstalled" (the service is not next to this app) or "unknown" (checking).
@@ -113,4 +113,4 @@ private:
     QString m_serviceVersion;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

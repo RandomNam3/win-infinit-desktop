@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Runtime smoke test of the canvas service on a real desktop (CI runner or a test machine):
@@ -21,7 +21,7 @@ function Program($path) {
     if (Test-Path $flat) { return $flat }
     return Join-Path $Build $path
 }
-$service = Program "src/service/win-infinit-desktop.exe"
+$service = Program "src/service/win-infinite-desktop.exe"
 $ctl = Program "tools/wid-ctl/wid-ctl.exe"
 $testWindow = Program "tools/wid-testwindow/wid-testwindow.exe"
 $probe = Program "tools/wid-probe/wid-probe.exe"
@@ -103,7 +103,7 @@ try {
         # The overview covers the real window: only its thumbnail is to be seen.
         $onTop = & $probe --window-at ([int]($zoomed.frame.x + $zoomed.frame.width / 2)) ([int]($zoomed.frame.y + $zoomed.frame.height / 2))
         Note "on top of the real window: $onTop"
-        if ("$onTop" -notmatch 'WinInfinitDesktopOverview') { Fail "the real window is not covered by the overview" }
+        if ("$onTop" -notmatch 'WinInfiniteDesktopOverview') { Fail "the real window is not covered by the overview" }
         & $ctl resetZoom monitor=$monitor | Out-Null
         Start-Sleep -Milliseconds 700
         $state = & $ctl state | ConvertFrom-Json
@@ -196,7 +196,7 @@ try {
 } finally {
     if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }
     if (-not $window.HasExited) { Stop-Process -Id $window.Id -Force }
-    $log = Join-Path $env:LOCALAPPDATA "WIN Infinit Desktop\service.log"
+    $log = Join-Path $env:LOCALAPPDATA "WIN Infinite Desktop\service.log"
     if (Test-Path $log) {
         Write-Host "--- service.log"
         Get-Content $log -Tail 60

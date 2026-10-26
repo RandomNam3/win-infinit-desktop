@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -15,7 +15,7 @@ class QSettings;
 namespace Wid
 {
 
-/// The actions of KDE Infinit Desktop's shortcut table (src/shared/shortcutdefs.h there).
+/// The actions of KDE Infinite Desktop's shortcut table (src/shared/shortcutdefs.h there).
 enum class ShortcutAction {
     ZoomIn,
     ZoomOut,

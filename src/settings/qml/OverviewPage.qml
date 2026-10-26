@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Start page: plugin status, the update check, a short "getting around" guide that
@@ -6,7 +6,7 @@
 import QtQuick
 import QtQuick.Controls.Basic as Basic
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 PageScaffold {
     id: page
@@ -52,10 +52,10 @@ PageScaffold {
             result.push({ icon: "touchpad", text: i18n("Scroll with two fingers on the touchpad over the empty desktop to pan"), keys: [] });
         }
         const shortcutTips = [
-            ["overview", "InfinitDesktop Overview"],
-            ["home", "InfinitDesktop Home"],
-            ["pin", "InfinitDesktop TogglePin"],
-            ["layers", "InfinitDesktop TogglePinAbove"]
+            ["overview", "InfiniteDesktop Overview"],
+            ["home", "InfiniteDesktop Home"],
+            ["pin", "InfiniteDesktop TogglePin"],
+            ["layers", "InfiniteDesktop TogglePinAbove"]
         ];
         for (const tip of shortcutTips) {
             const title = Shortcuts.title(tip[1]);
@@ -152,7 +152,7 @@ PageScaffold {
 
                 UiText {
                     Layout.fillWidth: true
-                    text: i18nc("@title application name", "WIN Infinit Desktop")
+                    text: i18nc("@title application name", "WIN Infinite Desktop")
                     font.pointSize: Theme.fontDisplay
                     font.weight: Font.Bold
                     wrapMode: Text.Wrap
@@ -223,7 +223,7 @@ PageScaffold {
                     Layout.fillWidth: true
                     Layout.topMargin: 2
                     visible: Effect.effectVersion.length > 0 && Effect.effectVersion !== Effect.appVersion
-                    text: i18n("Version %1 of the canvas service is running, these settings belong to version %2. Quit WIN Infinit Desktop from its icon in the notification area and start it again.", Effect.effectVersion, Effect.appVersion)
+                    text: i18n("Version %1 of the canvas service is running, these settings belong to version %2. Quit WIN Infinite Desktop from its icon in the notification area and start it again.", Effect.effectVersion, Effect.appVersion)
                     color: Theme.warning
                     font.pointSize: Theme.fontSmall
                     wrapMode: Text.Wrap

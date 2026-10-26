@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "motion.h"
@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 qreal easeOutCubic(qreal t)
@@ -111,4 +111,4 @@ Camera CameraMotion::target() const
     return m_to;
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

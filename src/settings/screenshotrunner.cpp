@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "screenshotrunner.h"
@@ -14,7 +14,7 @@
 #include <QQuickWindow>
 #include <QTimer>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -99,4 +99,4 @@ void ScreenshotRunner::capture()
     QTimer::singleShot(0, this, &ScreenshotRunner::runStep);
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

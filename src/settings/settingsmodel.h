@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -16,14 +16,14 @@
 class QJSEngine;
 class QQmlEngine;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 class SchemaItem;
 struct SettingsEntryMeta;
 
 /**
- * All entries of win-infinit-desktop.kcfg as a list model.
+ * All entries of win-infinite-desktop.kcfg as a list model.
  *
  * Changes are applied live: the item is updated immediately, settings.ini is written
  * after a short debounce and the service is asked to reload it (SettingsFile).
@@ -211,4 +211,4 @@ public:
     Q_INVOKABLE QStringList ids() const;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

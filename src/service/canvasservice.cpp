@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "canvasservice.h"
@@ -39,7 +39,7 @@
 #include <string_view>
 
 using namespace std::chrono_literals;
-using InfinitDesktop::Camera;
+using InfiniteDesktop::Camera;
 
 namespace Wid
 {
@@ -48,7 +48,7 @@ namespace
 {
 
 constexpr UINT InputMessage = WM_APP + 10;
-const wchar_t *const s_serviceClass = L"WinInfinitDesktopService";
+const wchar_t *const s_serviceClass = L"WinInfiniteDesktopService";
 constexpr auto ZoomStepDuration = 150ms;
 constexpr ULONGLONG NewWindowMs = 5000;
 constexpr qreal RevealMargin = 24;
@@ -65,9 +65,9 @@ POINT rounded(const QPointF &point)
     return POINT{LONG(std::lround(point.x())), LONG(std::lround(point.y()))};
 }
 
-InfinitDesktop::TimePoint now()
+InfiniteDesktop::TimePoint now()
 {
-    return InfinitDesktop::Clock::now();
+    return InfiniteDesktop::Clock::now();
 }
 
 QJsonObject cameraJson(const Camera &camera)
@@ -120,9 +120,9 @@ void setSnap(bool on)
 
 } // namespace
 
-InfinitDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor)
+InfiniteDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor)
 {
-    InfinitDesktop::OutputIdentity identity;
+    InfiniteDesktop::OutputIdentity identity;
     identity.name = QString::fromStdWString(monitor.gdiName);
     identity.manufacturer = QString::fromStdWString(monitor.manufacturerCode());
     if (monitor.edidValid) {
@@ -263,7 +263,7 @@ bool CanvasService::createServiceWindow()
     registerWindowClass(s_serviceClass, &CanvasService::serviceWindowProc);
     // A hidden top-level window: message-only windows get neither WM_DISPLAYCHANGE nor
     // WM_ENDSESSION.
-    m_serviceWindow.reset(CreateWindowExW(WS_EX_TOOLWINDOW, s_serviceClass, L"WIN Infinit Desktop", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr,
+    m_serviceWindow.reset(CreateWindowExW(WS_EX_TOOLWINDOW, s_serviceClass, L"WIN Infinite Desktop", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr,
                                           GetModuleHandleW(nullptr), this));
     return bool(m_serviceWindow);
 }
@@ -437,7 +437,7 @@ int CanvasService::monitorAt(const QPointF &point) const
         }
         rects.append(monitor.viewport);
     }
-    return InfinitDesktop::nearestOutputIndex(rects, point);
+    return InfiniteDesktop::nearestOutputIndex(rects, point);
 }
 
 int CanvasService::monitorOfWindow(HWND hwnd) const
@@ -929,7 +929,7 @@ void CanvasService::tryAdopt(HWND hwnd, bool isNew)
     m_organizer->windowAdopted(adopted);
     Canvas &home = canvas(key);
     if (isNew && home.overview && m_settings.newWindowsExitZoom && !adopted.hidden) {
-        reveal(hwnd, InfinitDesktop::RevealMode::Center);
+        reveal(hwnd, InfiniteDesktop::RevealMode::Center);
         return;
     }
     if (!home.overview && adopted.onCanvas()) {
@@ -1032,16 +1032,16 @@ void CanvasService::restorePlacement(ManagedWindow &window, bool *reveal)
         return;
     }
     quint64 entry = 0;
-    const std::optional<InfinitDesktop::WindowPlacement> placement = m_placements.take(window.appKey, &entry);
+    const std::optional<InfiniteDesktop::WindowPlacement> placement = m_placements.take(window.appKey, &entry);
     if (!placement) {
         return;
     }
     window.placementEntry = entry;
-    QList<InfinitDesktop::OutputIdentity> identities;
+    QList<InfiniteDesktop::OutputIdentity> identities;
     for (const MonitorState &monitor : m_monitors) {
         identities.append(outputIdentity(monitor.info));
     }
-    int index = InfinitDesktop::bestOutputMatch(placement->output, identities);
+    int index = InfiniteDesktop::bestOutputMatch(placement->output, identities);
     if (index < 0) {
         index = monitorIndexOf(window.canvasKey);
     }
@@ -1068,7 +1068,7 @@ void CanvasService::restorePlacement(ManagedWindow &window, bool *reveal)
         }
         return;
     }
-    *reveal = !InfinitDesktop::isFullyVisible(target.committed, canvasRect(window), monitor.viewport, monitor.work);
+    *reveal = !InfiniteDesktop::isFullyVisible(target.committed, canvasRect(window), monitor.viewport, monitor.work);
 }
 
 void CanvasService::resizeFrame(ManagedWindow &window, const QSizeF &size)
@@ -1100,7 +1100,7 @@ void CanvasService::rememberPlacement(const ManagedWindow &window)
     }
     const MonitorState &monitor = m_monitors[std::size_t(index)];
     const Canvas &home = m_canvases.at(window.canvasKey);
-    InfinitDesktop::WindowPlacement placement;
+    InfiniteDesktop::WindowPlacement placement;
     placement.appKey = window.appKey;
     placement.output = outputIdentity(monitor.info);
     placement.canvasPos = window.canvasPos;
@@ -1368,7 +1368,7 @@ void CanvasService::onForeground(HWND hwnd)
     }
     const MonitorState &monitor = m_monitors[std::size_t(index)];
     Canvas &home = canvas(window.canvasKey);
-    if (home.overview || !InfinitDesktop::isFullyVisible(targetCamera(home), canvasRect(window), monitor.viewport, monitor.work)) {
+    if (home.overview || !InfiniteDesktop::isFullyVisible(targetCamera(home), canvasRect(window), monitor.viewport, monitor.work)) {
         reveal(hwnd, m_settings.revealMode);
     }
 }
@@ -1526,7 +1526,7 @@ void CanvasService::placeWindow(ManagedWindow &window, const Canvas &canvas, con
     }
     // Off its monitor or at the edge to a neighbour: park it in the void next to it, where it
     // can get no input.
-    const InfinitDesktop::ParkingSpot spot = InfinitDesktop::computeParkingSpot(rects, index, window.size);
+    const InfiniteDesktop::ParkingSpot spot = InfiniteDesktop::computeParkingSpot(rects, index, window.size);
     window.parked = true;
     requestMove(window, rounded(spot.topLeft));
 }
@@ -1639,7 +1639,7 @@ void CanvasService::ensureTicking()
 
 void CanvasService::tick()
 {
-    const InfinitDesktop::TimePoint time = now();
+    const InfiniteDesktop::TimePoint time = now();
     bool active = false;
     for (auto &[key, canvas] : m_canvases) {
         if (!canvas.motion.isActive()) {
@@ -1674,7 +1674,7 @@ void CanvasService::zoomAt(Canvas &canvas, const QPointF &anchor, qreal steps)
     const MonitorState &monitor = m_monitors[std::size_t(index)];
     const qreal direction = m_settings.invertWheelZoom ? -1 : 1;
     const Camera base = targetCamera(canvas);
-    const qreal zoom = InfinitDesktop::clampZoom(base.zoom * std::pow(m_settings.zoomStep, steps * direction), m_settings.minZoom, m_settings.maxZoom,
+    const qreal zoom = InfiniteDesktop::clampZoom(base.zoom * std::pow(m_settings.zoomStep, steps * direction), m_settings.minZoom, m_settings.maxZoom,
                                                  m_settings.snapZoomToOne ? 0.02 : 0.0);
     animateTo(canvas, base.zoomedAt(anchor, zoom, monitor.viewport), ZoomStepDuration);
 }
@@ -1790,7 +1790,7 @@ void CanvasService::updateOverview(Canvas &canvas)
                                    : m_organizer->overviewAreas(canvas, monitor.viewport, monitor.info.dpi / 96.0));
 }
 
-void CanvasService::reveal(HWND hwnd, InfinitDesktop::RevealMode mode)
+void CanvasService::reveal(HWND hwnd, InfiniteDesktop::RevealMode mode)
 {
     auto it = m_windows.find(hwnd);
     if (it == m_windows.end() || !it->second.onCanvas()) {
@@ -1804,7 +1804,7 @@ void CanvasService::reveal(HWND hwnd, InfinitDesktop::RevealMode mode)
     const MonitorState &monitor = m_monitors[std::size_t(index)];
     Canvas &home = canvas(it->second.canvasKey);
     const Camera target =
-        InfinitDesktop::revealCamera(targetCamera(home), canvasRect(it->second), monitor.viewport, monitor.work, mode, RevealMargin, 1.0);
+        InfiniteDesktop::revealCamera(targetCamera(home), canvasRect(it->second), monitor.viewport, monitor.work, mode, RevealMargin, 1.0);
     animateTo(home, target);
 }
 
@@ -1824,7 +1824,7 @@ void CanvasService::showAll(Canvas &canvas, bool toggle)
     if (rects.isEmpty()) {
         return;
     }
-    const Camera fit = InfinitDesktop::fitCamera(InfinitDesktop::boundingRect(rects), monitor.viewport, monitor.work, 48, m_settings.minZoom, 1.0);
+    const Camera fit = InfiniteDesktop::fitCamera(InfiniteDesktop::boundingRect(rects), monitor.viewport, monitor.work, 48, m_settings.minZoom, 1.0);
     if (toggle && canvas.beforeShowAll && targetCamera(canvas).fuzzyEquals(fit, 1.0, 1e-3)) {
         const Camera previous = *canvas.beforeShowAll;
         canvas.beforeShowAll.reset();
@@ -1916,7 +1916,7 @@ void CanvasService::updateMarkersNow()
                 Canvas &targetCanvas = canvas(it->second.canvasKey);
                 const Camera current = targetCamera(targetCanvas);
                 animateTo(targetCanvas,
-                          InfinitDesktop::revealCamera(current, canvasRect(it->second), home.viewport, home.work, InfinitDesktop::RevealMode::Center,
+                          InfiniteDesktop::revealCamera(current, canvasRect(it->second), home.viewport, home.work, InfiniteDesktop::RevealMode::Center,
                                                        RevealMargin, current.zoom));
                 if (current.isUnitZoom()) {
                     activate(target);
@@ -2115,7 +2115,7 @@ void CanvasService::triggerShortcut(ShortcutAction action, bool repeat)
         const QPointF step(monitor.viewport.width() * m_settings.keyboardPanStep / base.zoom, monitor.viewport.height() * m_settings.keyboardPanStep / base.zoom);
         animateTo(*target, Camera{base.center + QPointF(dx * step.x(), dy * step.y()), base.zoom});
     };
-    const auto focus = [&](InfinitDesktop::Direction direction) {
+    const auto focus = [&](InfiniteDesktop::Direction direction) {
         const HWND current = GetForegroundWindow();
         QRectF from(targetCamera(*target).center, QSizeF(1, 1));
         if (auto it = m_windows.find(current); it != m_windows.end() && it->second.canvasKey == target->key) {
@@ -2129,7 +2129,7 @@ void CanvasService::triggerShortcut(ShortcutAction action, bool repeat)
                 handles.append(hwnd);
             }
         }
-        const int found = InfinitDesktop::findNeighbor(from, rects, direction);
+        const int found = InfiniteDesktop::findNeighbor(from, rects, direction);
         if (found >= 0) {
             activate(handles[found]);
             reveal(handles[found], m_settings.revealMode);
@@ -2152,7 +2152,7 @@ void CanvasService::triggerShortcut(ShortcutAction action, bool repeat)
         goHome(*target);
         break;
     case ShortcutAction::CenterWindow:
-        reveal(GetForegroundWindow(), InfinitDesktop::RevealMode::Center);
+        reveal(GetForegroundWindow(), InfiniteDesktop::RevealMode::Center);
         break;
     case ShortcutAction::PanLeft:
         pan(-1, 0);
@@ -2167,16 +2167,16 @@ void CanvasService::triggerShortcut(ShortcutAction action, bool repeat)
         pan(0, 1);
         break;
     case ShortcutAction::FocusLeft:
-        focus(InfinitDesktop::Direction::Left);
+        focus(InfiniteDesktop::Direction::Left);
         break;
     case ShortcutAction::FocusRight:
-        focus(InfinitDesktop::Direction::Right);
+        focus(InfiniteDesktop::Direction::Right);
         break;
     case ShortcutAction::FocusUp:
-        focus(InfinitDesktop::Direction::Up);
+        focus(InfiniteDesktop::Direction::Up);
         break;
     case ShortcutAction::FocusDown:
-        focus(InfinitDesktop::Direction::Down);
+        focus(InfiniteDesktop::Direction::Down);
         break;
     case ShortcutAction::GotoBookmark1:
     case ShortcutAction::GotoBookmark2:
@@ -2404,8 +2404,8 @@ void CanvasService::overviewDive(HWND hwnd)
     const MonitorState &monitor = m_monitors[std::size_t(index)];
     Camera target{targetCamera(home).center, 1.0};
     if (it->second.onCanvas()) {
-        target = InfinitDesktop::revealCamera(targetCamera(home), canvasRect(it->second), monitor.viewport, monitor.work,
-                                              InfinitDesktop::RevealMode::Center, RevealMargin, 1.0);
+        target = InfiniteDesktop::revealCamera(targetCamera(home), canvasRect(it->second), monitor.viewport, monitor.work,
+                                              InfiniteDesktop::RevealMode::Center, RevealMargin, 1.0);
     }
     home.diveTarget = hwnd;
     animateTo(home, target);
@@ -2526,14 +2526,14 @@ void CanvasService::bringWindowsBack()
 void CanvasService::openSettingsApp()
 {
     const QDir directory(QCoreApplication::applicationDirPath());
-    for (const QString &name : {QStringLiteral("wid-settings.exe"), QStringLiteral("win-infinit-desktop-settings.exe")}) {
+    for (const QString &name : {QStringLiteral("wid-settings.exe"), QStringLiteral("win-infinite-desktop-settings.exe")}) {
         const QString path = directory.filePath(name);
         if (QFile::exists(path) && QProcess::startDetached(path, {})) {
             return;
         }
     }
     if (m_tray) {
-        m_tray->notify(L"WIN Infinit Desktop", text(L"The settings app is not installed.", L"Die Einstellungs-App ist nicht installiert."));
+        m_tray->notify(L"WIN Infinite Desktop", text(L"The settings app is not installed.", L"Die Einstellungs-App ist nicht installiert."));
     }
 }
 
@@ -2834,7 +2834,7 @@ QJsonValue CanvasService::handleIpc(const QString &method, const QJsonObject &pa
             *error = QStringLiteral("invalid zoom");
             return {};
         }
-        const qreal zoom = InfinitDesktop::clampZoom(requested, m_settings.minZoom, m_settings.maxZoom);
+        const qreal zoom = InfiniteDesktop::clampZoom(requested, m_settings.minZoom, m_settings.maxZoom);
         return apply(target->camera.zoomedAt(center, zoom, monitor.viewport));
     }
     if (method == QLatin1String("resetZoom")) {
@@ -2853,7 +2853,7 @@ QJsonValue CanvasService::handleIpc(const QString &method, const QJsonObject &pa
         if (rects.isEmpty()) {
             return cameraJson(target->camera);
         }
-        return apply(InfinitDesktop::fitCamera(InfinitDesktop::boundingRect(rects), monitor.viewport, monitor.work, 48, m_settings.minZoom, 1.0));
+        return apply(InfiniteDesktop::fitCamera(InfiniteDesktop::boundingRect(rects), monitor.viewport, monitor.work, 48, m_settings.minZoom, 1.0));
     }
     if (method == QLatin1String("setCamera")) {
         const std::optional<Camera> camera = cameraFromJson(params);
@@ -2861,7 +2861,7 @@ QJsonValue CanvasService::handleIpc(const QString &method, const QJsonObject &pa
             *error = QStringLiteral("invalid camera");
             return {};
         }
-        return apply(Camera{camera->center, InfinitDesktop::clampZoom(camera->zoom, m_settings.minZoom, m_settings.maxZoom)});
+        return apply(Camera{camera->center, InfiniteDesktop::clampZoom(camera->zoom, m_settings.minZoom, m_settings.maxZoom)});
     }
     *error = QStringLiteral("unknown method %1").arg(method);
     return {};

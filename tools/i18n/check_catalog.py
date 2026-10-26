@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Compares the texts of the apps with the German catalog po/de/win-infinit-desktop.po.
+"""Compares the texts of the apps with the German catalog po/de/win-infinite-desktop.po.
 
 Finds every i18n(), i18nc(), i18np(), i18ncp(), kli18n() and kli18nc() call in src/ (C++
 and QML) and every label and explanation of the settings schema, and reports
@@ -102,7 +102,7 @@ def main():
     parser.add_argument('--unused', action='store_true', help='also list catalog entries nothing uses')
     options = parser.parse_args()
 
-    catalog = parse_po(options.root / 'po/de/win-infinit-desktop.po')
+    catalog = parse_po(options.root / 'po/de/win-infinite-desktop.po')
     texts = source_texts(options.root)
     missing = [(key, where) for key, where in sorted(texts.items(), key=lambda item: item[1]) if key not in catalog or not any(catalog[key][0])]
     for (context, message), where in missing:

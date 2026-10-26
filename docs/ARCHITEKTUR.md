@@ -1,8 +1,8 @@
-# WIN Infinit Desktop – Technische Dokumentation
+# WIN Infinite Desktop – Technische Dokumentation
 
 Aufbau und Designentscheidungen der Windows-Version. Welche Windows-Schnittstellen sie nutzt und warum,
 steht in [Abschnitt 15](#15-windows-schnittstellen), woher der gemeinsame Kern kommt, in
-[Abschnitt 16](#16-gemeinsamer-kern-mit-kde-infinit-desktop). Zielplattform ist Windows 11 25H2/26H2
+[Abschnitt 16](#16-gemeinsamer-kern-mit-kde-infinite-desktop). Zielplattform ist Windows 11 25H2/26H2
 (Build 26200/26300) auf x64; die Win32-Schicht und `wid-probe` bauen auch für ARM64.
 
 ---
@@ -10,7 +10,7 @@ steht in [Abschnitt 15](#15-windows-schnittstellen), woher der gemeinsame Kern k
 ## 1. Überblick
 
 ```
-┌──────────────────────────── win-infinit-desktop.exe (ein Prozess) ──────────────────────────┐
+┌──────────────────────────── win-infinite-desktop.exe (ein Prozess) ──────────────────────────┐
 │                                                                                              │
 │  Hook-Thread                         Haupt-Thread (Qt-Ereignisschleife)                      │
 │  ┌──────────────────────┐  Befehle   ┌──────────────────────────────────────────────────┐   │
@@ -26,20 +26,20 @@ steht in [Abschnitt 15](#15-windows-schnittstellen), woher der gemeinsame Kern k
 │                                      │  CrashGuard, Einstellungen (INI, beobachtet)      │   │
 │                                      └──────────────────────────────────────────────────┘   │
 └──────────────────────────────────────────────────────────────────────────────────────────────┘
-        ▲ Named Pipe win-infinit-desktop-<Sitzung>                ▲ %APPDATA%\WIN Infinit Desktop\settings.ini
+        ▲ Named Pipe win-infinite-desktop-<Sitzung>                ▲ %APPDATA%\WIN Infinite Desktop\settings.ini
         │                                                          │
    wid-ctl.exe, wid-settings.exe, wid-notes.exe               wid-settings.exe, Texteditor
 ```
 
 | Verzeichnis | Inhalt | Abhängigkeiten |
 |---|---|---|
-| `src/core/` | Kamera, Animationen, Geschwindigkeit, Parkplätze, Navigation, Fensterplatz-Gedächtnis, Gruppen, Bereiche, Notizen, Karte – **unverändert aus KDE** (siehe [Abschnitt 16](#16-gemeinsamer-kern-mit-kde-infinit-desktop)) | Qt Core |
+| `src/core/` | Kamera, Animationen, Geschwindigkeit, Parkplätze, Navigation, Fensterplatz-Gedächtnis, Gruppen, Bereiche, Notizen, Karte – **unverändert aus KDE** (siehe [Abschnitt 16](#16-gemeinsamer-kern-mit-kde-infinite-desktop)) | Qt Core |
 | `src/platform/` | Win32-Schicht (Bildschirme, Fenster, Ereignisse, Hooks, Touchpad, Desktops, Vollbild, Verschieben) | Windows SDK |
-| `src/service/` | der Dienst `win-infinit-desktop.exe` | Qt Gui, Qt Network, core, platform |
+| `src/service/` | der Dienst `win-infinite-desktop.exe` | Qt Gui, Qt Network, core, platform |
 | `src/shared/` | Namen der Pipes von Dienst und Notiz-App (`pipenames.h`, nur Header); für die Apps: Pipe-Client und -Server, Übersetzungen aus dem `.po`-Katalog, Pfade | Qt Core, Qt Network, Qt Qml |
 | `src/notes/` | die Notiz-App `wid-notes.exe` | Qt Quick, shared |
-| `src/settings/` | die Einstellungs-App `wid-settings.exe` mit dem Schema `win-infinit-desktop.kcfg` | Qt Quick, shared |
-| `po/de/` | deutscher Katalog beider Apps (`win-infinit-desktop.po`) | – |
+| `src/settings/` | die Einstellungs-App `wid-settings.exe` mit dem Schema `win-infinite-desktop.kcfg` | Qt Quick, shared |
+| `po/de/` | deutscher Katalog beider Apps (`win-infinite-desktop.po`) | – |
 | `tools/i18n/` | `check_catalog.py`: fehlende und unbenutzte Übersetzungen | Python 3 |
 | `tools/wid-ctl/` | Kommandozeilen-Client der IPC-Schnittstelle | Qt Network |
 | `tools/wid-probe/` | Diagnose der Windows-Schnittstellen auf dem Rechner | Windows SDK |
@@ -257,13 +257,13 @@ Für jedes Fenster außerhalb des Bildes zeigt eine kleine Markierung die Richtu
 
 | Datei | Inhalt |
 |---|---|
-| `%APPDATA%\WIN Infinit Desktop\settings.ini`, Gruppe `[Effect-infinitdesktop]` | Einstellungen: gleiche Schlüssel und Standardwerte wie `infinitdesktop.kcfg` der KDE-Version |
-| dieselbe Datei, Gruppe `[Shortcuts]` | Tastenkürzel: Schlüssel = Aktions-ID der KDE-Version (`InfinitDesktop Home`), Wert z. B. `Win+Alt+H;Ctrl+Alt+H`, leer = keins |
-| `%LOCALAPPDATA%\WIN Infinit Desktop\canvas.json` | Kameras und Lesezeichen je Canvas (nie gezoomt wiederhergestellt) |
-| `%LOCALAPPDATA%\WIN Infinit Desktop\placements.json` | Fensterplatz-Gedächtnis |
-| `%LOCALAPPDATA%\WIN Infinit Desktop\groups.json`, `areas.json`, `notes.json` | Gruppen, Bereiche und Plätze der Notizen, gleiches JSON wie unter KDE |
-| `%LOCALAPPDATA%\WIN Infinit Desktop\crashguard` | Zähler des Absturzschutzes |
-| `%LOCALAPPDATA%\WIN Infinit Desktop\service.log` | Protokoll (1 MB, eine alte Generation) |
+| `%APPDATA%\WIN Infinite Desktop\settings.ini`, Gruppe `[Effect-infinitedesktop]` | Einstellungen: gleiche Schlüssel und Standardwerte wie `infinitedesktop.kcfg` der KDE-Version |
+| dieselbe Datei, Gruppe `[Shortcuts]` | Tastenkürzel: Schlüssel = Aktions-ID der KDE-Version (`InfiniteDesktop Home`), Wert z. B. `Win+Alt+H;Ctrl+Alt+H`, leer = keins |
+| `%LOCALAPPDATA%\WIN Infinite Desktop\canvas.json` | Kameras und Lesezeichen je Canvas (nie gezoomt wiederhergestellt) |
+| `%LOCALAPPDATA%\WIN Infinite Desktop\placements.json` | Fensterplatz-Gedächtnis |
+| `%LOCALAPPDATA%\WIN Infinite Desktop\groups.json`, `areas.json`, `notes.json` | Gruppen, Bereiche und Plätze der Notizen, gleiches JSON wie unter KDE |
+| `%LOCALAPPDATA%\WIN Infinite Desktop\crashguard` | Zähler des Absturzschutzes |
+| `%LOCALAPPDATA%\WIN Infinite Desktop\service.log` | Protokoll (1 MB, eine alte Generation) |
 
 - Einstellungen wirken sofort: Der Dienst beobachtet die Datei und das Verzeichnis, Editoren ersetzen
   die Datei beim Speichern. Zusätzlich gibt es den Befehl `reloadSettings`.
@@ -310,7 +310,7 @@ Für jedes Fenster außerhalb des Bildes zeigt eine kleine Markierung die Richtu
 
 ## 11. IPC-Schnittstelle
 
-Named Pipe `\\.\pipe\win-infinit-desktop-<Sitzungs-ID>`, nur für den eigenen Benutzer
+Named Pipe `\\.\pipe\win-infinite-desktop-<Sitzungs-ID>`, nur für den eigenen Benutzer
 (`QLocalServer::UserAccessOption`), höchstens 16 Verbindungen, Zeilen bis 64 KB.
 
 ```
@@ -485,14 +485,14 @@ Dateien und seinen Overlay-Fenstern, wie der gleichnamige Teil des KWin-Effekts.
 
 ## 14. Notiz-App und Einstellungs-App
 
-Beide Apps sind die Qt-Quick-Apps von KDE Infinit Desktop (QML fast unverändert) ohne KDE
+Beide Apps sind die Qt-Quick-Apps von KDE Infinite Desktop (QML fast unverändert) ohne KDE
 Frameworks. Was dort KDE erledigt, übernehmen kleine Teile in `src/shared` und den Apps:
 
 | KDE | Windows |
 |---|---|
 | KI18n, `KLocalizedContext` | `Localizer` liest den `.po`-Katalog (als Ressource eingebaut) beim Start; `i18n()`, `i18nc()`, `i18np()`, `i18ncp()` mit derselben Bedeutung in C++ und QML (`LocalizedContext`). Platzhalter werden in einem Durchgang ersetzt. Ohne deutsche Oberflächensprache bleibt der Text englisch (`WID_LANGUAGE=de` erzwingt Deutsch). |
 | D-Bus | JSON-Zeilen über Named Pipes: `IpcClient` (asynchron, Antworten an Rückrufe, die mit ihrem Kontextobjekt verfallen; Zeitlimit; begrenzte Warteschlangen) und `JsonLineServer` (Zeilen höchstens 64 KiB, höchstens 16 Verbindungen). |
-| `kwinrc` mit KConfigSkeleton | `SettingsFile` schreibt `%APPDATA%\WIN Infinit Desktop\settings.ini` so, wie der Dienst sie liest (Gruppe `[Effect-infinitdesktop]`, Enums als Name, Farben als `r,g,b`, Listen mit Komma, Standardwerte fallen weg). Das Schema `win-infinit-desktop.kcfg` ist das von KDE ohne die Einträge, die unter Windows nichts bewirken, mit Texten für Windows. |
+| `kwinrc` mit KConfigSkeleton | `SettingsFile` schreibt `%APPDATA%\WIN Infinite Desktop\settings.ini` so, wie der Dienst sie liest (Gruppe `[Effect-infinitedesktop]`, Enums als Name, Farben als `r,g,b`, Listen mit Komma, Standardwerte fallen weg). Das Schema `win-infinite-desktop.kcfg` ist das von KDE ohne die Einträge, die unter Windows nichts bewirken, mit Texten für Windows. |
 | KGlobalAccel | Kürzel in `[Shortcuts]` derselben Datei in der Schreibweise des Dienstes (`Win+Alt+H;Win+Alt+Num+`, `keycombo.h`). Ohne Eintrag gelten die Standardkürzel, ein leerer Wert hebt die Belegung auf. Die Seite „Mit Windows“ zeigt die dokumentierten Kürzel von Windows 11 als feste Tabelle und markiert Überschneidungen (etwa Win + Alt + B für HDR). |
 | KService, Icon-Theme | Startmenü über den Shell-Ordner `AppsFolder` (in einem eigenen Thread, `IShellItem`), Symbole über `IShellItemImageFactory`. Programm-ID ist wie im Dienst die AppUserModelID oder der Programmpfad in Kleinbuchstaben, der Startbefehl behält die Schreibweise. |
 | KStatusNotifierItem | entfällt: das Symbol im Infobereich gehört dem Dienst. |
@@ -505,7 +505,7 @@ Frameworks. Was dort KDE erledigt, übernehmen kleine Teile in `src/shared` und 
   höchstens 500 ms auf die Antwort; der Dienst übernimmt genau dieses Fenster und legt es an
   seinen Platz. Ausgeblendete Notizen haben kein Fenster, alle Fenster teilen die einfache
   Render-Schleife (`QSG_RENDER_LOOP=basic`).
-- Speicherung wie unter KDE: `<id>.md` und `index.json` in `%APPDATA%\WIN Infinit Desktop\notes`,
+- Speicherung wie unter KDE: `<id>.md` und `index.json` in `%APPDATA%\WIN Infinite Desktop\notes`,
   verzögert und atomar (`QSaveFile`). `index.json` hält je Notiz auch `formatted`: Eine Notiz zeigt
   standardmäßig den Markdown-Text zum Bearbeiten, der Stift in der Kopfzeile (Strg + E) schaltet auf
   den formatierten Text und zurück.
@@ -535,14 +535,14 @@ Frameworks. Was dort KDE erledigt, übernehmen kleine Teile in `src/shared` und 
 - Die Titelleiste zeichnet Windows; sie folgt dem hellen oder dunklen Aussehen der App über
   `DWMWA_USE_IMMERSIVE_DARK_MODE`, auch wenn der Modus wechselt.
 - Update-Check: Releases dieses Repositorys; ein Release enthält
-  `win-infinit-desktop-<Version>-<x64|arm64>.zip`, GitHub nennt dazu dessen SHA-256 (`digest`). Nur
+  `win-infinite-desktop-<Version>-<x64|arm64>.zip`, GitHub nennt dazu dessen SHA-256 (`digest`). Nur
   Downloads von GitHub werden verwendet. „Update installieren“ (`UpdateChecker`):
   1. lädt das Paket mit `QNetworkAccessManager` nach `%TEMP%` (Fortschrittsbalken) und vergleicht
      die Prüfsumme;
   2. entpackt es mit `tar.exe` von Windows;
   3. startet dessen `install.ps1 -Update -Log … -ResultFile … -OpenSettings` ohne Fenster
      (`CREATE_NO_WINDOW`). Der Installer beendet den Dienst und die App, installiert, startet
-     den Dienst, schreibt sein Ergebnis nach `%LOCALAPPDATA%\WIN Infinit Desktop\update-result.json`
+     den Dienst, schreibt sein Ergebnis nach `%LOCALAPPDATA%\WIN Infinite Desktop\update-result.json`
      und öffnet die App wieder; sie zeigt das Ergebnis beim Start. Läuft die App noch, weil der
      Installer vorher scheiterte, sieht sie jede Sekunde nach dem Ergebnis und danach, ob der
      Installer noch läuft. Das Protokoll ist `update.log` daneben.
@@ -565,7 +565,7 @@ unterstützt, **[U]** undokumentiert oder nur von Dritten beschrieben, kann sich
 
 ### Das Grundproblem
 
-Unter KDE ist Infinit Desktop ein Plugin im Compositor (KWin). Es darf Fenster an beliebiger Stelle und
+Unter KDE ist Infinite Desktop ein Plugin im Compositor (KWin). Es darf Fenster an beliebiger Stelle und
 in beliebiger Größe **zeichnen** und Eingaben abfangen, **bevor** KWin sie verteilt. Unter Windows ist der
 Compositor (DWM) geschlossen: Es gibt keine Plugin-Schnittstelle. Ein normales Programm kann nur
 
@@ -864,13 +864,13 @@ bleiben, wo sie sind (sie verhalten sich wie angepinnt).
 
 | KDE | Windows |
 |---|---|
-| KConfig (`kwinrc`) | INI-Datei unter `%APPDATA%\WIN Infinit Desktop\settings.ini`, gleiche Schlüssel wie `infinitdesktop.kcfg` |
-| D-Bus `org.kde.InfinitDesktop` | Named Pipe (`QLocalServer`/`QLocalSocket`), nur für den eigenen Benutzer (`UserAccessOption`), JSON-Zeilen mit denselben Methoden |
+| KConfig (`kwinrc`) | INI-Datei unter `%APPDATA%\WIN Infinite Desktop\settings.ini`, gleiche Schlüssel wie `infinitedesktop.kcfg` |
+| D-Bus `org.kde.InfiniteDesktop` | Named Pipe (`QLocalServer`/`QLocalSocket`), nur für den eigenen Benutzer (`UserAccessOption`), JSON-Zeilen mit denselben Methoden |
 | KGlobalAccel | eigene Kürzel-Tabelle in den Einstellungen, ausgewertet vom Tastatur-Hook |
 | KI18n (`.po`-Kataloge) | dieselben `.po`-Dateien, gelesen von einer kleinen Ersatzschicht mit den Funktionen `i18n()`, `i18nc()`, `i18np()` |
 | `.desktop`-Dateien (Programmliste) | Startmenü-Programme aus `FOLDERID_AppsFolder` |
 | Autostart über KWin | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` |
-| `~/.local/state/kde-infinit-desktop` | `%LOCALAPPDATA%\WIN Infinit Desktop` |
+| `~/.local/state/kde-infinite-desktop` | `%LOCALAPPDATA%\WIN Infinite Desktop` |
 
 KDE Frameworks laufen grundsätzlich auch unter Windows (KDE Craft), KGlobalAccel aber nicht. Die
 Build-Kette ist schwer und langsam. Deshalb gibt es die schmale Ersatzschicht statt Craft.
@@ -918,20 +918,20 @@ Fenstertitel stehen nur mit `--titles` im Bericht, Pfade im Benutzerprofil werde
 | [PaperWM-Win](https://github.com/Valijuu/PaperWM-Win), [komorebi](https://github.com/LGUG2Z/komorebi), [GlazeWM](https://github.com/glzr-io/glazewm) | Kachel-Fenstermanager | – |
 | [VirtualDesktopAccessor](https://github.com/Ciantic/VirtualDesktopAccessor) | undokumentierte Desktop-Schnittstellen je Build | – |
 
-## 16. Gemeinsamer Kern mit KDE Infinit Desktop
+## 16. Gemeinsamer Kern mit KDE Infinite Desktop
 
 Die Windows-Version teilt die reine Logik mit
-[KDE Infinit Desktop](https://github.com/RandomNam3/kde-infinit-desktop). Diese Dateien werden **unverändert**
+[KDE Infinite Desktop](https://github.com/RandomNam3/kde-infinite-desktop). Diese Dateien werden **unverändert**
 übernommen. Änderungen daran gehören zuerst in das KDE-Repository und werden dann hierher kopiert, damit
 beide Versionen gleich rechnen.
 
 | Hier | Dort | Stand (Commit im KDE-Repository) |
 |---|---|---|
-| `src/core/` | `src/core/` | `45ec5d4` (KDE Infinit Desktop 0.5.0 und 0.5.1) |
+| `src/core/` | `src/core/` | `45ec5d4` (KDE Infinite Desktop 0.5.0 und 0.5.1) |
 | `tests/test_{camera,motion,velocitytracker,parking,navigation,placementmemory,groups,areas}.cpp` | `tests/` | `45ec5d4` |
 
 Prüfen, ob beide noch gleich sind (unter Windows mit CRLF im Arbeitsverzeichnis):
 
 ```bash
-diff -r --strip-trailing-cr src/core ../kde-infinit-desktop/src/core --exclude=CMakeLists.txt
+diff -r --strip-trailing-cr src/core ../kde-infinite-desktop/src/core --exclude=CMakeLists.txt
 ```

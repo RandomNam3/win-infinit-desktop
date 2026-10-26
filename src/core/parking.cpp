@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "parking.h"
@@ -9,7 +9,7 @@
 #include <cmath>
 #include <limits>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 int nearestOutputIndex(const QList<QRectF> &outputs, const QPointF &point)
@@ -151,4 +151,4 @@ ParkingSpot computeParkingSpot(const QList<QRectF> &outputs, int ownerIndex, con
     return best;
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

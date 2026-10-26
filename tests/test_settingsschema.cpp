@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 // The settings schema and how values are stored in settings.ini (settingsschema.h,
@@ -15,7 +15,7 @@
 #include <QTemporaryDir>
 #include <QTest>
 
-using namespace InfinitDesktop;
+using namespace InfiniteDesktop;
 
 class TestSettingsSchema : public QObject
 {
@@ -37,7 +37,7 @@ private Q_SLOTS:
     void schemaIsComplete()
     {
         const SettingsSchema &schema = SettingsSchema::instance();
-        QCOMPARE(schema.group(), QStringLiteral("Effect-infinitdesktop"));
+        QCOMPARE(schema.group(), QStringLiteral("Effect-infinitedesktop"));
         QVERIFY(schema.items().size() >= 45);
         for (const auto &item : schema.items()) {
             QVERIFY2(!item->label().isEmpty(), qPrintable(item->name()));
@@ -92,7 +92,7 @@ private Q_SLOTS:
         file->flush();
 
         QSettings ini(m_path, QSettings::IniFormat);
-        ini.beginGroup(QStringLiteral("Effect-infinitdesktop"));
+        ini.beginGroup(QStringLiteral("Effect-infinitedesktop"));
         QCOMPARE(ini.value(QStringLiteral("PanModifier")).toString(), modifier->choices().at(3).name);
         QCOMPARE(ini.value(QStringLiteral("GridColor")).toString(), QStringLiteral("10,20,30"));
         QCOMPARE(ini.value(QStringLiteral("ExcludedWindowClasses")).toString(), QStringLiteral("notepad,C:\\Tools\\x.exe"));
@@ -105,8 +105,8 @@ private Q_SLOTS:
         speed->writeConfig(*file);
         file->flush();
         QSettings again(m_path, QSettings::IniFormat);
-        QVERIFY(!again.contains(QStringLiteral("Effect-infinitdesktop/PanSpeed")));
-        QVERIFY(again.contains(QStringLiteral("Effect-infinitdesktop/PanModifier")));
+        QVERIFY(!again.contains(QStringLiteral("Effect-infinitedesktop/PanSpeed")));
+        QVERIFY(again.contains(QStringLiteral("Effect-infinitedesktop/PanModifier")));
 
         // And everything reads back.
         modifier->setDefault();

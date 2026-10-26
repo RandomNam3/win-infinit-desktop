@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -13,24 +13,24 @@
 namespace Wid
 {
 
-/// %APPDATA%\WIN Infinit Desktop (roaming): settings and notes. Not created here.
+/// %APPDATA%\WIN Infinite Desktop (roaming): settings and notes. Not created here.
 inline QString roamingDataDirectory()
 {
     QString base = qEnvironmentVariable("APPDATA");
     if (base.isEmpty() || QStandardPaths::isTestModeEnabled()) {
         base = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     }
-    return QDir(base).filePath(QStringLiteral("WIN Infinit Desktop"));
+    return QDir(base).filePath(QStringLiteral("WIN Infinite Desktop"));
 }
 
-/// %APPDATA%\WIN Infinit Desktop\settings.ini, the file the service reads (settingsFilePath() there).
+/// %APPDATA%\WIN Infinite Desktop\settings.ini, the file the service reads (settingsFilePath() there).
 inline QString appSettingsFilePath()
 {
     return QDir(roamingDataDirectory()).filePath(QStringLiteral("settings.ini"));
 }
 
 /// Settings group of the canvas settings, as in KDE's kwinrc.
-inline constexpr const char *AppSettingsGroup = "Effect-infinitdesktop";
+inline constexpr const char *AppSettingsGroup = "Effect-infinitedesktop";
 /// Settings group of the shortcuts (key = action id, value = "Win+Alt+H;…").
 inline constexpr const char *AppShortcutsGroup = "Shortcuts";
 
@@ -41,11 +41,11 @@ inline QString siblingProgram(const QString &name)
 }
 
 #ifdef Q_OS_WIN
-inline constexpr const char *ServiceExecutable = "win-infinit-desktop.exe";
+inline constexpr const char *ServiceExecutable = "win-infinite-desktop.exe";
 inline constexpr const char *NotesExecutable = "wid-notes.exe";
 inline constexpr const char *SettingsExecutable = "wid-settings.exe";
 #else
-inline constexpr const char *ServiceExecutable = "win-infinit-desktop";
+inline constexpr const char *ServiceExecutable = "win-infinite-desktop";
 inline constexpr const char *NotesExecutable = "wid-notes";
 inline constexpr const char *SettingsExecutable = "wid-settings";
 #endif

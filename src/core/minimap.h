@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -8,7 +8,7 @@
 #include <QList>
 #include <QRectF>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
@@ -42,4 +42,4 @@ MapView mapView(const QList<QRectF> &content, const QRectF &visible, const QRect
 /// Camera centre after dragging the visible rect on the map by `screenDelta`.
 QPointF mapDragCenter(const MapView &view, const QPointF &centerAtStart, const QPointF &screenDelta);
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Plays the scenes of the documentation images on the desktop it runs on (meant for Windows
@@ -66,7 +66,7 @@ Start-Sleep -Seconds 3
 & $media place explorer.exe (X 0.50) (Y 0.06) (X 0.40) (Y 0.44)
 
 $env:WID_LANGUAGE = "de"
-$service = Start-Process -FilePath (Join-Path $App "win-infinit-desktop.exe") -PassThru
+$service = Start-Process -FilePath (Join-Path $App "win-infinite-desktop.exe") -PassThru
 & $ctl --wait 20 version | Out-Null
 Start-Sleep -Seconds 2
 Ctl goHome monitor=0

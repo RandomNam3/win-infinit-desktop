@@ -1,14 +1,15 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
-    win-infinit-desktop.exe: the canvas service. Runs in the background with an icon in the
+    win-infinite-desktop.exe: the canvas service. Runs in the background with an icon in the
     notification area; the settings app and wid-ctl talk to it over IpcServer.
 */
 #include "canvasservice.h"
 #include "crashguard.h"
 #include "ipcserver.h"
+#include "legacy.h"
 #include "logging.h"
 #include "menutheme.h"
 #include "osversion.h"
@@ -32,7 +33,48 @@ using namespace Wid;
 namespace
 {
 
-const wchar_t *const s_mutexName = L"Local\\WinInfinitDesktop.Service";
+const wchar_t *const s_mutexName = L"Local\\WinInfiniteDesktop.Service";
+/// Mutex and pipe of WIN Infinit Desktop 0.2 and older.
+const wchar_t *const s_legacyMutexName = L"Local\\WinInfinitDesktop.Service";
+
+/// Asks a running service of 0.2 or older to quit over its pipe (so it brings its windows back)
+/// and waits until it has ended. Two services would fight over every window.
+void quitLegacyService()
+{
+    UniqueHandle legacy(OpenMutexW(SYNCHRONIZE, FALSE, s_legacyMutexName));
+    if (!legacy) {
+        return;
+    }
+    DWORD session = 0;
+    ProcessIdToSessionId(GetCurrentProcessId(), &session);
+    const std::wstring pipe = L"\\\\.\\pipe\\win-infinit-desktop-" + std::to_wstring(session);
+    if (!WaitNamedPipeW(pipe.c_str(), 2000)) {
+        return;
+    }
+    const HANDLE raw = CreateFileW(pipe.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+    if (raw == INVALID_HANDLE_VALUE) {
+        return;
+    }
+    UniqueHandle client(raw);
+    ULONG serverProcess = 0;
+    GetNamedPipeServerProcessId(client.get(), &serverProcess);
+    UniqueHandle process(OpenProcess(SYNCHRONIZE, FALSE, serverProcess));
+    const char request[] = "{\"id\":1,\"method\":\"quit\",\"params\":{}}\n";
+    DWORD written = 0;
+    WriteFile(client.get(), request, DWORD(sizeof(request) - 1), &written, nullptr);
+    // Its answer (or the closed pipe) shows the request was read before this end goes away.
+    for (int waited = 0; waited < 3000; waited += 50) {
+        DWORD available = 0;
+        if (!PeekNamedPipe(client.get(), nullptr, 0, nullptr, &available, nullptr) || available > 0) {
+            break;
+        }
+        Sleep(50);
+    }
+    client.reset();
+    if (process) {
+        WaitForSingleObject(process.get(), 20000);
+    }
+}
 
 bool hasArgument(int argc, char **argv, const char *argument)
 {
@@ -54,9 +96,9 @@ int main(int argc, char **argv)
     const OsVersion os = currentOsVersion();
     if (osSupport(os) == OsSupport::Unsupported && !hasArgument(argc, argv, "--ignore-version")) {
         MessageBoxW(nullptr,
-                    text(L"WIN Infinit Desktop needs Windows 11 version 24H2 or newer (build 26100); 25H2 or 26H2 is recommended.",
-                         L"WIN Infinit Desktop braucht Windows 11 ab Version 24H2 (Build 26100); empfohlen sind 25H2 oder 26H2."),
-                    L"WIN Infinit Desktop", MB_ICONERROR | MB_OK);
+                    text(L"WIN Infinite Desktop needs Windows 11 version 24H2 or newer (build 26100); 25H2 or 26H2 is recommended.",
+                         L"WIN Infinite Desktop braucht Windows 11 ab Version 24H2 (Build 26100); empfohlen sind 25H2 oder 26H2."),
+                    L"WIN Infinite Desktop", MB_ICONERROR | MB_OK);
         return 1;
     }
 
@@ -65,11 +107,14 @@ int main(int argc, char **argv)
     if (!mutex || GetLastError() == ERROR_ALREADY_EXISTS) {
         return 0;
     }
+    // The renamed version: the old service steps aside, its settings and canvases move over.
+    quitLegacyService();
+    migrateLegacyData(QString::fromLatin1(SettingsGroup));
     // Canvas menu and tray menu dark like the rest of Windows in dark mode.
     followSystemMenuTheme();
 
     QGuiApplication app(argc, argv);
-    QGuiApplication::setApplicationName(QStringLiteral("WIN Infinit Desktop"));
+    QGuiApplication::setApplicationName(QStringLiteral("WIN Infinite Desktop"));
     QGuiApplication::setApplicationVersion(QStringLiteral(WID_VERSION_STRING));
     QGuiApplication::setQuitOnLastWindowClosed(false);
     installLogging();
@@ -160,7 +205,7 @@ int main(int argc, char **argv)
     });
 
     if (safeMode) {
-        tray.notify(L"WIN Infinit Desktop",
+        tray.notify(L"WIN Infinite Desktop",
                     text(L"Started in safe mode after repeated crashes. Windows are not managed until you leave safe mode.",
                          L"Nach wiederholten Abstürzen im abgesicherten Modus gestartet. Fenster werden erst nach dem Verlassen verwaltet."));
     }

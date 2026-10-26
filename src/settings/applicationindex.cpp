@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "applicationindex.h"
@@ -17,7 +17,7 @@
 
 #include <algorithm>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -377,4 +377,4 @@ bool ApplicationFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &
     return SearchUtil::matches(index.data(ApplicationIndex::SearchTextRole).toString(), m_terms);
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

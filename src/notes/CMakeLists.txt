@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # wid-notes.exe: notes on the canvas (Qt Quick, no widgets). Started by the canvas service
@@ -34,7 +34,7 @@ add_executable(wid-notes WIN32
 set_target_properties(wid-notes PROPERTIES AUTOMOC ON)
 
 qt_add_qml_module(wid-notes
-    URI InfinitDesktop.Notes
+    URI InfiniteDesktop.Notes
     VERSION 1.0
     QML_FILES qml/NoteWindow.qml
     DEPENDENCIES QtQuick
@@ -46,7 +46,7 @@ qt_add_resources(wid-notes "wid_notes_icons"
     FILES icons/note-app.svg
 )
 wid_add_catalogs(wid-notes)
-wid_add_windows_resources(wid-notes wid-notes "WIN Infinit Desktop Notes")
+wid_add_windows_resources(wid-notes wid-notes "WIN Infinite Desktop Notes")
 
 target_link_libraries(wid-notes PRIVATE
     wid_appshared

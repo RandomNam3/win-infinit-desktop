@@ -1,8 +1,8 @@
-# WIN Infinit Desktop – Benutzerhandbuch
+# WIN Infinite Desktop – Benutzerhandbuch
 
-> *If it runs Windows 11, it runs WIN Infinit Desktop.*
+> *If it runs Windows 11, it runs WIN Infinite Desktop.*
 
-WIN Infinit Desktop macht jeden Bildschirm zu einer **unendlich großen Arbeitsfläche**. Fenster liegen in
+WIN Infinite Desktop macht jeden Bildschirm zu einer **unendlich großen Arbeitsfläche**. Fenster liegen in
 Originalgröße auf dieser Fläche, dein Bildschirm ist wie eine Kamera, die einen Ausschnitt davon zeigt.
 Du kannst die Fläche in jede Richtung verschieben, herauszoomen, um alles zu überblicken, und wieder
 hineinzoomen – die Taskleiste und das Hintergrundbild bleiben dabei, wo sie sind.
@@ -45,12 +45,12 @@ hineinzoomen – die Taskleiste und das Hintergrundbild bleiben dabei, wo sie si
 Die ausführliche Anleitung steht in [INSTALL.md](INSTALL.md). Kurzfassung: in PowerShell ausführen
 
 ```powershell
-irm https://raw.githubusercontent.com/RandomNam3/win-infinit-desktop/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/RandomNam3/win-infinite-desktop/main/install.ps1 | iex
 ```
 
 oder das ZIP aus dem neuesten Release entpacken und im Ordner `install.ps1` ausführen.
 
-Danach startet WIN Infinit Desktop bei jeder Anmeldung von selbst. Das Symbol im Infobereich der
+Danach startet WIN Infinite Desktop bei jeder Anmeldung von selbst. Das Symbol im Infobereich der
 Taskleiste zeigt, dass es läuft.
 
 **Beenden:** Symbol im Infobereich → *Beenden*. Alle Fenster, die gerade außerhalb des sichtbaren
@@ -71,7 +71,7 @@ einem abgedunkelten Hintergrundbild mit Punktraster. Die Taskleiste bleibt sicht
 
 **Statisch bleibt:** das Hintergrundbild, die Taskleiste, angepinnte Fenster und Vollbild-Fenster.
 
-**Geparkte Fenster** – Fenster, die gerade nicht im Bild sind, legt WIN Infinit Desktop außerhalb aller
+**Geparkte Fenster** – Fenster, die gerade nicht im Bild sind, legt WIN Infinite Desktop außerhalb aller
 Bildschirme ab. Viele Programme (alle auf Chromium-Basis wie Edge, Chrome, Teams oder Discord) hören dann
 auf zu zeichnen und sparen Strom.
 
@@ -90,7 +90,7 @@ auf zu zeichnen und sparen Strom.
 | Nach schnellem Ziehen **loslassen** | die Fläche gleitet nach und bremst sanft ab |
 | **Klick**, während die Fläche noch gleitet oder fährt | hält sie an; der nächste Klick geht an das Fenster |
 
-Das Startmenü öffnet sich bei Win + Mausrad und Win + Alt + Ziehen nicht: WIN Infinit Desktop sorgt dafür,
+Das Startmenü öffnet sich bei Win + Mausrad und Win + Alt + Ziehen nicht: WIN Infinite Desktop sorgt dafür,
 dass Windows das Loslassen der Win-Taste nicht als einzelnen Tastendruck sieht.
 
 Beim Zurückzoomen rastet der Zoom genau bei 100 % ein – dann sind alle Fenster wieder direkt bedienbar.
@@ -165,7 +165,7 @@ Windows* zeigt die Kürzel von Windows 11 und markiert Überschneidungen.
 | Win + Alt + F1 … F9 | Gruppe 1 … 9 öffnen bzw. zusammenholen |
 
 Win + Alt + B (HDR ein/aus) und Win + Alt + G (Game Bar: Aufnahme der letzten Minuten) belegt auch
-Windows. Solange WIN Infinit Desktop läuft, gelten sie für WIN Infinit Desktop. Brauchst du die
+Windows. Solange WIN Infinite Desktop läuft, gelten sie für WIN Infinite Desktop. Brauchst du die
 Windows-Funktion, belege das Kürzel in der Einstellungs-App um.
 
 ## Fenster: finden, anpinnen, immer oben
@@ -181,13 +181,13 @@ Bild-im-Bild-Video. Du kannst es weiterhin frei verschieben. Nochmal Win + Alt +
 Fläche, genau an die Stelle, an der es gerade zu sehen ist.
 
 **Immer oben (Win + Alt + Umschalt + T):** wie Anpinnen, zusätzlich bleibt das Fenster über allen anderen.
-Beim Lösen und beim Beenden von WIN Infinit Desktop wird „immer im Vordergrund“ wieder zurückgenommen.
+Beim Lösen und beim Beenden von WIN Infinite Desktop wird „immer im Vordergrund“ wieder zurückgenommen.
 Mit der Option, Fenster mit „immer im Vordergrund“ anzupinnen, werden auch Fenster angepinnt, die ein
 Programm selbst über alle anderen legt.
 
 ## Fenster öffnen sich dort, wo sie zuletzt waren
 
-Wird ein Programmfenster geschlossen, merkt sich WIN Infinit Desktop **Stelle auf der Fläche, Größe,
+Wird ein Programmfenster geschlossen, merkt sich WIN Infinite Desktop **Stelle auf der Fläche, Größe,
 Bildschirm und Anpinnen**. Das nächste Fenster dieses Programms öffnet sich wieder dort – liegt die Stelle
 gerade nicht im Bild, fährt die Kamera hin.
 
@@ -234,7 +234,7 @@ Notizen sind kleine Zettel, die wie Fenster auf der Fläche liegen. Neu anlegen 
   anklickbaren Links; nochmal schaltet zurück zum Bearbeiten, ebenso ein Doppelklick in den Text. Jede
   Notiz merkt sich ihre Ansicht.
 - **Speichern** passiert automatisch, kurz nach dem Tippen. Jede Notiz ist eine Markdown-Datei unter
-  `%APPDATA%\WIN Infinit Desktop\notes\` und lässt sich auch dort lesen.
+  `%APPDATA%\WIN Infinite Desktop\notes\` und lässt sich auch dort lesen.
 - **Verschieben** an der Kopfzeile, **Größe ändern** an der Ecke rechts unten. Notizen öffnen sich wieder
   genau dort, wo sie lagen.
 - **Anheften** (Knopf ◉ in der Kopfzeile): Die Notiz bleibt am Bildschirm, auch wenn die Kamera
@@ -318,11 +318,11 @@ Pfeiltasten (Windows-Standard) geht es auch per Tastatur.
 
 > **Hinweis:** Windows maximiert oder kachelt Fenster („Snap“), wenn man sie an den oberen bzw.
 > seitlichen Bildschirmrand zieht. Das würde mit dem Kantenscrollen kollidieren. Deshalb schaltet
-> WIN Infinit Desktop Snap **nur während du ein Fenster der Arbeitsfläche ziehst** ab; an deinen
+> WIN Infinite Desktop Snap **nur während du ein Fenster der Arbeitsfläche ziehst** ab; an deinen
 > Windows-Einstellungen ändert sich nichts. Möchtest du lieber Snap am Rand verwenden, schalte das
 > Kantenscrollen in den Einstellungen aus. Snap per Win + Pfeiltasten funktioniert immer.
 
-Werden Bildschirme an- oder abgesteckt, ordnet WIN Infinit Desktop die Fenster neu ein; Fenster eines
+Werden Bildschirme an- oder abgesteckt, ordnet WIN Infinite Desktop die Fenster neu ein; Fenster eines
 verschwundenen Bildschirms gehören danach zu dem, auf dem sie jetzt liegen.
 
 ## Virtuelle Desktops
@@ -355,7 +355,7 @@ dieser einen Fläche.
 Das Menü des Symbols hat:
 - *Neue Notiz*, *Notizen ein-/ausblenden*, *Karte zeigen*;
 - *Neue Gruppe aus Auswahl …*, *Bereich aufziehen …* und *Gruppe öffnen* mit allen Gruppen;
-- *Gesten pausieren*: Maus und Tastatur verhalten sich wie ohne WIN Infinit Desktop, die Fläche bleibt;
+- *Gesten pausieren*: Maus und Tastatur verhalten sich wie ohne WIN Infinite Desktop, die Fläche bleibt;
 - *Alle Fenster zurückholen*: holt alle Fenster in den sichtbaren Bereich;
 - *Einstellungen …* und *Beenden*.
 
@@ -363,20 +363,20 @@ Im abgesicherten Modus steht dort außerdem *Abgesicherten Modus verlassen*.
 
 ## Einstellungen
 
-Die **Einstellungs-App** (Startmenü → *WIN Infinit Desktop Settings*, oder Symbol im Infobereich →
+Die **Einstellungs-App** (Startmenü → *WIN Infinite Desktop Settings*, oder Symbol im Infobereich →
 *Einstellungen …*) hat ein Suchfeld über alle Optionen und zu jeder Option eine kurze Erklärung hinter
 dem **(i)**. Änderungen wirken **sofort**. Hier lassen sich auch alle Tastenkürzel ändern, Gruppen und
 Bereiche bearbeiten und gemerkte Fensterplätze löschen.
 
-Alle Einstellungen liegen in `%APPDATA%\WIN Infinit Desktop\settings.ini`. Kamerapositionen, Lesezeichen,
-gemerkte Fensterplätze, Gruppen und Bereiche liegen unter `%LOCALAPPDATA%\WIN Infinit Desktop\`.
+Alle Einstellungen liegen in `%APPDATA%\WIN Infinite Desktop\settings.ini`. Kamerapositionen, Lesezeichen,
+gemerkte Fensterplätze, Gruppen und Bereiche liegen unter `%LOCALAPPDATA%\WIN Infinite Desktop\`.
 
 ### Updates
 
 Die Einstellungs-App sieht beim Start auf GitHub nach, ob es eine neue Version gibt (abschaltbar auf der
 Startseite, dort gibt es auch *Jetzt prüfen*). Gibt es eine, zeigt die Startseite die Neuerungen aller
 neueren Versionen. **Update installieren** lädt das Paket herunter (mit Fortschrittsbalken), prüft es,
-packt es aus und installiert es. Dabei schließen sich WIN Infinit Desktop und die Einstellungs-App kurz;
+packt es aus und installiert es. Dabei schließen sich WIN Infinite Desktop und die Einstellungs-App kurz;
 danach starten beide in der neuen Version wieder, und die Startseite meldet, ob das Update geklappt hat.
 Ging etwas schief, zeigt sie den Grund und öffnet auf Wunsch das Protokoll.
 
@@ -390,15 +390,15 @@ Ging etwas schief, zeigt sie den Grund und öffnet auf Wunsch das Protokoll.
 
 ## Fehlerbehebung
 
-**WIN Infinit Desktop startet nicht.**
+**WIN Infinite Desktop startet nicht.**
 Meist blockiert Smart App Control die nicht signierten Programme. Siehe
 [INSTALL.md](INSTALL.md#3-smart-app-control-und-smartscreen).
 
-**„WIN Infinit Desktop wurde nach wiederholten Abstürzen im abgesicherten Modus gestartet.“**
+**„WIN Infinite Desktop wurde nach wiederholten Abstürzen im abgesicherten Modus gestartet.“**
 Der Dienst ist mehrmals kurz hintereinander abgestürzt. Damit dein Desktop benutzbar bleibt, verwaltet
 er keine Fenster und reagiert auf keine Gesten. Wieder einschalten über das Symbol im Infobereich
 (*Abgesicherten Modus verlassen*) oder die Einstellungs-App. Bitte melde den Fehler mit dem Protokoll
-`%LOCALAPPDATA%\WIN Infinit Desktop\service.log`.
+`%LOCALAPPDATA%\WIN Infinite Desktop\service.log`.
 
 **Ein Fenster ist „verschwunden“.**
 Es liegt auf der Fläche außerhalb des Bilds: Klick in der Taskleiste oder Alt+Tab holt es, Win + Alt + W
@@ -407,7 +407,7 @@ den Bildschirm zurück.
 
 **Manche Fenster folgen beim Verschieben etwas verzögert.**
 Bei 100 % verschiebt jedes Programm sein Fenster selbst, wenn es dazu kommt. Beschäftigte Programme –
-etwa Firefox oder das Fenster von Windows Sandbox – brauchen dafür länger. WIN Infinit Desktop schickt
+etwa Firefox oder das Fenster von Windows Sandbox – brauchen dafür länger. WIN Infinite Desktop schickt
 ihnen dann nur die jeweils neueste Position statt jeder Zwischenstation; sie hängen bei schnellem
 Verschieben kurz hinterher und kommen danach genau an ihrem Platz an.
 
@@ -416,16 +416,16 @@ Gesten kurz pausieren (Symbol im Infobereich oder Kürzel *Gesten pausieren/fort
 Belegung in den Einstellungen ändern.
 
 **Ausführliches Protokoll:** Option *Debug-Protokoll* unter *Erweitert* einschalten, dann
-`%LOCALAPPDATA%\WIN Infinit Desktop\service.log` ansehen.
+`%LOCALAPPDATA%\WIN Infinite Desktop\service.log` ansehen.
 
 **Status abfragen:**
 ```powershell
-& "$env:LOCALAPPDATA\Programs\WIN Infinit Desktop\wid-ctl.exe" state
+& "$env:LOCALAPPDATA\Programs\WIN Infinite Desktop\wid-ctl.exe" state
 ```
 
 ## Häufige Fragen
 
-**Kostet WIN Infinit Desktop Leistung, wenn ich nichts verschiebe?** Nein. Ohne Eingaben und ohne
+**Kostet WIN Infinite Desktop Leistung, wenn ich nichts verschiebe?** Nein. Ohne Eingaben und ohne
 Fensterereignisse schläft das Programm; Fenster außerhalb des Bilds schlafen sogar.
 
 **Werden meine Fenster beim Verschieben wirklich bewegt?** Ja. Bei 100 % liegen die Fenster genau dort,
@@ -442,5 +442,5 @@ eigene Fläche mit eigener Kameraposition, siehe [Virtuelle Desktops](#virtuelle
 **Öffnet sich das Startmenü an der Mausposition?** Nein, das Startmenü bleibt an der Taskleiste. Windows
 bietet keine Möglichkeit, es an anderer Stelle zu öffnen.
 
-**Was passiert bei einem Absturz mit meinen Fenstern?** Beim nächsten Start holt WIN Infinit Desktop alle
+**Was passiert bei einem Absturz mit meinen Fenstern?** Beim nächsten Start holt WIN Infinite Desktop alle
 Fenster zurück, die ganz außerhalb der Bildschirme liegen. Snap wird ebenfalls wieder eingeschaltet.

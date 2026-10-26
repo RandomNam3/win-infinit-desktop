@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
     wid-probe: reports what the Windows interfaces the canvas relies on actually do on
@@ -437,7 +437,7 @@ int report(const Options &options)
         return 0;
     }
 
-    line(L"== WIN Infinit Desktop probe " WID_VERSION_STRING L" ==");
+    line(L"== WIN Infinite Desktop probe " WID_VERSION_STRING L" ==");
     line(format(L"Windows %u.%u.%u.%u  DisplayVersion %ls  (%ls)", os.major, os.minor, os.build, os.revision, os.displayVersion.c_str(),
                 supportText(osSupport(os))));
     line(format(L"Elevated: %ls   Notification state: %ls", selfElevated() ? L"yes" : L"no", userNotificationState()));
@@ -886,7 +886,7 @@ int windowAt(int x, int y)
 
 void usage()
 {
-    line(L"wid-probe " WID_VERSION_STRING L" - checks the Windows interfaces WIN Infinit Desktop uses");
+    line(L"wid-probe " WID_VERSION_STRING L" - checks the Windows interfaces WIN Infinite Desktop uses");
     line();
     line(L"  wid-probe [--json] [--titles] [--all]   system, monitors, settings, top-level windows");
     line(L"  wid-probe --watch-input SECONDS         wheel vs. touchpad, pinch, injected input");

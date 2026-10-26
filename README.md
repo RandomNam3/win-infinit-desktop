@@ -1,13 +1,16 @@
-# WIN Infinit Desktop
+# WIN Infinite Desktop
 
 **Eine unendliche Arbeitsfläche für Windows 11 – auf jedem Bildschirm.**
-*If it runs Windows 11, it runs WIN Infinit Desktop.*
+*If it runs Windows 11, it runs WIN Infinite Desktop.*
 
-WIN Infinit Desktop ist die Windows-Version von [KDE Infinit Desktop](https://github.com/RandomNam3/kde-infinit-desktop)
+WIN Infinite Desktop ist die Windows-Version von [KDE Infinite Desktop](https://github.com/RandomNam3/kde-infinite-desktop)
 (Windows 11 24H2, 25H2 und 26H2). Jeder Monitor wird zu einer in alle Richtungen unendlichen Fläche, auf der
 Fenster in Originalgröße liegen. Du verschiebst die Fläche mit Maus, Touchpad oder Tastatur, zoomst mit dem
 Mausrad heraus, um alles zu überblicken, und wieder hinein, um weiterzuarbeiten. Taskleiste und
 Hintergrundbild bleiben dabei fest stehen.
+
+Bis Version 0.2 hieß das Projekt „WIN Infinit Desktop“. Der Installer übernimmt eine solche Installation
+samt Einstellungen, Notizen und Arbeitsflächen.
 
 ![Übersicht bei 55 %: alle Fenster und Notizen als Live-Vorschau, die Taskleiste bleibt stehen](docs/images/overview.webp)
 
@@ -57,12 +60,12 @@ Hintergrundbild bleiben dabei fest stehen.
 Ein Befehl in PowerShell, als normaler Benutzer:
 
 ```powershell
-irm https://raw.githubusercontent.com/RandomNam3/win-infinit-desktop/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/RandomNam3/win-infinite-desktop/main/install.ps1 | iex
 ```
 
 Er lädt das neueste Release von GitHub, prüft dessen SHA-256-Prüfsumme und startet den Installer. Von
-Hand geht es auch: aus dem [neuesten Release](https://github.com/RandomNam3/win-infinit-desktop/releases/latest)
-`win-infinit-desktop-<Version>-x64.zip` herunterladen, entpacken und im entpackten Ordner ausführen:
+Hand geht es auch: aus dem [neuesten Release](https://github.com/RandomNam3/win-infinite-desktop/releases/latest)
+`win-infinite-desktop-<Version>-x64.zip` herunterladen, entpacken und im entpackten Ordner ausführen:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
@@ -70,10 +73,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 
 Der Installer:
 - installiert für den angemeldeten Benutzer, **ohne Administratorrechte**, nach
-  `%LOCALAPPDATA%\Programs\WIN Infinit Desktop`,
+  `%LOCALAPPDATA%\Programs\WIN Infinite Desktop`,
 - legt Einträge im **Startmenü** und im **Autostart** an,
 - trägt das Programm unter *Einstellungen → Apps* ein (dort lässt es sich auch entfernen),
-- startet WIN Infinit Desktop. Das Symbol erscheint im Infobereich.
+- startet WIN Infinite Desktop. Das Symbol erscheint im Infobereich.
 
 Updates installiert die Einstellungs-App. Alles Weitere, auch Deinstallieren und Fehlerbehebung, steht in
 [docs/INSTALL.md](docs/INSTALL.md).

@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "serviceconnection.h"
@@ -14,7 +14,7 @@
 
 using namespace std::chrono_literals;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -102,4 +102,4 @@ void ServiceConnection::callNotes(const QString &method, const QJsonObject &para
     m_notes->call(method, params, context, std::move(callback));
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

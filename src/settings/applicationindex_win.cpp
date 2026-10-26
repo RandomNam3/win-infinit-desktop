@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
     The Start menu (the shell's AppsFolder) for ApplicationIndex, and application icons
@@ -19,7 +19,7 @@
 #include <shlobj.h>
 #include <shobjidl.h>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -110,4 +110,4 @@ QList<ApplicationIndex::Entry> ApplicationIndex::readStartMenu()
     return entries;
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

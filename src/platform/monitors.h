@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -18,7 +18,7 @@ namespace Wid
  * One monitor, as the canvas needs it: geometry in physical pixels (the process is
  * per-monitor DPI aware v2), work area without taskbars and app bars, and an identity
  * that survives reconnecting the monitor to another port (EDID manufacturer and product,
- * like KDE Infinit Desktop's placement memory).
+ * like KDE Infinite Desktop's placement memory).
  *
  * DisplayConfig does not report the EDID serial number. Two identical monitors are told
  * apart by their device path (it contains the connector), see identity().

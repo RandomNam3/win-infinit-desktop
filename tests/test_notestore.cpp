@@ -1,5 +1,5 @@
 /*
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop and WIN Infinit Desktop contributors
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop and WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "notestore.h"
@@ -10,7 +10,7 @@
 #include <QStandardPaths>
 #include <QTest>
 
-using namespace InfinitDesktop;
+using namespace InfiniteDesktop;
 
 class TestNoteStore : public QObject
 {

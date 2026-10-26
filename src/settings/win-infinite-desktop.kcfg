@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    WIN Infinit Desktop - settings schema
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - settings schema
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
-    The schema of KDE Infinit Desktop (infinitdesktop.kcfg there) with the entries the
+    The schema of KDE Infinite Desktop (infinitedesktop.kcfg there) with the entries the
     Windows service reads: same names, types, defaults and ranges, texts for Windows.
-    The service reads %APPDATA%\WIN Infinit Desktop\settings.ini, group
-    [Effect-infinitdesktop]; enums are stored by choice name, colors as "r,g,b", lists
+    The service reads %APPDATA%\WIN Infinite Desktop\settings.ini, group
+    [Effect-infinitedesktop]; enums are stored by choice name, colors as "r,g,b", lists
     comma separated. Every entry needs a <label> and a <whatsthis>; the UI category of an
     entry is defined in settingsmeta.cpp.
 -->
@@ -15,7 +15,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
     <kcfgfile arg="true"/>
-    <group name="Effect-infinitdesktop">
+    <group name="Effect-infinitedesktop">
 
         <!-- ===================== Navigation: mouse ===================== -->
         <entry name="DragDesktopToPan" type="Bool">
@@ -282,7 +282,7 @@
         <!-- ===================== Notes, groups, areas and the map ===================== -->
         <entry name="NotesEnabled" type="Bool">
             <label>Notes on the canvas</label>
-            <whatsthis>Notes are small windows with Markdown text that lie on the canvas like other windows and are saved automatically. Create one with Win+Alt+N, from the canvas menu (right click on the empty canvas in the overview, Win + right click on the desktop at 100 %) or from the WIN Infinit Desktop icon in the notification area. Pin a note to keep it on the screen while the canvas moves.</whatsthis>
+            <whatsthis>Notes are small windows with Markdown text that lie on the canvas like other windows and are saved automatically. Create one with Win+Alt+N, from the canvas menu (right click on the empty canvas in the overview, Win + right click on the desktop at 100 %) or from the WIN Infinite Desktop icon in the notification area. Pin a note to keep it on the screen while the canvas moves.</whatsthis>
             <default>true</default>
         </entry>
         <entry name="NoteColor" type="Enum">
@@ -344,7 +344,7 @@
         <!-- ===================== Advanced ===================== -->
         <entry name="CrashGuard" type="Bool">
             <label>Safe mode after repeated crashes</label>
-            <whatsthis>If WIN Infinit Desktop crashes several times in a row, it starts in safe mode and leaves the windows alone until you turn it on again. This keeps your desktop usable.</whatsthis>
+            <whatsthis>If WIN Infinite Desktop crashes several times in a row, it starts in safe mode and leaves the windows alone until you turn it on again. This keeps your desktop usable.</whatsthis>
             <default>true</default>
         </entry>
         <entry name="RememberCanvas" type="Bool">
@@ -354,7 +354,7 @@
         </entry>
         <entry name="DebugLogging" type="Bool">
             <label>Debug logging</label>
-            <whatsthis>Writes detailed messages to the file service.log in %LOCALAPPDATA%\WIN Infinit Desktop. Only useful for bug reports.</whatsthis>
+            <whatsthis>Writes detailed messages to the file service.log in %LOCALAPPDATA%\WIN Infinite Desktop. Only useful for bug reports.</whatsthis>
             <default>false</default>
         </entry>
     </group>

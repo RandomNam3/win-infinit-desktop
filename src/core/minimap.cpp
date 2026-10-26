@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "minimap.h"
@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 QPointF MapView::toScreen(const QPointF &canvasPoint) const
@@ -79,4 +79,4 @@ QPointF mapDragCenter(const MapView &view, const QPointF &centerAtStart, const Q
     return centerAtStart + screenDelta / view.scale;
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

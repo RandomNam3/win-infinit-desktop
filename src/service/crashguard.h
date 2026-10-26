@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -13,7 +13,7 @@ namespace Wid
 {
 
 /**
- * Counts starts that did not end cleanly, like KDE Infinit Desktop's CrashGuard.
+ * Counts starts that did not end cleanly, like KDE Infinite Desktop's CrashGuard.
  *
  * Every start increments a counter on disk; 30 s of stable running or a clean exit reset
  * it. After three crashes in a row the service starts in safe mode: no hooks, no window
@@ -27,7 +27,7 @@ public:
     static constexpr int Threshold = 3;
     static constexpr int StableAfterMs = 30000;
 
-    /// `path`: the counter file; empty = %LOCALAPPDATA%\WIN Infinit Desktop\crashguard.
+    /// `path`: the counter file; empty = %LOCALAPPDATA%\WIN Infinite Desktop\crashguard.
     explicit CrashGuard(const QString &path = QString(), QObject *parent = nullptr);
 
     /// Reads the counter and arms the guard. Returns true if safe mode is required.
