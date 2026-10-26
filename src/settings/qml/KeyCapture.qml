@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Shows a shortcut as key caps. Click (or Enter/Space) to record a new one:
 // press the key combination, Esc cancels, Backspace removes the shortcut.
 import QtQuick
 import QtQuick.Controls.Basic as Basic
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Basic.AbstractButton {
     id: control

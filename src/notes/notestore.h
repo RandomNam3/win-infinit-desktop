@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /// One note: Markdown text and how its window looks. Where it lies is the canvas' business.
@@ -110,7 +110,7 @@ private:
 };
 
 /**
- * All notes, stored in %APPDATA%\WIN Infinit Desktop\notes: the text of each note in
+ * All notes, stored in %APPDATA%\WIN Infinite Desktop\notes: the text of each note in
  * <id>.md (readable and editable outside the app), everything else in index.json. Saving is
  * delayed a little and atomic (QSaveFile), so typing never waits for the disk and a crash
  * never leaves half a file.
@@ -153,7 +153,7 @@ public:
     static bool isValidId(const QString &id);
 
 Q_SIGNALS:
-    void noteAdded(InfinitDesktop::Note *note);
+    void noteAdded(InfiniteDesktop::Note *note);
     void noteRemoved(const QString &id);
 
 private:
@@ -168,4 +168,4 @@ private:
     QTimer m_saveTimer;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

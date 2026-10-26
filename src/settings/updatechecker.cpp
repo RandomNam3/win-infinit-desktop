@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "updatechecker.h"
@@ -33,7 +33,7 @@
 
 #include <algorithm>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -41,7 +41,7 @@ namespace
 
 UpdateChecker *s_updateInstance = nullptr;
 
-const QString s_repository = QStringLiteral("RandomNam3/win-infinit-desktop");
+const QString s_repository = QStringLiteral("RandomNam3/win-infinite-desktop");
 const QString s_configGroup = QStringLiteral("Updates");
 const QString s_checkOnStartKey = QStringLiteral("CheckOnStart");
 constexpr int TimeoutMs = 15000;
@@ -83,7 +83,7 @@ QString updateFile(const QString &name)
     if (base.isEmpty()) {
         base = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     }
-    return QDir(base).filePath(QStringLiteral("WIN Infinit Desktop/") + name);
+    return QDir(base).filePath(QStringLiteral("WIN Infinite Desktop/") + name);
 }
 
 /// Console programs started from here (tar, PowerShell) run without a window.
@@ -219,7 +219,7 @@ void UpdateChecker::check()
     QNetworkRequest request(QUrl(QStringLiteral("https://api.github.com/repos/%1/releases?per_page=30").arg(s_repository)));
     request.setRawHeader("Accept", "application/vnd.github+json");
     request.setRawHeader("X-GitHub-Api-Version", "2022-11-28");
-    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("win-infinit-desktop-settings/%1").arg(currentVersion()));
+    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("win-infinite-desktop-settings/%1").arg(currentVersion()));
     request.setTransferTimeout(TimeoutMs);
     QNetworkReply *reply = network()->get(request);
     m_reply = reply;
@@ -283,8 +283,8 @@ QVariantList UpdateChecker::newerReleases(const QByteArray &json, const QString 
         entry.insert(QStringLiteral("notes"), release.value(QStringLiteral("body")).toString().trimmed());
         entry.insert(QStringLiteral("url"), release.value(QStringLiteral("html_url")).toString());
         entry.insert(QStringLiteral("date"), QDateTime::fromString(release.value(QStringLiteral("published_at")).toString(), Qt::ISODate).toLocalTime());
-        // The package for this computer: win-infinit-desktop-<version>-<architecture>.zip.
-        const QString packageName = QStringLiteral("win-infinit-desktop-%1-%2.zip").arg(version, architecture);
+        // The package for this computer: win-infinite-desktop-<version>-<architecture>.zip.
+        const QString packageName = QStringLiteral("win-infinite-desktop-%1-%2.zip").arg(version, architecture);
         const QJsonArray assets = release.value(QStringLiteral("assets")).toArray();
         for (const QJsonValue &asset : assets) {
             const QJsonObject object = asset.toObject();
@@ -321,7 +321,7 @@ QString UpdateChecker::updateCommand() const
     // service and the apps (this one too), installs and starts the service again.
     return QStringLiteral(
                "$ErrorActionPreference = 'Stop'; "
-               "$dir = Join-Path $env:TEMP 'win-infinit-desktop-update-%1'; "
+               "$dir = Join-Path $env:TEMP 'win-infinite-desktop-update-%1'; "
                "if (Test-Path $dir) { Remove-Item -Recurse -Force $dir }; "
                "New-Item -ItemType Directory -Force $dir | Out-Null; "
                "$zip = Join-Path $dir 'package.zip'; "
@@ -387,7 +387,7 @@ void UpdateChecker::installUpdate()
         setInstallStatus(QStringLiteral("failed"), i18n("This release has no package for this computer."));
         return;
     }
-    m_updateDirectory = QDir(QDir::tempPath()).filePath(QStringLiteral("win-infinit-desktop-update-%1").arg(version));
+    m_updateDirectory = QDir(QDir::tempPath()).filePath(QStringLiteral("win-infinite-desktop-update-%1").arg(version));
     QDir(m_updateDirectory).removeRecursively();
     m_package = std::make_unique<QFile>(QDir(m_updateDirectory).filePath(QStringLiteral("package.zip")));
     if (!QDir().mkpath(m_updateDirectory) || !m_package->open(QIODevice::WriteOnly)) {
@@ -399,7 +399,7 @@ void UpdateChecker::installUpdate()
     m_packageDigest = release.value(QStringLiteral("packageDigest")).toString();
 
     QNetworkRequest request{QUrl(package)};
-    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("win-infinit-desktop-settings/%1").arg(currentVersion()));
+    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("win-infinite-desktop-settings/%1").arg(currentVersion()));
     // GitHub redirects to its storage host; the time limit applies while nothing arrives.
     request.setTransferTimeout(2 * TimeoutMs);
     QNetworkReply *reply = network()->get(request);
@@ -539,14 +539,16 @@ void UpdateChecker::watchInstaller()
 
 void UpdateChecker::readInstallResult()
 {
-    // The packages of earlier updates: the installer ran from there and could not remove them.
+    // The packages of earlier updates (of 0.2 and older too): the installer ran from there and
+    // could not remove them.
     // A little later, when the installer that opened this app has ended.
     QTimer::singleShot(10000, this, [this]() {
         if (isRunning(m_installStatus)) {
             return;
         }
         const QDir temp(QDir::tempPath());
-        const QStringList folders = temp.entryList({QStringLiteral("win-infinit-desktop-update-*")}, QDir::Dirs | QDir::NoDotAndDotDot);
+        const QStringList folders = temp.entryList({QStringLiteral("win-infinite-desktop-update-*"), QStringLiteral("win-infinit-desktop-update-*")},
+                                                  QDir::Dirs | QDir::NoDotAndDotDot);
         for (const QString &folder : folders) {
             QDir(temp.filePath(folder)).removeRecursively();
         }
@@ -577,4 +579,4 @@ void UpdateChecker::openInstallLog() const
     }
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

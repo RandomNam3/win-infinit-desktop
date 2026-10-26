@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-<!-- SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+<!-- SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
      SPDX-License-Identifier: GPL-3.0-or-later -->
 <g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
 <rect x="2" y="5" width="9.5" height="7.5" rx="1.5"/><rect x="12.5" y="5" width="9.5" height="7.5" rx="1.5"/><path d="M6.75 12.5V16M4.75 16h4M17.25 12.5V16M15.25 16h4"/><path d="M5 19h14" stroke-opacity="0.55"/>

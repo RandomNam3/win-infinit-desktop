@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -54,7 +54,7 @@ enum class CanvasMenuItem : unsigned {
     Quit,
 };
 
-/// The canvas menu as in KDE Infinit Desktop: notes (if enabled), group and area from a
+/// The canvas menu as in KDE Infinite Desktop: notes (if enabled), group and area from a
 /// selection, "remove this area" over an area, the map, then the view and the settings.
 QList<CanvasMenuItem> canvasMenuItems(bool notesEnabled, bool overArea, bool zoomedOut);
 
@@ -185,12 +185,12 @@ private:
     void prunePending();
 
     // Areas
-    QList<InfinitDesktop::Area> areasOf(const Canvas &canvas) const;
-    QList<InfinitDesktop::OutputIdentity> monitorIdentities() const;
+    QList<InfiniteDesktop::Area> areasOf(const Canvas &canvas) const;
+    QList<InfiniteDesktop::OutputIdentity> monitorIdentities() const;
     /// Whether something of `stored` desktop is on a canvas of `canvasDesktop`: without
     /// canvases per desktop there is one canvas with everything.
     static bool onDesktop(const QString &stored, const QString &canvasDesktop);
-    static bool areaBelongsTo(const InfinitDesktop::Area &area, int monitor, const QString &desktop, const QList<InfinitDesktop::OutputIdentity> &identities);
+    static bool areaBelongsTo(const InfiniteDesktop::Area &area, int monitor, const QString &desktop, const QList<InfiniteDesktop::OutputIdentity> &identities);
     void updateAreas(const Canvas &canvas);
     void scheduleAreaUpdate(const QString &canvasKey);
     void createAreaFromRect(const QRectF &canvasRect, int monitor);
@@ -199,11 +199,11 @@ private:
     // Groups
     QString groupsJson() const;
     bool setGroupsJson(const QString &json);
-    int monitorForGroup(const InfinitDesktop::Group &group) const;
-    void fillMissingGeometry(InfinitDesktop::Group &group, int monitor);
-    void revealGroup(const InfinitDesktop::Group &group, int monitor);
+    int monitorForGroup(const InfiniteDesktop::Group &group) const;
+    void fillMissingGeometry(InfiniteDesktop::Group &group, int monitor);
+    void revealGroup(const InfiniteDesktop::Group &group, int monitor);
     void createGroupFromRect(const QRectF &canvasRect, int monitor);
-    QList<QRectF> memberRects(const InfinitDesktop::Group &group) const;
+    QList<QRectF> memberRects(const InfiniteDesktop::Group &group) const;
     void placeAgainLater(HWND hwnd, const QString &canvasKey, const QPointF &canvasPos);
     static void launch(const QString &command);
 
@@ -225,9 +225,9 @@ private:
     bool isLocked(int monitor) const;
 
     CanvasService &m_service;
-    InfinitDesktop::GroupStore m_groups;
-    InfinitDesktop::AreaStore m_areas;
-    InfinitDesktop::NotePlacements m_notes;
+    InfiniteDesktop::GroupStore m_groups;
+    InfiniteDesktop::AreaStore m_areas;
+    InfiniteDesktop::NotePlacements m_notes;
     bool m_groupsDirty = false;
     bool m_areasDirty = false;
     bool m_notesDirty = false;
@@ -257,7 +257,7 @@ private:
     bool m_selecting = false;
     QPoint m_selectStart;
     // Map
-    InfinitDesktop::MapView m_map;
+    InfiniteDesktop::MapView m_map;
     QRect m_mapPanel; ///< screen rect of the panel
     bool m_mapDragging = false;
     bool m_mapMoved = false;

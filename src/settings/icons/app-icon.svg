@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <!-- WIN Infinit Desktop application icon (the one of KDE Infinit Desktop): an infinite canvas (dot grid with floating windows) and the infinity sign.
-       SPDX-FileCopyrightText: 2026 KDE Infinit Desktop and WIN Infinit Desktop contributors
+  <!-- WIN Infinite Desktop application icon (the one of KDE Infinite Desktop): an infinite canvas (dot grid with floating windows) and the infinity sign.
+       SPDX-FileCopyrightText: 2026 KDE Infinite Desktop and WIN Infinite Desktop contributors
        SPDX-License-Identifier: GPL-3.0-or-later -->
   <defs>
     <linearGradient id="background" x1="12" y1="8" x2="116" y2="120" gradientUnits="userSpaceOnUse">

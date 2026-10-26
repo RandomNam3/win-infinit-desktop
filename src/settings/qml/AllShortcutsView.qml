@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Every global shortcut of the session, grouped by application, with search,
@@ -6,7 +6,7 @@
 import QtQuick
 import QtQuick.Controls.Basic as Basic
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Item {
     id: view
@@ -157,7 +157,7 @@ Item {
                     Layout.leftMargin: 4
                     text: GlobalShortcuts.loading ? i18nc("@info:status", "Loading shortcuts…")
                           : filter.count === GlobalShortcuts.count
-                            ? i18ncp("@info:status %1 shortcuts of Infinit Desktop and Windows", "%1 shortcut of Infinit Desktop and Windows. Windows' own shortcuts cannot be changed; while the canvas service runs, a shortcut of Infinit Desktop wins.", "%1 shortcuts of Infinit Desktop and Windows. Windows' own shortcuts cannot be changed; while the canvas service runs, a shortcut of Infinit Desktop wins.", GlobalShortcuts.count)
+                            ? i18ncp("@info:status %1 shortcuts of Infinite Desktop and Windows", "%1 shortcut of Infinite Desktop and Windows. Windows' own shortcuts cannot be changed; while the canvas service runs, a shortcut of Infinite Desktop wins.", "%1 shortcuts of Infinite Desktop and Windows. Windows' own shortcuts cannot be changed; while the canvas service runs, a shortcut of Infinite Desktop wins.", GlobalShortcuts.count)
                             : i18ncp("@info:status", "Showing %1 of %2 shortcuts", "Showing %1 of %2 shortcuts", filter.count, GlobalShortcuts.count)
                     color: Theme.textSecondary
                     font.pointSize: Theme.fontSmall

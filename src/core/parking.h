@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -10,7 +10,7 @@
 #include <QRectF>
 #include <QSizeF>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
@@ -39,4 +39,4 @@ ParkingSpot computeParkingSpot(const QList<QRectF> &outputs, int ownerIndex, con
 /// True if @p rect intersects any of @p outputs other than @p exceptIndex.
 bool intersectsOtherOutput(const QList<QRectF> &outputs, int exceptIndex, const QRectF &rect);
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

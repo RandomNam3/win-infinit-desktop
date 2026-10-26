@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 // The .po catalog reader and the i18n functions (localizer.h).
@@ -133,7 +133,7 @@ private Q_SLOTS:
     {
         // The catalog that is compiled into the apps.
         Catalog catalog;
-        QVERIFY(catalog.load(QStringLiteral(WID_SOURCE_DIR "/po/de/win-infinit-desktop.po")));
+        QVERIFY(catalog.load(QStringLiteral(WID_SOURCE_DIR "/po/de/win-infinite-desktop.po")));
         QVERIFY(catalog.size() > 500);
         QCOMPARE(catalog.find(QStringLiteral("@title:tab"), QStringLiteral("With Windows")), QStringLiteral("Mit Windows"));
         QCOMPARE(catalog.findPlural(QStringLiteral("@title:tab %1 is the number of conflicts"), QStringLiteral("With Windows · %1 conflict"), 2),

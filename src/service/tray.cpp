@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "tray.h"
@@ -18,7 +18,7 @@ namespace
 
 constexpr UINT TrayMessage = WM_APP + 1;
 constexpr UINT TrayId = 1;
-const wchar_t *const s_windowClass = L"WinInfinitDesktopTray";
+const wchar_t *const s_windowClass = L"WinInfiniteDesktopTray";
 
 enum MenuId : UINT {
     MenuPause = 1,
@@ -64,7 +64,7 @@ bool Tray::show()
 {
     if (!m_window) {
         registerWindowClass(s_windowClass, &Tray::windowProc);
-        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW, s_windowClass, L"WIN Infinit Desktop", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr,
+        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW, s_windowClass, L"WIN Infinite Desktop", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr,
                                        GetModuleHandleW(nullptr), this));
         m_taskbarCreated = RegisterWindowMessageW(L"TaskbarCreated");
         const int size = GetSystemMetrics(SM_CXSMICON);
@@ -82,7 +82,7 @@ bool Tray::addIcon()
     data.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_SHOWTIP;
     data.uCallbackMessage = TrayMessage;
     data.hIcon = m_icon ? m_icon.get() : LoadIconW(nullptr, IDI_APPLICATION);
-    copy(data.szTip, std::size(data.szTip), L"WIN Infinit Desktop");
+    copy(data.szTip, std::size(data.szTip), L"WIN Infinite Desktop");
     if (!Shell_NotifyIconW(NIM_ADD, &data)) {
         // Still there from before an Explorer restart.
         Shell_NotifyIconW(NIM_MODIFY, &data);
@@ -110,7 +110,7 @@ void Tray::updateTip()
     data.hWnd = m_window.get();
     data.uID = TrayId;
     data.uFlags = NIF_TIP | NIF_SHOWTIP;
-    std::wstring tip = L"WIN Infinit Desktop";
+    std::wstring tip = L"WIN Infinite Desktop";
     if (!m_state.status.empty()) {
         tip += L"\n" + m_state.status;
     }

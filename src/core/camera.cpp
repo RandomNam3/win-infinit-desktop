@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "camera.h"
@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 Camera Camera::zoomedAt(const QPointF &screenAnchor, qreal newZoom, const QRectF &viewport) const
@@ -84,4 +84,4 @@ QPointF snapToPixelGrid(const QPointF &point, qreal scale)
     return QPointF(std::round(point.x() * scale) / scale, std::round(point.y() * scale) / scale);
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

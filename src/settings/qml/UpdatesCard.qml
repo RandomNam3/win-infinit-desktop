@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Update check on the start page: newer versions with their release notes. The
@@ -7,14 +7,14 @@
 // again, which then shows the result.
 import QtQuick
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Card {
     id: card
 
     readonly property string status: Updates.status
     readonly property bool available: status === "available"
-    // The newest release has a package for this computer (win-infinit-desktop-X.Y.Z-x64.zip).
+    // The newest release has a package for this computer (win-infinite-desktop-X.Y.Z-x64.zip).
     readonly property bool hasPackage: Updates.releases.length > 0 && Updates.updateCommand().length > 0
     readonly property string install: Updates.installStatus
     readonly property bool installing: install === "downloading" || install === "unpacking" || install === "installing"
@@ -264,7 +264,7 @@ Card {
             }
             UiText {
                 Layout.fillWidth: true
-                text: card.hasPackage ? i18n("The update downloads the new version from GitHub, closes WIN Infinit Desktop and this window for a moment, installs the new version and starts both again.")
+                text: card.hasPackage ? i18n("The update downloads the new version from GitHub, closes WIN Infinite Desktop and this window for a moment, installs the new version and starts both again.")
                                      : i18n("This release has no package for this computer yet. Download it from GitHub.")
                 font.pointSize: Theme.fontSmall
                 wrapMode: Text.Wrap
@@ -320,7 +320,7 @@ Card {
                 case "unpacking":
                     return i18n("Unpacking …");
                 default:
-                    return i18n("Installing … WIN Infinit Desktop and this window close for a moment and open again when the update is done.");
+                    return i18n("Installing … WIN Infinite Desktop and this window close for a moment and open again when the update is done.");
                 }
             }
             font.pointSize: Theme.fontSmall

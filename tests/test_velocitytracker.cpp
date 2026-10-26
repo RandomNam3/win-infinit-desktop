@@ -1,12 +1,12 @@
 /*
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "velocitytracker.h"
 
 #include <QTest>
 
-using namespace InfinitDesktop;
+using namespace InfiniteDesktop;
 using namespace std::chrono_literals;
 
 class TestVelocityTracker : public QObject

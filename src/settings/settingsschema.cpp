@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "settingsschema.h"
@@ -13,7 +13,7 @@
 
 #include <algorithm>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -221,7 +221,7 @@ SettingsSchema &SettingsSchema::instance()
 {
     static SettingsSchema schema = []() {
         SettingsSchema result;
-        QFile file(QStringLiteral(":/settings/win-infinit-desktop.kcfg"));
+        QFile file(QStringLiteral(":/settings/win-infinite-desktop.kcfg"));
         QString error;
         if (!file.open(QIODevice::ReadOnly) || !result.parse(file.readAll(), &error)) {
             qWarning("SettingsSchema: cannot read the schema: %s", qPrintable(error));
@@ -350,4 +350,4 @@ bool SettingsSchema::parse(const QByteArray &xml, QString *error)
     return !m_items.empty();
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

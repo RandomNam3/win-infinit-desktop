@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 // What the settings app writes is what the service reads: the settings app's writer
@@ -19,7 +19,7 @@
 #include <QTemporaryDir>
 #include <QTest>
 
-using namespace InfinitDesktop;
+using namespace InfiniteDesktop;
 
 class TestSettingsInterop : public QObject
 {
@@ -91,7 +91,7 @@ private Q_SLOTS:
         QCOMPARE(settings.panModifier, Wid::GestureModifier::CtrlAlt);
         QCOMPARE(settings.zoomModifier, Wid::GestureModifier::Disabled);
         QCOMPARE(settings.panSpeed, 2.5);
-        QCOMPARE(settings.revealMode, InfinitDesktop::RevealMode::Center);
+        QCOMPARE(settings.revealMode, InfiniteDesktop::RevealMode::Center);
         QCOMPARE(settings.restoreOnCanvas, false);
         QCOMPARE(settings.gridColor, QColor(12, 34, 56));
         QCOMPARE(settings.offscreenMarkers, Wid::ShowMode::Always);
@@ -103,7 +103,7 @@ private Q_SLOTS:
     {
         // Every action both tables know has the same id and the same default keys.
         int compared = 0;
-        for (const ShortcutDefinition &own : InfinitDesktop::shortcutDefinitions()) {
+        for (const ShortcutDefinition &own : InfiniteDesktop::shortcutDefinitions()) {
             for (const Wid::ShortcutDefinition &service : Wid::shortcutDefinitions()) {
                 if (QLatin1String(service.id) != QLatin1String(own.id)) {
                     continue;
@@ -122,8 +122,8 @@ private Q_SLOTS:
         {
             QSettings file(m_path, QSettings::IniFormat);
             file.beginGroup(QStringLiteral("Shortcuts"));
-            file.setValue(QStringLiteral("InfinitDesktop ZoomIn"), KeyCombo::toList(keys));
-            file.setValue(QStringLiteral("InfinitDesktop ZoomOut"), QString());
+            file.setValue(QStringLiteral("InfiniteDesktop ZoomIn"), KeyCombo::toList(keys));
+            file.setValue(QStringLiteral("InfiniteDesktop ZoomOut"), QString());
         }
         QSettings file(m_path, QSettings::IniFormat);
         const Wid::ShortcutMap map = Wid::ShortcutMap::load(file);

@@ -1,8 +1,8 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Collects a build into a folder that runs on its own (Qt deployed next to the programs)
-# and zips it: win-infinit-desktop-<version>-<arch>.zip with install.ps1 at its root.
+# and zips it: win-infinite-desktop-<version>-<arch>.zip with install.ps1 at its root.
 # Used by CI (artifact of every run) and by the release workflow (release asset).
 #
 # Usage: pwsh scripts/package.ps1 [-Build build] [-Output dist] [-Arch x64]
@@ -17,11 +17,11 @@ param(
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot
 
-$version = (Select-String -Path (Join-Path $root "CMakeLists.txt") -Pattern '^project\(win-infinit-desktop VERSION ([0-9.]+)').Matches[0].Groups[1].Value
+$version = (Select-String -Path (Join-Path $root "CMakeLists.txt") -Pattern '^project\(win-infinite-desktop VERSION ([0-9.]+)').Matches[0].Groups[1].Value
 if (-not $version) { throw "no project version in CMakeLists.txt" }
 
 # Programs of the package; the apps are optional (a build without Qt Quick has none).
-$required = @("win-infinit-desktop.exe", "wid-ctl.exe", "wid-probe.exe")
+$required = @("win-infinite-desktop.exe", "wid-ctl.exe", "wid-probe.exe")
 $optional = @("wid-notes.exe", "wid-settings.exe")
 
 if (Test-Path $Output) { Remove-Item -Recurse -Force $Output }
@@ -65,7 +65,7 @@ if ($env:VCToolsRedistDir) {
 
 Copy-Item (Join-Path $root "scripts/install.ps1"), (Join-Path $root "LICENSE"), (Join-Path $root "README.md") $Output
 
-$zip = "win-infinit-desktop-$version-$Arch.zip"
+$zip = "win-infinite-desktop-$version-$Arch.zip"
 if (Test-Path $zip) { Remove-Item $zip }
 Compress-Archive -Path (Join-Path $Output "*") -DestinationPath $zip
 Write-Host "package: $zip ($([int]((Get-Item $zip).Length / 1MB)) MB)"

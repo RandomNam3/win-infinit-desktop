@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Shortcuts: the plugin's own global shortcuts (grouped like in shortcutdefs.h)
 // and, in a second tab, every global shortcut of the session with conflict detection.
 import QtQuick
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Item {
     id: page
@@ -77,7 +77,7 @@ Item {
                 }
 
                 SegmentedControl {
-                    model: [i18nc("@title:tab shortcuts of this plugin", "Infinit Desktop"),
+                    model: [i18nc("@title:tab shortcuts of this plugin", "Infinite Desktop"),
                             GlobalShortcuts.conflictCount > 0
                             ? i18ncp("@title:tab %1 is the number of conflicts", "With Windows · %1 conflict", "With Windows · %1 conflicts", GlobalShortcuts.conflictCount)
                             : i18nc("@title:tab", "With Windows")]

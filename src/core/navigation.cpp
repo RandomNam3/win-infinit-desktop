@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "navigation.h"
@@ -10,7 +10,7 @@
 #include <limits>
 #include <numbers>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 int findNeighbor(const QRectF &from, const QList<QRectF> &candidates, Direction direction)
@@ -158,4 +158,4 @@ QPointF findFreeTileSpot(const QPointF &preferredCenter, const QSizeF &size, con
     return QPointF(preferredCenter.x() - size.width() / 2, preferredCenter.y() - size.height() / 2);
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

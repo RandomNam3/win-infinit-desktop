@@ -5,7 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(core_tests camera motion velocitytracker parking navigation placementmemory groups areas)
 foreach(name IN LISTS core_tests)
     add_executable(test_${name} test_${name}.cpp)
-    target_link_libraries(test_${name} PRIVATE infinitdesktop_core Qt6::Test)
+    target_link_libraries(test_${name} PRIVATE infinitedesktop_core Qt6::Test)
     add_test(NAME test_${name} COMMAND test_${name})
 endforeach()
 
@@ -25,7 +25,7 @@ endif()
 
 if(WID_BUILD_APPS)
     # The notes app and the settings app: their parts without QML.
-    set(app_tests notestore localizer ipcclient keycombo settingsschema updatechecker)
+    set(app_tests notestore localizer ipcclient keycombo settingsschema updatechecker legacy)
     foreach(name IN LISTS app_tests)
         add_executable(test_${name} test_${name}.cpp)
         target_link_libraries(test_${name} PRIVATE wid_appshared Qt6::Test)

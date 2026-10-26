@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "notestore.h"
@@ -20,7 +20,7 @@
 
 using namespace std::chrono_literals;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -143,7 +143,7 @@ NoteStore::~NoteStore()
 
 QString NoteStore::directory()
 {
-    // %APPDATA%\WIN Infinit Desktop\notes: roams with the user profile like the settings.
+    // %APPDATA%\WIN Infinite Desktop\notes: roams with the user profile like the settings.
     return QDir(Wid::roamingDataDirectory()).filePath(QStringLiteral("notes"));
 }
 
@@ -313,4 +313,4 @@ void NoteStore::setNotesVisible(bool visible)
     }
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

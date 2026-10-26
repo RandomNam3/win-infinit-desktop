@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "globalshortcutsmodel.h"
@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 namespace
@@ -50,7 +50,7 @@ QKeySequence normalized(const QKeySequence &sequence)
 
 QString displayName(const QString &actionName, bool own)
 {
-    // Our actions are called "Infinit Desktop: …"; the badge says that already.
+    // Our actions are called "Infinite Desktop: …"; the badge says that already.
     if (own) {
         const int colon = actionName.indexOf(QLatin1String(": "));
         if (colon > 0 && colon <= 24) {
@@ -370,7 +370,7 @@ bool GlobalShortcutsModel::setKeys(int row, const QList<QKeySequence> &requested
         ShortcutModel::instance()->applyShortcuts(entry.actionId, keys);
         return true;
     }
-    Q_EMIT changeFailed(i18n("Shortcuts of Windows cannot be changed here. Give the Infinit Desktop action another shortcut instead."));
+    Q_EMIT changeFailed(i18n("Shortcuts of Windows cannot be changed here. Give the Infinite Desktop action another shortcut instead."));
     return false;
 }
 
@@ -705,4 +705,4 @@ bool GlobalShortcutsFilterModel::filterAcceptsRow(int sourceRow, const QModelInd
     return SearchUtil::matches(index.data(GlobalShortcutsModel::SearchTextRole).toString(), m_terms);
 }
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Titles, explanations and colors for the states of EffectStatus.
 pragma Singleton
 
 import QtQuick
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 QtObject {
     function title(state) {
@@ -34,9 +34,9 @@ QtObject {
         case "disabled":
             return i18n("The canvas service is installed but not running. Turn it on to make every screen an infinite canvas; it then also starts when you sign in.");
         case "safemode":
-            return i18n("WIN Infinit Desktop crashed several times in a row, so it was started in safe mode and leaves the windows alone. Leave safe mode to use the canvas again.");
+            return i18n("WIN Infinite Desktop crashed several times in a row, so it was started in safe mode and leaves the windows alone. Leave safe mode to use the canvas again.");
         case "notinstalled":
-            return i18n("The canvas service win-infinit-desktop.exe is not next to this app. Install WIN Infinit Desktop again.");
+            return i18n("The canvas service win-infinite-desktop.exe is not next to this app. Install WIN Infinite Desktop again.");
         default:
             return i18n("Asking the canvas service…");
         }

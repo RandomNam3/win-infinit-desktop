@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -12,7 +12,7 @@
 #include <objbase.h>
 #include <shobjidl.h>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /// Owns one COM reference.
@@ -96,4 +96,4 @@ QString displayName(IShellItem *item, SIGDN form);
  */
 QImage shellItemIcon(const QString &parsingName, bool appsFolder, QSize size);
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

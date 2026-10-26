@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -9,7 +9,7 @@
 #include <QRectF>
 #include <QSizeF>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
@@ -79,4 +79,4 @@ qreal clampZoom(qreal zoom, qreal minZoom, qreal maxZoom, qreal snapRange = 0.02
 /// Rounds @p point to the closest point on the device pixel grid of an output with @p scale.
 QPointF snapToPixelGrid(const QPointF &point, qreal scale);
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

@@ -1,5 +1,5 @@
 /*
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "groups.h"
@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QTest>
 
-using namespace InfinitDesktop;
+using namespace InfiniteDesktop;
 
 class TestGroups : public QObject
 {

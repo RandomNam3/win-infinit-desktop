@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -11,7 +11,7 @@
 #include <QString>
 #include <QStringList>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
@@ -44,9 +44,9 @@ protected:
     }
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop
 
-namespace InfinitDesktop::SearchUtil
+namespace InfiniteDesktop::SearchUtil
 {
 
 /**
@@ -65,4 +65,4 @@ bool matches(const QString &haystack, const QStringList &terms);
 /// HTML (Text.StyledText) with all occurrences of @p terms emphasized.
 QString highlight(const QString &text, const QStringList &terms, const QColor &color);
 
-} // namespace InfinitDesktop::SearchUtil
+} // namespace InfiniteDesktop::SearchUtil

@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "settings.h"
@@ -184,8 +184,8 @@ Settings Settings::load(QSettings &settings)
     s.keyboardPanStep = readInt(settings, "KeyboardPanStep", 25, 5, 100) / 100.0;
     s.revealOnActivate = readBool(settings, "RevealOnActivate", s.revealOnActivate);
     s.revealMode = settings.value(QStringLiteral("RevealMode")).toString().trimmed().toLower() == QLatin1String("center")
-        ? InfinitDesktop::RevealMode::Center
-        : InfinitDesktop::RevealMode::Minimal;
+        ? InfiniteDesktop::RevealMode::Center
+        : InfiniteDesktop::RevealMode::Minimal;
     s.newWindowsExitZoom = readBool(settings, "NewWindowsExitZoom", s.newWindowsExitZoom);
     s.pinKeepAboveWindows = readBool(settings, "PinKeepAboveWindows", s.pinKeepAboveWindows);
     s.excludedClasses = readList(settings, "ExcludedWindowClasses", {});
@@ -232,7 +232,7 @@ QString settingsFilePath()
     if (base.isEmpty()) {
         base = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     }
-    return QDir(base).filePath(QStringLiteral("WIN Infinit Desktop/settings.ini"));
+    return QDir(base).filePath(QStringLiteral("WIN Infinite Desktop/settings.ini"));
 }
 
 QString stateDirectory()
@@ -241,7 +241,7 @@ QString stateDirectory()
     if (base.isEmpty()) {
         base = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     }
-    const QString path = QDir(base).filePath(QStringLiteral("WIN Infinit Desktop"));
+    const QString path = QDir(base).filePath(QStringLiteral("WIN Infinite Desktop"));
     QDir().mkpath(path);
     return path;
 }

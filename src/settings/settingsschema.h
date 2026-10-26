@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -15,13 +15,13 @@
 #include <optional>
 #include <vector>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 class SettingsFile;
 
 /**
- * One entry of win-infinit-desktop.kcfg with its current value: the part of
+ * One entry of win-infinite-desktop.kcfg with its current value: the part of
  * KConfigSkeletonItem the settings model needs, without KConfig.
  *
  * Values in memory: Bool as bool, Int as int, Enum as the index of the choice, Color as
@@ -113,12 +113,12 @@ private:
 class SettingsSchema
 {
 public:
-    /// The schema compiled into the program (:/settings/win-infinit-desktop.kcfg).
+    /// The schema compiled into the program (:/settings/win-infinite-desktop.kcfg).
     static SettingsSchema &instance();
 
     /// Parses kcfg XML; false on errors (the entries read so far are kept).
     bool parse(const QByteArray &xml, QString *error = nullptr);
-    /// The group of the entries ("Effect-infinitdesktop").
+    /// The group of the entries ("Effect-infinitedesktop").
     QString group() const
     {
         return m_group;
@@ -134,4 +134,4 @@ private:
     std::vector<std::unique_ptr<SchemaItem>> m_items;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

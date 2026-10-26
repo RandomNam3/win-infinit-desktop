@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+// SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Dialog to pick an installed application (desktop file), or to enter a
@@ -6,7 +6,7 @@
 import QtQuick
 import QtQuick.Controls.Basic as Basic
 import QtQuick.Layouts
-import InfinitDesktop.Settings
+import InfiniteDesktop.Settings
 
 Basic.Popup {
     id: picker

@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "overview.h"
@@ -19,7 +19,7 @@ namespace Wid
 namespace
 {
 
-const wchar_t *const s_windowClass = L"WinInfinitDesktopOverview";
+const wchar_t *const s_windowClass = L"WinInfiniteDesktopOverview";
 constexpr COLORREF Background = RGB(24, 26, 30);
 constexpr BYTE WallpaperOpacity = 90;
 constexpr qreal TitleHeight = 32; ///< canvas pixels, scaled with the zoom
@@ -63,7 +63,7 @@ void Overview::show(const RECT &area)
         // Double clicks are needed for the title bars.
         registerWindowClass(s_windowClass, &Overview::windowProc, CS_DBLCLKS);
         // Never activated: the keyboard stays with the active application, as on KDE.
-        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_TOPMOST, s_windowClass, L"WIN Infinit Desktop", WS_POPUP, area.left, area.top,
+        m_window.reset(CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_TOPMOST, s_windowClass, L"WIN Infinite Desktop", WS_POPUP, area.left, area.top,
                                        area.right - area.left, area.bottom - area.top, nullptr, nullptr, GetModuleHandleW(nullptr), this));
         if (!m_window) {
             return;

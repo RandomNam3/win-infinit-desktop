@@ -1,16 +1,16 @@
-# WIN Infinit Desktop - infinite canvas for Windows 11
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# WIN Infinite Desktop - infinite canvas for Windows 11
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 cmake_minimum_required(VERSION 3.22)
 
-project(win-infinit-desktop VERSION 0.2.0 LANGUAGES CXX)
+project(win-infinite-desktop VERSION 0.3.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# The canvas logic (src/core) is shared with KDE Infinit Desktop and needs Qt Core.
+# The canvas logic (src/core) is shared with KDE Infinite Desktop and needs Qt Core.
 # The Win32 layer (src/platform) and the diagnostic tool (tools/wid-probe) only need
 # the Windows SDK, so they also build without Qt (e.g. a quick MinGW check on Linux).
 option(WID_WITH_QT "Build the Qt based parts (canvas core and its unit tests)" ON)

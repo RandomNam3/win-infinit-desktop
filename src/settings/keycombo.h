@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -9,7 +9,7 @@
 #include <QList>
 #include <QString>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
@@ -33,4 +33,4 @@ bool isSupported(const QKeySequence &sequence);
 
 } // namespace KeyCombo
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

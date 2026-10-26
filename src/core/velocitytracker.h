@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -11,7 +11,7 @@
 #include <chrono>
 #include <cstddef>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
@@ -65,4 +65,4 @@ private:
     std::size_t m_count = 0;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

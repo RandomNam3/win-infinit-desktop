@@ -1,17 +1,17 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
 
 #include <QQuickImageProvider>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
- * Renders the line icons shipped in the resources (":/infinitdesktop/icons")
+ * Renders the line icons shipped in the resources (":/infinitedesktop/icons")
  * in any color: "image://idicon/<name>/<color without #>".
  *
  * The SVGs use "currentColor", which is replaced before rendering at the
@@ -34,4 +34,4 @@ public:
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize) override;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

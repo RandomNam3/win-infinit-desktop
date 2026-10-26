@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -15,11 +15,11 @@
 class QFileSystemWatcher;
 class QSettings;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
- * %APPDATA%\WIN Infinit Desktop\settings.ini, the file the canvas service reads, in place of
+ * %APPDATA%\WIN Infinite Desktop\settings.ini, the file the canvas service reads, in place of
  * KDE's kwinrc. Values are written like KConfig writes them (the service parses that):
  * bools as true/false, enums by choice name, colors as "r,g,b", lists comma separated.
  *
@@ -69,4 +69,4 @@ private:
     QTimer m_writeTimer;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

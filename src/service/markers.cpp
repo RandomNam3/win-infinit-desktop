@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "markers.h"
@@ -16,7 +16,7 @@ namespace Wid
 
 namespace
 {
-const wchar_t *const s_windowClass = L"WinInfinitDesktopMarker";
+const wchar_t *const s_windowClass = L"WinInfiniteDesktopMarker";
 constexpr int MaxBubbles = 64;
 
 /// Whether the visible pixels of an icon are mostly dark (mean luminance below a quarter).

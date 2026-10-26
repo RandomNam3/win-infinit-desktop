@@ -1,12 +1,12 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Installs WIN Infinit Desktop for the current user (no administrator rights needed):
-#   %LOCALAPPDATA%\Programs\WIN Infinit Desktop   programs
-#   Start menu                                     "WIN Infinit Desktop", "... Settings"
+# Installs WIN Infinite Desktop for the current user (no administrator rights needed):
+#   %LOCALAPPDATA%\Programs\WIN Infinite Desktop   programs
+#   Start menu                                     "WIN Infinite Desktop", "... Settings"
 #   HKCU ...\Run                                   start at login
 #   HKCU ...\Uninstall                             entry in Settings > Apps
-# Settings, notes and the canvas state stay in %APPDATA% / %LOCALAPPDATA%\WIN Infinit Desktop.
+# Settings, notes and the canvas state stay in %APPDATA% / %LOCALAPPDATA%\WIN Infinite Desktop.
 #
 # Usage (from the extracted release zip):
 #   powershell -NoProfile -ExecutionPolicy Bypass -File install.ps1 [-Update] [-NoStart]
@@ -21,6 +21,11 @@
 #
 # A running service is asked to quit over its pipe, so every window comes back onto a
 # screen before the files are replaced; it is never killed.
+#
+# Up to version 0.2 the project was called "WIN Infinit Desktop". An installation of it is
+# replaced: its service is asked to quit over its old pipe, its programs, Start menu folder,
+# autostart and Apps entries are removed, and its data folders are taken over (settings,
+# notes, canvases).
 
 param(
     [switch]$Update,
@@ -36,6 +41,20 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 3
 $version = ""
+
+# The settings app of 0.2 and older passes its log and result files in its own data folder,
+# which this script takes over: they go to the new folder, where the new app looks.
+$legacyLocalData = Join-Path $env:LOCALAPPDATA "WIN Infinit Desktop"
+$localData = Join-Path $env:LOCALAPPDATA "WIN Infinite Desktop"
+function MovedFromLegacy([string]$path) {
+    if ($path -and $path.StartsWith($legacyLocalData + "\", [StringComparison]::OrdinalIgnoreCase)) {
+        $path = $localData + $path.Substring($legacyLocalData.Length)
+        New-Item -ItemType Directory -Force -Path (Split-Path $path) | Out-Null
+    }
+    return $path
+}
+$Log = MovedFromLegacy $Log
+$ResultFile = MovedFromLegacy $ResultFile
 
 if ($Log) {
     try { Start-Transcript -Path $Log -Force | Out-Null } catch { }
@@ -56,7 +75,7 @@ $settingsWasOpen = $false
 # The settings app again, if it asked for that or this script closed it.
 function OpenSettingsApp {
     if ((-not $OpenSettings -and -not $script:settingsWasOpen) -or $DryRun) { return }
-    $app = Join-Path (Join-Path $env:LOCALAPPDATA "Programs\WIN Infinit Desktop") "wid-settings.exe"
+    $app = Join-Path (Join-Path $env:LOCALAPPDATA "Programs\WIN Infinite Desktop") "wid-settings.exe"
     if (Test-Path $app) {
         try { Start-Process -FilePath $app -ArgumentList "--page", "overview" -WorkingDirectory (Split-Path $app) } catch { }
     }
@@ -71,13 +90,18 @@ trap {
     exit 1
 }
 
-$product = "WIN Infinit Desktop"
+$product = "WIN Infinite Desktop"
 $target = Join-Path $env:LOCALAPPDATA "Programs\$product"
 $runKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
-$uninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\WinInfinitDesktop"
+$uninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\WinInfiniteDesktop"
 $startMenu = Join-Path ([Environment]::GetFolderPath("Programs")) $product
-$programs = @("win-infinit-desktop.exe", "wid-notes.exe", "wid-settings.exe", "wid-ctl.exe", "wid-probe.exe")
+$programs = @("win-infinite-desktop.exe", "wid-notes.exe", "wid-settings.exe", "wid-ctl.exe", "wid-probe.exe")
 $minimumBuild = 26100
+# WIN Infinit Desktop 0.2 and older.
+$legacyProduct = "WIN Infinit Desktop"
+$legacyTarget = Join-Path $env:LOCALAPPDATA "Programs\$legacyProduct"
+$legacyUninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\WinInfinitDesktop"
+$legacyStartMenu = Join-Path ([Environment]::GetFolderPath("Programs")) $legacyProduct
 
 function Step($message) { Write-Host "==> $message" }
 function Act([scriptblock]$action, $description) {
@@ -85,9 +109,9 @@ function Act([scriptblock]$action, $description) {
 }
 
 # ---- Pipes (same names as src/shared/pipenames.h) ----------------------------------------
-function PipeName([string]$suffix) {
+function PipeName([string]$suffix, [string]$base = "win-infinite-desktop") {
     $session = (Get-Process -Id $PID).SessionId
-    return "win-infinit-desktop-$session$suffix"
+    return "$base-$session$suffix"
 }
 
 # Sends one request; true if the program answered.
@@ -116,22 +140,25 @@ function ProcessesIn([string]$directory) {
 }
 
 function StopPrograms {
-    $service = Get-Process -Name "win-infinit-desktop" -ErrorAction SilentlyContinue
-    if ($service) {
+    # This version and 0.2 and older ("win-infinit-desktop.exe", its own pipe names).
+    foreach ($name in @("win-infinite-desktop", "win-infinit-desktop")) {
+        $service = Get-Process -Name $name -ErrorAction SilentlyContinue
+        if (-not $service) { continue }
         Step "Quitting the running service (windows come back onto the screens)"
         Act {
-            if (SendRequest (PipeName "") "quit") {
+            if (SendRequest (PipeName "" $name) "quit") {
                 $service | ForEach-Object { [void]$_.WaitForExit(20000) }
             }
-            if (Get-Process -Name "win-infinit-desktop" -ErrorAction SilentlyContinue) {
+            if (Get-Process -Name $name -ErrorAction SilentlyContinue) {
                 throw "The service did not quit. Quit it from its tray icon and run the installer again."
             }
-        } "quit win-infinit-desktop.exe over its pipe"
+        } "quit $name.exe over its pipe"
     }
     if (Get-Process -Name "wid-notes" -ErrorAction SilentlyContinue) {
         Step "Quitting the notes app (it saves every note first)"
         Act {
             [void](SendRequest (PipeName "-notes") "quit")
+            [void](SendRequest (PipeName "-notes" "win-infinit-desktop") "quit")
             Get-Process -Name "wid-notes" -ErrorAction SilentlyContinue | ForEach-Object {
                 if (-not $_.WaitForExit(10000)) { Stop-Process -Id $_.Id -Force }
             }
@@ -143,9 +170,44 @@ function StopPrograms {
         $script:settingsWasOpen = $true
         Act { Stop-Process -Id $_.Id -Force; [void]$_.WaitForExit(5000) } "stop wid-settings.exe"
     }
-    $left = @(ProcessesIn $target)
+    $left = @(ProcessesIn $target) + @(ProcessesIn $legacyTarget)
     if ($left.Count -gt 0 -and -not $DryRun) {
         throw "Still running from $target`: $($left.Name -join ', '). Close them and run the installer again."
+    }
+}
+
+# Programs, Start menu folder, autostart and Apps entries of 0.2 and older.
+function RemoveLegacyInstallation {
+    $found = (Test-Path $legacyTarget) -or (Test-Path $legacyUninstallKey) -or (Test-Path $legacyStartMenu) -or
+        ($null -ne (Get-ItemProperty -Path $runKey -Name $legacyProduct -ErrorAction SilentlyContinue))
+    if (-not $found) { return }
+    Step "Removing $legacyProduct (the name up to version 0.2)"
+    Act {
+        Remove-ItemProperty -Path $runKey -Name $legacyProduct -ErrorAction SilentlyContinue
+        Remove-Item -Path $legacyUninstallKey -Recurse -ErrorAction SilentlyContinue
+        Remove-Item -Path $legacyStartMenu -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path $legacyTarget -Recurse -Force -ErrorAction SilentlyContinue
+    } "remove $legacyTarget, its Start menu folder, autostart and Apps entries"
+}
+
+# Settings, notes and canvases of 0.2 and older go to the new folders; what is already in a
+# new folder stays.
+function MoveLegacyData {
+    foreach ($base in @($env:APPDATA, $env:LOCALAPPDATA)) {
+        $old = Join-Path $base $legacyProduct
+        $new = Join-Path $base $product
+        if (-not (Test-Path $old)) { continue }
+        Step "Taking over $old"
+        Act {
+            if (-not (Test-Path $new)) {
+                Move-Item -Path $old -Destination $new
+            } else {
+                Get-ChildItem -Path $old -Force | ForEach-Object {
+                    if (-not (Test-Path (Join-Path $new $_.Name))) { Move-Item -Path $_.FullName -Destination $new }
+                }
+                Remove-Item -Path $old -Recurse -Force -ErrorAction SilentlyContinue
+            }
+        } "move $old to $new"
     }
 }
 
@@ -171,10 +233,13 @@ if ($Uninstall) {
         Set-Location $env:TEMP
         Remove-Item -Path $target -Recurse -Force -ErrorAction SilentlyContinue
     } "remove the autostart entry, the Start menu folder, the uninstall entry and $target"
+    RemoveLegacyInstallation
     if ($RemoveData) {
         Act {
-            Remove-Item -Path (Join-Path $env:APPDATA $product) -Recurse -Force -ErrorAction SilentlyContinue
-            Remove-Item -Path (Join-Path $env:LOCALAPPDATA $product) -Recurse -Force -ErrorAction SilentlyContinue
+            foreach ($name in @($product, $legacyProduct)) {
+                Remove-Item -Path (Join-Path $env:APPDATA $name) -Recurse -Force -ErrorAction SilentlyContinue
+                Remove-Item -Path (Join-Path $env:LOCALAPPDATA $name) -Recurse -Force -ErrorAction SilentlyContinue
+            }
         } "remove settings, notes and the canvas state"
     } else {
         Write-Host "    Settings, notes and the canvas state were kept (-RemoveData removes them)."
@@ -186,8 +251,8 @@ if ($Uninstall) {
 
 # ---- Install / update --------------------------------------------------------------------
 $source = $PSScriptRoot
-if (-not (Test-Path (Join-Path $source "win-infinit-desktop.exe"))) {
-    throw "win-infinit-desktop.exe is not next to install.ps1: run the script from the extracted release zip."
+if (-not (Test-Path (Join-Path $source "win-infinite-desktop.exe"))) {
+    throw "win-infinite-desktop.exe is not next to install.ps1: run the script from the extracted release zip."
 }
 if ((Resolve-Path $source).Path.TrimEnd('\') -ieq $target.TrimEnd('\')) {
     throw "Run install.ps1 from the extracted release zip, not from $target."
@@ -196,7 +261,7 @@ $build = [Environment]::OSVersion.Version.Build
 if ($build -lt $minimumBuild) {
     throw "$product needs Windows 11 24H2 or newer (build $minimumBuild); this is build $build."
 }
-$version = (Get-Item (Join-Path $source "win-infinit-desktop.exe")).VersionInfo.ProductVersion
+$version = (Get-Item (Join-Path $source "win-infinite-desktop.exe")).VersionInfo.ProductVersion
 if (-not $version) { $version = "0.0.0" }
 Step "$(if ($Update) { 'Updating to' } else { 'Installing' }) $product $version for $env:USERNAME"
 
@@ -212,7 +277,7 @@ Act {
     Get-ChildItem -Path $target -Recurse -File | Unblock-File
 } "replace the contents of $target with the files of this package"
 
-$service = Join-Path $target "win-infinit-desktop.exe"
+$service = Join-Path $target "win-infinite-desktop.exe"
 $settings = Join-Path $target "wid-settings.exe"
 
 Step "Start menu, autostart and the uninstall entry"
@@ -228,11 +293,11 @@ Act {
     $values = @{
         DisplayName = $product
         DisplayVersion = $version
-        Publisher = "WIN Infinit Desktop contributors"
+        Publisher = "WIN Infinite Desktop contributors"
         DisplayIcon = "`"$service`",0"
         InstallLocation = $target
         UninstallString = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$target\install.ps1`" -Uninstall"
-        URLInfoAbout = "https://github.com/RandomNam3/win-infinit-desktop"
+        URLInfoAbout = "https://github.com/RandomNam3/win-infinite-desktop"
     }
     foreach ($name in $values.Keys) {
         New-ItemProperty -Path $uninstallKey -Name $name -Value $values[$name] -PropertyType String -Force | Out-Null
@@ -241,6 +306,10 @@ Act {
     New-ItemProperty -Path $uninstallKey -Name NoModify -Value 1 -PropertyType DWord -Force | Out-Null
     New-ItemProperty -Path $uninstallKey -Name NoRepair -Value 1 -PropertyType DWord -Force | Out-Null
 } "create the Start menu entries, the Run entry and the Apps entry"
+
+# Only now that this version is in place: an installation of 0.2 and older goes.
+RemoveLegacyInstallation
+MoveLegacyData
 
 if (-not $NoStart) {
     Step "Starting $product"

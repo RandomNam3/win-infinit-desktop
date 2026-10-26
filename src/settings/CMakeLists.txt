@@ -1,7 +1,7 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# wid-settings.exe: the settings app with the Qt Quick UI of KDE Infinit Desktop
+# wid-settings.exe: the settings app with the Qt Quick UI of KDE Infinite Desktop
 # (plain QtQuick + QtQuick.Controls.Basic). QML, icons, the settings schema and the
 # translations are compiled into the executable.
 
@@ -29,7 +29,7 @@ target_include_directories(wid_settings_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(wid_settings_core PUBLIC wid_appshared Qt6::Core Qt6::Gui Qt6::Network)
 qt_add_resources(wid_settings_core "wid_settings_schema"
     PREFIX "/settings"
-    FILES win-infinit-desktop.kcfg
+    FILES win-infinite-desktop.kcfg
 )
 
 set(model_sources
@@ -148,7 +148,7 @@ endforeach()
 set_source_files_properties(qml/Theme.qml qml/StatusTexts.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(wid-settings
-    URI InfinitDesktop.Settings
+    URI InfiniteDesktop.Settings
     VERSION 1.0
     QML_FILES ${qml_paths}
     SOURCES ${model_sources}
@@ -157,12 +157,12 @@ qt_add_qml_module(wid-settings
 )
 
 file(GLOB icon_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS icons/*.svg)
-qt_add_resources(wid-settings "infinitdesktop_icons"
-    PREFIX "/infinitdesktop"
+qt_add_resources(wid-settings "infinitedesktop_icons"
+    PREFIX "/infinitedesktop"
     FILES ${icon_files}
 )
 wid_add_catalogs(wid-settings)
-wid_add_windows_resources(wid-settings wid-settings "WIN Infinit Desktop Settings")
+wid_add_windows_resources(wid-settings wid-settings "WIN Infinite Desktop Settings")
 
 target_link_libraries(wid-settings PRIVATE
     wid_settings_core

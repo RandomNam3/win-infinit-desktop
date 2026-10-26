@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -16,7 +16,7 @@ namespace Wid
 class IpcClient;
 }
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
@@ -57,4 +57,4 @@ private:
     Wid::IpcClient *m_notes = nullptr;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

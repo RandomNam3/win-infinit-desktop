@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -17,7 +17,7 @@ namespace Wid
 /**
  * Translations without KDE Frameworks: a gettext catalog (.po, compiled into the program
  * as a resource) and the i18n functions of KI18n with the same meaning, so that the QML
- * and the catalog can be shared with KDE Infinit Desktop.
+ * and the catalog can be shared with KDE Infinite Desktop.
  *
  *   i18n(text, args…), i18nc(context, text, args…),
  *   i18np(singular, plural, n, args…), i18ncp(context, singular, plural, n, args…)

@@ -1,6 +1,6 @@
 /*
-    KDE Infinit Desktop - infinite canvas for KWin
-    SPDX-FileCopyrightText: 2026 KDE Infinit Desktop contributors
+    KDE Infinite Desktop - infinite canvas for KWin
+    SPDX-FileCopyrightText: 2026 KDE Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -14,7 +14,7 @@
 
 #include <optional>
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /// When the arrangement of a group's windows is stored.
@@ -159,4 +159,4 @@ private:
     QList<Group> m_groups;
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

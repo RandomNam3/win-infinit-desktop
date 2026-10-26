@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -48,9 +48,9 @@ enum class NoteColor {
 
 /**
  * The settings of the canvas service, read from
- * %APPDATA%\WIN Infinit Desktop\settings.ini, group [Effect-infinitdesktop].
+ * %APPDATA%\WIN Infinite Desktop\settings.ini, group [Effect-infinitedesktop].
  *
- * Keys, types and defaults are those of KDE Infinit Desktop's infinitdesktop.kcfg, so both
+ * Keys, types and defaults are those of KDE Infinite Desktop's infinitedesktop.kcfg, so both
  * settings apps share one schema; values are clamped like the KWin effect does. Settings
  * that have no meaning on Windows are not read.
  */
@@ -76,7 +76,7 @@ struct Settings
     std::chrono::milliseconds animationDuration{280};
     qreal keyboardPanStep = 0.25;
     bool revealOnActivate = true;
-    InfinitDesktop::RevealMode revealMode = InfinitDesktop::RevealMode::Minimal;
+    InfiniteDesktop::RevealMode revealMode = InfiniteDesktop::RevealMode::Minimal;
     bool newWindowsExitZoom = true;
     bool pinKeepAboveWindows = false;
     QStringList excludedClasses;
@@ -114,11 +114,11 @@ struct Settings
     static Settings loadDefaultFile();
 };
 
-inline constexpr const char *SettingsGroup = "Effect-infinitdesktop";
+inline constexpr const char *SettingsGroup = "Effect-infinitedesktop";
 
-/// %APPDATA%\WIN Infinit Desktop\settings.ini
+/// %APPDATA%\WIN Infinite Desktop\settings.ini
 QString settingsFilePath();
-/// %LOCALAPPDATA%\WIN Infinit Desktop (created if missing)
+/// %LOCALAPPDATA%\WIN Infinite Desktop (created if missing)
 QString stateDirectory();
 
 GestureModifier parseGestureModifier(const QString &value, GestureModifier fallback);

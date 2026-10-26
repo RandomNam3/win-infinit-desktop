@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -58,13 +58,13 @@ class Tray;
 struct Canvas
 {
     QString key;
-    InfinitDesktop::Camera camera;
-    InfinitDesktop::Camera committed;
-    InfinitDesktop::CameraMotion motion;
+    InfiniteDesktop::Camera camera;
+    InfiniteDesktop::Camera committed;
+    InfiniteDesktop::CameraMotion motion;
     bool overview = false;
-    std::optional<InfinitDesktop::Camera> beforeShowAll;
-    std::optional<InfinitDesktop::Camera> beforeHome;
-    std::array<std::optional<InfinitDesktop::Camera>, 4> bookmarks;
+    std::optional<InfiniteDesktop::Camera> beforeShowAll;
+    std::optional<InfiniteDesktop::Camera> beforeHome;
+    std::array<std::optional<InfiniteDesktop::Camera>, 4> bookmarks;
     HWND diveTarget = nullptr; ///< activated when the motion back to 100 % ends
     bool dirty = false; ///< the camera changed since the last flush
 };
@@ -109,7 +109,7 @@ struct ManagedWindow
 };
 
 /// Monitor identity as the core compares it (placements, groups, areas, notes).
-InfinitDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor);
+InfiniteDesktop::OutputIdentity outputIdentity(const MonitorInfo &monitor);
 
 class CanvasService : public QObject, public OverviewHost
 {
@@ -270,16 +270,16 @@ private:
     QRectF canvasRect(const ManagedWindow &window) const;
 
     // Camera
-    void setCamera(Canvas &canvas, const InfinitDesktop::Camera &camera);
-    void animateTo(Canvas &canvas, const InfinitDesktop::Camera &target, std::chrono::milliseconds duration);
-    void animateTo(Canvas &canvas, const InfinitDesktop::Camera &target);
+    void setCamera(Canvas &canvas, const InfiniteDesktop::Camera &camera);
+    void animateTo(Canvas &canvas, const InfiniteDesktop::Camera &target, std::chrono::milliseconds duration);
+    void animateTo(Canvas &canvas, const InfiniteDesktop::Camera &target);
     void zoomAt(Canvas &canvas, const QPointF &anchor, qreal steps);
-    InfinitDesktop::Camera targetCamera(const Canvas &canvas) const;
+    InfiniteDesktop::Camera targetCamera(const Canvas &canvas) const;
     void enterOverview(Canvas &canvas);
     void leaveOverview(Canvas &canvas);
     void tick();
     void ensureTicking();
-    void reveal(HWND hwnd, InfinitDesktop::RevealMode mode);
+    void reveal(HWND hwnd, InfiniteDesktop::RevealMode mode);
     void showAll(Canvas &canvas, bool toggle);
     void goHome(Canvas &canvas);
     void activate(HWND hwnd);
@@ -341,7 +341,7 @@ private:
 
     // Pan by drag or wheel
     QString m_panCanvas;
-    InfinitDesktop::VelocityTracker m_panVelocity;
+    InfiniteDesktop::VelocityTracker m_panVelocity;
     QPointF m_panPosition;
 
     UserMove m_userMove;
@@ -349,7 +349,7 @@ private:
     bool m_snapChanged = false;
     std::chrono::steady_clock::time_point m_edgeLast;
 
-    InfinitDesktop::PlacementMemory m_placements;
+    InfiniteDesktop::PlacementMemory m_placements;
 
     bool m_markersDirty = false;
     bool m_markersNavigating = false;

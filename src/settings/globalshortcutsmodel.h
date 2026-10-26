@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -15,11 +15,11 @@
 class QJSEngine;
 class QQmlEngine;
 
-namespace InfinitDesktop
+namespace InfiniteDesktop
 {
 
 /**
- * The shortcuts of WIN Infinit Desktop together with the documented default shortcuts of
+ * The shortcuts of WIN Infinite Desktop together with the documented default shortcuts of
  * Windows 11 (shell, Snap, virtual desktops, accessibility, Game Bar). Windows has no
  * interface to read or change them, so they come from a fixed table and only our own can
  * be edited.
@@ -175,4 +175,4 @@ private:
     QColor m_highlightColor = QColor(0x3d, 0xae, 0xe9);
 };
 
-} // namespace InfinitDesktop
+} // namespace InfiniteDesktop

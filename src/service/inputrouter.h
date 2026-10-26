@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #pragma once
@@ -84,7 +84,7 @@ struct InputCommand
  * Runs on the hook thread; everything it touches there is owned by it, except the
  * snapshot (atomic) and the touchpad tick (atomic).
  *
- * The rules are those of KDE Infinit Desktop's CanvasInputFilter where Windows allows:
+ * The rules are those of KDE Infinite Desktop's CanvasInputFilter where Windows allows:
  * - LMB on the empty desktop passes; from a few pixels of movement on it becomes a pan, the
  *   desktop gets a (tagged) button release at once so it does not draw a selection, and the
  *   pointer keeps moving normally.
@@ -156,7 +156,7 @@ private:
     bool m_swallowRightUp = false;
     std::bitset<256> m_swallowedKeys;
     // Window drag by the user
-    InfinitDesktop::VelocityTracker m_hand;
+    InfiniteDesktop::VelocityTracker m_hand;
     QPointF m_handPosition;
     POINT m_lastPassed = {};
     bool m_handValid = false;

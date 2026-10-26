@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+# SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Every version gets its tag (vX.Y.Z) and its GitHub release with the installable zip,
@@ -13,7 +13,10 @@
 #
 # Release notes: docs/releases/X.Y.Z.md (Markdown without a title line, taken from main so
 # they can be added afterwards); without that file, the body of an annotated tag.
-# Asset: win-infinit-desktop-X.Y.Z-x64.zip (programs, Qt, install.ps1).
+# Asset: win-infinite-desktop-X.Y.Z-x64.zip (programs, Qt, install.ps1). The same file is also
+# attached as win-infinit-desktop-X.Y.Z-x64.zip: the update check of 0.2 and older (when the
+# project was called "WIN Infinit Desktop") looks for that name, and its installer takes the old
+# installation over.
 
 name: Release
 
@@ -54,7 +57,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ver=$(sed -n 's/^project(win-infinit-desktop VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
+          ver=$(sed -n 's/^project(win-infinite-desktop VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
           [ -n "$ver" ] || { echo "::error::no project version in CMakeLists.txt"; exit 1; }
           tag="v$ver"
           if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "$tag" ]; then
@@ -66,7 +69,7 @@ jobs:
           echo "version=$ver" >> "$GITHUB_OUTPUT"
           # A release that already has its zip is only refreshed (notes), not rebuilt.
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' 2>/dev/null \
-              | grep -qx "win-infinit-desktop-$ver-x64.zip"; then
+              | grep -qx "win-infinite-desktop-$ver-x64.zip"; then
             echo "released=true" >> "$GITHUB_OUTPUT"
           else
             echo "released=false" >> "$GITHUB_OUTPUT"
@@ -85,7 +88,7 @@ jobs:
           fi
           if [ ! -s notes.md ]; then
             echo "::warning::no release notes in docs/releases/$ver.md"
-            echo "WIN Infinit Desktop $ver" > notes.md
+            echo "WIN Infinite Desktop $ver" > notes.md
           fi
 
       - uses: actions/upload-artifact@v7
@@ -138,7 +141,7 @@ jobs:
           Expand-Archive -Path "${{ steps.package.outputs.zip }}" -DestinationPath $dir -Force
           powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -NoStart
           if ($LASTEXITCODE -ne 0) { throw "install.ps1 failed" }
-          $installed = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinit Desktop\win-infinit-desktop.exe"
+          $installed = Join-Path $env:LOCALAPPDATA "Programs\WIN Infinite Desktop\win-infinite-desktop.exe"
           if (-not (Test-Path $installed)) { throw "not installed" }
           powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$dir\install.ps1" -Uninstall
           if ($LASTEXITCODE -ne 0 -or (Test-Path $installed)) { throw "uninstall failed" }
@@ -174,7 +177,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          { echo "WIN Infinit Desktop ${TAG#v}"; echo; cat artifacts/notes/notes.md; } > tag-message.md
+          { echo "WIN Infinite Desktop ${TAG#v}"; echo; cat artifacts/notes/notes.md; } > tag-message.md
           git tag -a --cleanup=verbatim -F tag-message.md "$TAG" HEAD
           git push origin "refs/tags/$TAG"
 
@@ -183,11 +186,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.version.outputs.tag }}
         run: |
-          zips=$(find artifacts -name 'win-infinit-desktop-*.zip')
+          # The same zip under the old name, for the update check of 0.2 and older.
+          for zip in $(find artifacts -name 'win-infinite-desktop-*.zip'); do
+            cp "$zip" "$(dirname "$zip")/$(basename "$zip" | sed 's/^win-infinite-desktop-/win-infinit-desktop-/')"
+          done
+          zips=$(find artifacts -name 'win-infinite-desktop-*.zip' -o -name 'win-infinit-desktop-*.zip')
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file artifacts/notes/notes.md
             [ -z "$zips" ] || gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber $zips
           else
             gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag \
-              --title "WIN Infinit Desktop ${TAG#v}" --notes-file artifacts/notes/notes.md $zips
+              --title "WIN Infinite Desktop ${TAG#v}" --notes-file artifacts/notes/notes.md $zips
           fi

@@ -1,6 +1,6 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "overlays.h"
@@ -14,7 +14,7 @@ namespace Wid
 namespace
 {
 
-const wchar_t *const s_windowClass = L"WinInfinitDesktopOverlay";
+const wchar_t *const s_windowClass = L"WinInfiniteDesktopOverlay";
 
 } // namespace
 
@@ -48,7 +48,7 @@ bool OverlayWindow::create()
     case Style::Panel:
         break;
     }
-    m_window.reset(CreateWindowExW(exStyle, s_windowClass, L"WIN Infinit Desktop", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, GetModuleHandleW(nullptr), this));
+    m_window.reset(CreateWindowExW(exStyle, s_windowClass, L"WIN Infinite Desktop", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, GetModuleHandleW(nullptr), this));
     if (m_window && (m_style == Style::Veil || m_style == Style::Tint)) {
         SetLayeredWindowAttributes(m_window.get(), 0, m_alpha, LWA_ALPHA);
     }

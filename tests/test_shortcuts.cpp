@@ -1,5 +1,5 @@
 /*
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 */
 #include "settings.h"
@@ -75,7 +75,7 @@ private Q_SLOTS:
         QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT | MOD_SHIFT, 'G'}), std::optional(ShortcutAction::SaveGroupLayout));
         QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, VK_F1}), std::optional(ShortcutAction::OpenGroup1));
         QCOMPARE(map.actionFor(KeyCombo{MOD_WIN | MOD_ALT, VK_F9}), std::optional(ShortcutAction::OpenGroup9));
-        QCOMPARE(QLatin1String(findShortcut(ShortcutAction::OpenGroup9)->id), QLatin1String("InfinitDesktop OpenGroup9"));
+        QCOMPARE(QLatin1String(findShortcut(ShortcutAction::OpenGroup9)->id), QLatin1String("InfiniteDesktop OpenGroup9"));
         QCOMPARE(int(ShortcutAction::OpenGroup9) - int(ShortcutAction::OpenGroup1) + 1, GroupShortcutCount);
     }
 
@@ -84,11 +84,11 @@ private Q_SLOTS:
         QTemporaryDir dir;
         QSettings file(dir.filePath(QStringLiteral("settings.ini")), QSettings::IniFormat);
         file.beginGroup(QStringLiteral("Shortcuts"));
-        file.setValue(QStringLiteral("InfinitDesktop Home"), QStringLiteral("Ctrl+Alt+H; nonsense"));
-        file.setValue(QStringLiteral("InfinitDesktop ZoomIn"), QString());
-        file.setValue(QStringLiteral("InfinitDesktop ToggleEnabled"), QStringLiteral("Win+Alt+P"));
+        file.setValue(QStringLiteral("InfiniteDesktop Home"), QStringLiteral("Ctrl+Alt+H; nonsense"));
+        file.setValue(QStringLiteral("InfiniteDesktop ZoomIn"), QString());
+        file.setValue(QStringLiteral("InfiniteDesktop ToggleEnabled"), QStringLiteral("Win+Alt+P"));
         // Bound twice: the first action in the table keeps it.
-        file.setValue(QStringLiteral("InfinitDesktop CenterWindow"), QStringLiteral("Ctrl+Alt+H"));
+        file.setValue(QStringLiteral("InfiniteDesktop CenterWindow"), QStringLiteral("Ctrl+Alt+H"));
         file.endGroup();
         file.sync();
         const ShortcutMap map = ShortcutMap::load(file);
@@ -125,7 +125,7 @@ private Q_SLOTS:
         QCOMPARE(settings.zoomStep, 2.0);
         QCOMPARE(settings.minZoom, 0.02);
         QVERIFY(!settings.momentum);
-        QCOMPARE(settings.revealMode, InfinitDesktop::RevealMode::Center);
+        QCOMPARE(settings.revealMode, InfiniteDesktop::RevealMode::Center);
         QCOMPARE(settings.offscreenMarkers, ShowMode::Always);
         QCOMPARE(settings.gridColor, QColor(10, 20, 30));
         QCOMPARE(settings.excludedClasses, (QStringList{QStringLiteral("foo"), QStringLiteral("bar")}));

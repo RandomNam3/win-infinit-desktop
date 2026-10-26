@@ -1,15 +1,17 @@
 /*
-    WIN Infinit Desktop - infinite canvas for Windows 11
-    SPDX-FileCopyrightText: 2026 WIN Infinit Desktop contributors
+    WIN Infinite Desktop - infinite canvas for Windows 11
+    SPDX-FileCopyrightText: 2026 WIN Infinite Desktop contributors
     SPDX-License-Identifier: GPL-3.0-or-later
 
-    wid-settings.exe: the settings app, the same Qt Quick UI as in KDE Infinit Desktop.
+    wid-settings.exe: the settings app, the same Qt Quick UI as in KDE Infinite Desktop.
 */
 #include "applicationindex.h"
+#include "apppaths.h"
 #include "effectstatus.h"
 #include "globalshortcutsmodel.h"
 #include "i18n.h"
 #include "iconprovider.h"
+#include "legacy.h"
 #include "localizer.h"
 #include "screenshotrunner.h"
 #include "serviceconnection.h"
@@ -39,7 +41,7 @@
 #include <dwmapi.h>
 #endif
 
-using namespace InfinitDesktop;
+using namespace InfiniteDesktop;
 
 namespace
 {
@@ -93,10 +95,12 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QCoreApplication::setApplicationName(QStringLiteral("wid-settings"));
-    QCoreApplication::setOrganizationName(QStringLiteral("WIN Infinit Desktop"));
+    QCoreApplication::setOrganizationName(QStringLiteral("WIN Infinite Desktop"));
     QCoreApplication::setApplicationVersion(QStringLiteral(WID_VERSION_STRING));
+    // Before the settings are read: the folders of WIN Infinit Desktop 0.2 and older.
+    Wid::migrateLegacyData(QString::fromLatin1(Wid::AppSettingsGroup));
     Wid::Localizer::instance().loadForSystemLanguage();
-    QGuiApplication::setApplicationDisplayName(i18nc("@title application name", "WIN Infinit Desktop"));
+    QGuiApplication::setApplicationDisplayName(i18nc("@title application name", "WIN Infinite Desktop"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(i18n("Settings for the infinite canvas of Windows"));
@@ -144,7 +148,7 @@ int main(int argc, char *argv[])
     }
 
     QQuickStyle::setStyle(QStringLiteral("Basic"));
-    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/infinitdesktop/icons/app-icon.svg")));
+    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/infinitedesktop/icons/app-icon.svg")));
 
     ThemeController::instance()->setScreenshotMode(screenshotMode);
     if (screenshotMode) {
@@ -158,7 +162,7 @@ int main(int argc, char *argv[])
     engine.addImageProvider(QStringLiteral("themeicon"), new ThemeIconProvider);
     engine.rootContext()->setContextObject(new Wid::LocalizedContext(&engine));
     engine.setInitialProperties({{QStringLiteral("initialPage"), parser.value(pageOption)}});
-    engine.loadFromModule("InfinitDesktop.Settings", "Main");
+    engine.loadFromModule("InfiniteDesktop.Settings", "Main");
     if (engine.rootObjects().isEmpty()) {
         return 1;
     }
